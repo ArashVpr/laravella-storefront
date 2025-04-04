@@ -1,9 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SignupController;
+use App\Http\Controllers\HomeController;
+
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('index');
 });
 
 Route::middleware([
@@ -15,3 +18,13 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::fallback(function () {
+    // return view('welcome');
+    return 'Nadarim AMUUUUUUUUU';
+});
+
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/signup', [SignupController::class, 'create']);
+Route::get('/login', [SignupController::class, 'login']);
+
