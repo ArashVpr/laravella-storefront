@@ -1,4 +1,4 @@
-@extends('layouts.clean', ['cssClass' => 'page-signup'])
+@extends('layouts.base', ['cssClass' => 'page-signup'])
 
 @section('title', 'Signup')
 {{-- @include('layouts.partials.header') --}}
@@ -8,11 +8,7 @@
     <div class="container-small page-login">
       <div class="flex" style="gap: 5rem">
         <div class="auth-page-form">
-          <div class="text-center">
-            <a href="/">
-              <img src="/img/logoipsum-265.svg" alt="" />
-            </a>
-          </div>
+          <x-logo-image />
           <h1 class="auth-page-title">Signup</h1>
 
           <form action="" method="post">
@@ -37,23 +33,10 @@
             </div>
             <button class="btn btn-primary btn-login w-full">Register</button>
 
-            <div class="grid grid-cols-2 gap-1 social-auth-buttons">
-              <button
-                class="btn btn-default flex justify-center items-center gap-1"
-              >
-                <img src="/img/google.png" alt="" style="width: 20px" />
-                Google
-              </button>
-              <button
-                class="btn btn-default flex justify-center items-center gap-1"
-              >
-                <img src="/img/facebook.png" alt="" style="width: 20px" />
-                Facebook
-              </button>
-            </div>
+            <x-login-with />
             <div class="login-text-dont-have-account">
               Already have an account? -
-              <a href="/login.html"> Click here to login </a>
+              <a href="/login"> Click here to login </a>
             </div>
           </form>
         </div>
