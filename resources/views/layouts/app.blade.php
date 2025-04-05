@@ -1,4 +1,4 @@
-@extends('layouts.clean')
+@extends('layouts.base')
     
 
     @section('childContent')

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SignupController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CarController;
 
 
 Route::get('/', function () {
@@ -25,6 +26,8 @@ Route::fallback(function () {
 });
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::get('/signup', [SignupController::class, 'create']);
-Route::get('/login', [SignupController::class, 'login']);
+Route::get('/signup', [SignupController::class, 'create'])->name('signup');
+Route::get('/login', [SignupController::class, 'login'])->name('login');
 
+Route::get('/car/search', [CarController::class, 'search'])->name('car.search');
+Route::resource('car', CarController::class);
