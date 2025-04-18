@@ -31,3 +31,10 @@ Route::get('/login', [SignupController::class, 'login'])->name('login');
 
 Route::get('/car/search', [CarController::class, 'search'])->name('car.search');
 Route::resource('car', CarController::class);
+
+// sequence of auth event
+// validate
+// authorize
+// update 
+// persist
+// redirect

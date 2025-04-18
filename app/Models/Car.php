@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Models\CarFeatures;
-use App\Models\CarImage;
 use App\Models\CarType;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,17 +18,17 @@ class Car extends Model
 
     public function features(): HasOne
     {
-        return $this->hasOne(CarFeatures::class);
+        return $this->hasOne(CarFeature::class);
     }
 
     public function primaryImage(): HasOne
     {
-        return $this->hasOne(CarImage::class)->oldestOfMany('position');
+        return $this->hasOne(CarImages::class)->oldestOfMany('position');
     }
 
     public function images(): HasMany
     {
-        return $this->HasMany(CarImage::class);
+        return $this->HasMany(CarImages::class);
     }
 
     public function favoredUsers(): BelongsToMany
@@ -69,11 +67,7 @@ class Car extends Model
     }
     public function carImages(): HasMany
     {
-        return $this->hasMany(CarImage::class);
-    }
-    public function carType(): BelongsTo
-    {
-        return $this->belongsTo(CarType::class);
+        return $this->hasMany(CarImages::class);
     }
     public function carFeatures(): BelongsToMany
     {
