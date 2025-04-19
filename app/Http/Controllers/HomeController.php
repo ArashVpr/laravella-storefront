@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Car;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class HomeController extends Controller
 {
     public function index()
     {
 
-        $car = Car::find(1);
+        $cars = Car::where('created_at', '<', now())->orderBy('created_at','desc')->limit(30)->get();
 
-        return view('home.index');
+        return view('home.index',['cars' => $cars]);
     }
 }

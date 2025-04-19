@@ -30,12 +30,13 @@ class CarFactory extends Factory
             'fuel_type_id' => FuelType::inRandomOrder()->first()->id,
             'city_id' => City::inRandomOrder()->first()->id,
             'year' => fake()->numberBetween(2000, now()->year),
-            'price' => fake()->numberBetween(10000, 50000),
+            'price' => fake()->numberBetween(100, 500) * 100,
             "mileage" => fake()->numberBetween(1000, 200000),
             'vin' => strtoupper(fake()->bothify('??###??###??###??###')),
             'address' => fake()->streetAddress,
             'phone' => fake()->phoneNumber,
             'description' => fake()->text(200),
+            'created_at' => fake()->dateTimeBetween('-5 year', 'now'),
         ];
     }
 }
