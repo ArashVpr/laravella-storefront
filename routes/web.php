@@ -6,9 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CarController;
 
 
-Route::get('/', function () {
-    return view('index');
-});
+Route::get('/', [HomeController::class, 'index'])->name('homepage');
 
 Route::middleware([
     'auth:sanctum',
@@ -25,7 +23,7 @@ Route::fallback(function () {
     return 'Nadarim AMUUUUUUUUU';
 });
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+// Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/signup', [SignupController::class, 'create'])->name('signup');
 Route::get('/login', [SignupController::class, 'login'])->name('login');
 

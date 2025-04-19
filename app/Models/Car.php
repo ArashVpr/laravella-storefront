@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\CarType;
+use App\Models\Models;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -54,7 +55,7 @@ class Car extends Model
 
     public function model(): BelongsTo
     {
-        return $this->belongsTo(model::class);
+        return $this->belongsTo(models::class);
     }
 
     public function owner()
@@ -72,6 +73,11 @@ class Car extends Model
     public function carFeatures(): BelongsToMany
     {
         return $this->belongsToMany(CarFeature::class, 'car_feature_car');
+    }
+
+    public function formatDate()
+    {
+        return $this->created_at->format('Y-m-d');
     }
 
 
