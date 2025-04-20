@@ -123,7 +123,7 @@ class DatabaseSeeder extends Seeder
                             ['position' => $sequence->index % 5 + 1]),
                     )
                     ->hasFeatures()
-            )
+                    , 'favoriteCars')
             ->create();
     }
 }
