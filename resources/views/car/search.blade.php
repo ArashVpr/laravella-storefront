@@ -1,5 +1,6 @@
-@extends('layouts.app')
 @section('title', 'Search Cars')
+
+<x-app>
 <div>
     <main>
         <!-- Found Cars -->
@@ -429,3 +430,4 @@
         <!--/ Found Cars -->
       </main>
       </div>
+</x-app>

@@ -1,6 +1,6 @@
-@extends('layouts.app')
 @section('title', 'Watchlist')
 
+<x-app>
 <main>
     <!-- New Cars -->
     <section>
@@ -17,7 +17,6 @@
             
           @endif
         </div>
-
         
         <div class="car-items-listing">
           <!-- Car Item Card -->
@@ -32,3 +31,4 @@
     </section>
     <!--/ New Cars -->
   </main>
+</x-app>
