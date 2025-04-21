@@ -1,4 +1,3 @@
-
 <section>
     <div class="container">
       <h2>Latest Added Cars</h2>
@@ -8,4 +7,4 @@
         @endforeach
       </div>
     </div>
-  </section>
+</section>

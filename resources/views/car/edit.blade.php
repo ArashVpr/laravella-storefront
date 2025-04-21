@@ -1,7 +1,8 @@
-@extends('layouts.app')
 @section('title', 'Edit Car')
 
+<x-app>
 <div>
+
     <main>
         <div class="container-small">
           <h1 class="car-details-page-title">Edit Car: Lexus NX200t - 2016</h1>
@@ -312,3 +313,5 @@
         </div>
       </main>
     </div>
+
+</x-app>

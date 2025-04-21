@@ -1,6 +1,6 @@
-@extends('layouts.app')
 @section('title', 'Car Details')
 
+<x-app
 <div>
     <main>
         <div class="container">
@@ -180,3 +180,5 @@
         </div>
       </main>
     </div>
+
+</x-app>
