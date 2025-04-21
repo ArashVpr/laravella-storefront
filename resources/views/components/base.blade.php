@@ -1,4 +1,4 @@
-@props(['title' => '', 'bodyClass' => ''])
+@props(['bodyClass' => '', 'title' => ''])
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -27,6 +27,7 @@
 </head>
 
 <body @if($bodyClass)class="{{ $bodyClass }}"@endif>
+
 
     {{ $slot }}
 

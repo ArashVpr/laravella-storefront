@@ -1,4 +1,4 @@
-<x-app title="Signup" bodyClass="page-signup">
+<x-base title="Signup" bodyClass="page-signup">
     <main>
         <div class="container-small page-login">
             <div class="flex" style="gap: 5rem">
@@ -41,4 +41,4 @@
             </div>
         </div>
     </main>
-</x-app>
+</x-base>
