@@ -42,7 +42,7 @@
         </button>
       </div>
       <h2 class="car-item-title">{{ $car->year }} - {{ $car->maker->name }} {{ $car->model->name }}</h2>
-      <p class="car-item-price">${{ $car->price }}</p>
+      <p class="car-item-price">${{ number_format($car->price) }}</p>
       <hr />
       <p class="m-0">
         <span class="car-item-badge">{{ $car->carType->name }}</span>
