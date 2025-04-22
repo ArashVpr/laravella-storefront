@@ -1,6 +1,5 @@
-@section('title', 'Add New Car')
 
-<x-app>
+<x-app title="Add New Car">
 <div>
     <main>
         <div class="container-small">

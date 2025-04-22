@@ -1,6 +1,5 @@
-@section('title', 'Home Page')
 
-<x-app>
+<x-app title="Home Page">
     <!-- Home Slider -->
     <x-hero-slider />
     <!--/ Home Slider -->
