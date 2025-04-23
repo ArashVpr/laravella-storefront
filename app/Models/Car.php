@@ -17,6 +17,8 @@ class Car extends Model
     /** @use HasFactory<\Database\Factories\CarFactory> */
     use HasFactory, SoftDeletes;
 
+    protected $guarded = [];
+
     public function features(): HasOne
     {
         return $this->hasOne(CarFeature::class);

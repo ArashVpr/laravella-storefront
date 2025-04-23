@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class CarFeature extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
     public function car(): BelongsTo
     {
         return $this->belongsTo(Car::class);

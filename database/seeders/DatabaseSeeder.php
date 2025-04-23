@@ -65,14 +65,11 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Altima', 'maker_id' => Maker::inRandomOrder()->first()->id],
             ['name' => 'X5', 'maker_id' => Maker::inRandomOrder()->first()->id],
             ['name' => 'C-Class', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Golf', 'maker_id' => Maker::inRandomOrder()->first()->id],
             ['name' => 'Tucson', 'maker_id' => Maker::inRandomOrder()->first()->id],
             ['name' => 'Civic', 'maker_id' => Maker::inRandomOrder()->first()->id],
             ['name' => 'F-150', 'maker_id' => Maker::inRandomOrder()->first()->id],
             ['name' => 'Silverado', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Altima', 'maker_id' => Maker::inRandomOrder()->first()->id],
             ['name' => '3 Series', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'C-Class', 'maker_id' => Maker::inRandomOrder()->first()->id],
             ['name' => 'Golf', 'maker_id' => Maker::inRandomOrder()->first()->id],
             ['name' => 'Elantra', 'maker_id' => Maker::inRandomOrder()->first()->id],
             ['name' => 'Soul', 'maker_id' => Maker::inRandomOrder()->first()->id],
@@ -116,7 +113,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory(10)
             ->has(
-                Car::factory(50)
+                Car::factory(20)
                     ->has(
                         CarImages::factory(5)
                             ->sequence(fn(Sequence $sequence) =>
