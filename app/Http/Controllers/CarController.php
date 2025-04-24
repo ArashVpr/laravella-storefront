@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCarRequest;
 use App\Models\Car;
 use App\Models\User;
+use Illuminate\Validation\Rules\File;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
@@ -34,14 +36,15 @@ class CarController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCarRequest $request)
     {
 
         // Get request data
-        $data = $request->all();
+        $data = $request->validated();
+        // dd($data);
         // Get features data
         $featuresData = $data['features'] ?? [];
-        unset($data['features']);
+        // unset($featuresData);
         // Set user ID
         $data['user_id'] = 1;
         // Create new car

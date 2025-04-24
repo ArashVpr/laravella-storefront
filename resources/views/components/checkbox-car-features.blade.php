@@ -16,7 +16,7 @@
 
 @foreach ($features as $name => $feature)
     <label class="checkbox">
-        <input type="checkbox" name="features[{{ $name }}]" value="1" />
+        <input type="checkbox" name="features[{{ $name }}]" value="1" @checked(in_array($name, $attributes->get('value', []))) />
         {{ $feature }}
     </label>
 @endforeach
