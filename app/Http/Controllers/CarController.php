@@ -16,7 +16,7 @@ class CarController extends Controller
      */
     public function index()
     {
-        $cars = User::find(2)
+        $cars = User::find(1)
             ->cars()
             ->with(['primaryImage', 'maker', 'model'])
             ->orderBy('created_at', 'desc')
@@ -44,13 +44,24 @@ class CarController extends Controller
         // dd($data);
         // Get features data
         $featuresData = $data['features'] ?? [];
-        // unset($featuresData);
+        unset($data['features']);
+        // Attach images
+        $images = $request->file('images') ?: [];
+        unset($data['images']);
         // Set user ID
         $data['user_id'] = 1;
         // Create new car
         $car = Car::create($data);
         // Create features
         $car->features()->create($featuresData);
+        
+        // Iterate and create images
+        foreach ($images as $index => $image) {
+            // Save image on file system
+            $path = $image->store('public/images');
+            // Create record in the database
+            $car->images()->create(['image_path' => $path, 'position' => $index + 1]);
+        }
         // Redirect to car.index route
         return redirect()->route('car.index');
     }
@@ -60,6 +71,9 @@ class CarController extends Controller
      */
     public function show(Car $car)
     {
+        if (!$car->published_at) {
+            return abort(404);
+        }
         return view('car.show', ['car' => $car]);
     }
 
