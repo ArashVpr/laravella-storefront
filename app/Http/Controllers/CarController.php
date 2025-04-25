@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCarRequest;
 use App\Models\Car;
 use App\Models\User;
+use Illuminate\Contracts\Cache\Store;
 use Illuminate\Validation\Rules\File;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -82,13 +83,13 @@ class CarController extends Controller
      */
     public function edit(Car $car)
     {
-        return view('car.edit');
+        return view('car.edit', ['car' => $car]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Car $car)
+    public function update(StoreCarRequest $request, Car $car)
     {
         //
     }

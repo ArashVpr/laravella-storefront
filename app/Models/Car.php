@@ -82,5 +82,10 @@ class Car extends Model
         return $this->created_at->format('Y-m-d');
     }
 
+    public function getTitle()
+    {
+        return $this->year . ' - ' . $this->maker->name . ' ' . $this->model->name;
+    }
+
 
 }

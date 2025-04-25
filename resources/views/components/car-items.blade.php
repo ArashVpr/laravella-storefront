@@ -41,7 +41,7 @@
                     </svg>
         </button>
       </div>
-      <h2 class="car-item-title">{{ $car->year }} - {{ $car->maker->name }} {{ $car->model->name }}</h2>
+      <h2 class="car-item-title">{{ $car->getTitle() }}</h2>
       <p class="car-item-price">${{ number_format($car->price) }}</p>
       <hr />
       <p class="m-0">
