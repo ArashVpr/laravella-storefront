@@ -23,12 +23,12 @@
                                                 <img src="{{ $car->primaryImage?->getUrl() ?? '/img/no-image.png' }}" alt=""
                                                     class="my-cars-img-thumbnail" />
                                             </td>
-                                            <td>{{ $car->year }} - {{ $car->maker->name }} {{ $car->model->name }}
+                                            <td> {{ $car->getTitle() }}
                                             </td>
                                             <td>{{ $car->formatDate() }}</td>
                                             <td>{{ $car->published_at ? 'YES' : 'NO' }}</td>
                                             <td class="">
-                                                <a href="edit_car.html" class="btn btn-edit inline-flex items-center">
+                                                <a href="{{ route('car.edit' , $car) }}" class="btn btn-edit inline-flex items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                                         style="width: 12px; margin-right: 5px">

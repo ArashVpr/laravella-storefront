@@ -58,7 +58,7 @@
           </a>
           <ul class="submenu">
             <li>
-              <a href="my-cars">My Cars</a>
+              <a href="{{ route('car.index') }}">My Cars</a>
             </li>
             <li>
               <a href="watchlist">My Favourite Cars</a>

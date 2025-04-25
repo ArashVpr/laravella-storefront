@@ -1,3 +1,5 @@
+@props(['car' => null])
+
 @php
     $features = [
         'air_conditioning' => 'Air Conditioning',
@@ -14,9 +16,13 @@
     ];
 @endphp
 
-@foreach ($features as $name => $feature)
+@foreach ($features as $key => $feature)
     <label class="checkbox">
-        <input type="checkbox" name="features[{{ $name }}]" value="1" @checked(in_array($name, $attributes->get('value', []))) />
+        <input type="checkbox" 
+        name="features[{{ $key }}]" 
+        value="1" 
+        @checked(old('features.'.$key, $car?->features->$key)) />
         {{ $feature }}
     </label>
 @endforeach
+
