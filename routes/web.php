@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SignupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CarController;
+use App\Http\Controllers\LoginController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('homepage');
@@ -25,7 +26,10 @@ Route::fallback(function () {
 
 // Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/signup', [SignupController::class, 'create'])->name('signup');
-Route::get('/login', [SignupController::class, 'login'])->name('login');
+Route::post('/signup', [SignupController::class, 'store'])->name('signup.store');
+Route::get('/login', [LoginController::class, 'create'])->name('login');
+Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/car/search', [CarController::class, 'search'])->name('car.search');
 Route::get('/car/watchlist', [CarController::class, 'watchlist'])->name('car.watchlist');

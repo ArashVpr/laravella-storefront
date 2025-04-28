@@ -10,7 +10,6 @@ class HomeController extends Controller
 {
     public function index()
     {
-
         $cars = Car::where('created_at', '<', now())
         ->with(['primaryImage', 'city', 'carType', 'fuelType', 'maker', 'model'])
         ->orderBy('created_at','desc')
