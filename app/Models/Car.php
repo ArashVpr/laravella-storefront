@@ -21,7 +21,7 @@ class Car extends Model
 
     public function features(): HasOne
     {
-        return $this->hasOne(CarFeature::class);
+        return $this->hasOne(CarFeature::class, 'car_id');
     }
 
     public function primaryImage(): HasOne
@@ -74,7 +74,7 @@ class Car extends Model
     }
     public function carFeatures(): BelongsToMany
     {
-        return $this->belongsToMany(CarFeature::class, 'car_feature_car');
+        return $this->belongsToMany(CarFeature::class, 'car_id');
     }
 
     public function formatDate()

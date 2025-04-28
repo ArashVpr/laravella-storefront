@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCarRequest;
 use App\Models\Car;
 use App\Models\User;
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Validation\Rules\File;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
@@ -91,7 +89,27 @@ class CarController extends Controller
      */
     public function update(StoreCarRequest $request, Car $car)
     {
-        //
+        $data = $request->validated();
+        $features = array_merge([
+            'abs' => 0,
+            'air_conditioning' => 0,
+            'power_windows' => 0,
+            'power_door_locks' => 0,
+            'cruise_control' => 0,
+            'bluetooth_connectivity' => 0,
+            'gps_navigation' => 0,
+            'heated_seats' => 0,
+            'climate_control' => 0,
+            'rear_parking_sensors' => 0,
+            'leather_seats' => 0,
+        ], $data['features'] ?? []);
+        $data = $request->validated();
+        unset($data['features']);
+
+        $car->update($data);
+        $car->features()->sync($features);
+
+        return redirect()->route('car.index');
     }
 
     /**
@@ -99,7 +117,8 @@ class CarController extends Controller
      */
     public function destroy(Car $car)
     {
-        //
+        $car->delete();
+        return redirect()->route('car.index');
     }
 
     public function search(Request $request)
