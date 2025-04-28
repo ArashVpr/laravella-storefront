@@ -1,5 +1,11 @@
-
 <x-app title="Home Page">
+    @session('success')
+        <div class="container my-large">
+            <div class="success-message">
+                {{ session('success') }}
+            </div>
+        </div>
+    @endsession
     <!-- Home Slider -->
     <x-hero-slider />
     <!--/ Home Slider -->
