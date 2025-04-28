@@ -3,7 +3,7 @@
         <main>
             <div class="container-small">
                 <h1 class="car-details-page-title">Edit Car: {{ $car->getTitle() }}</h1>
-                <form action="" method="POST" class="card add-new-car-form"
+                <form action="{{ route('car.update', $car) }}" method="POST" class="card add-new-car-form"
                     enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
@@ -60,14 +60,16 @@
                                 <div class="col">
                                     <div class="form-group @error('vin') has-error @enderror">
                                         <label>Vin Code</label>
-                                        <input placeholder="Vin Code" name="vin" value="{{ old('vin', $car->vin) }}" />
+                                        <input placeholder="Vin Code" name="vin"
+                                            value="{{ old('vin', $car->vin) }}" />
                                         <p class="error-message">{{ $errors->first('vin') }}</p>
                                     </div>
                                 </div>
                                 <div class="col">
                                     <div class="form-group @error('mileage') has-error @enderror">
                                         <label>Mileage (ml)</label>
-                                        <input placeholder="Mileage" name="mileage" value="{{ old('mileage', $car->mileage) }}" />
+                                        <input placeholder="Mileage" name="mileage"
+                                            value="{{ old('mileage', $car->mileage) }}" />
                                         <p class="error-message">{{ $errors->first('mileage') }}</p>
                                     </div>
                                 </div>
@@ -106,14 +108,16 @@
                                 <div class="col">
                                     <div class="form-group @error('address') has-error @enderror">
                                         <label>Address</label>
-                                        <input placeholder="Address" name="address" value="{{ old('address', $car->address) }}" />
+                                        <input placeholder="Address" name="address"
+                                            value="{{ old('address', $car->address) }}" />
                                         <p class="error-message">{{ $errors->first('address') }}</p>
                                     </div>
                                 </div>
                                 <div class="col">
                                     <div class="form-group @error('phone') has-error @enderror">
                                         <label>Phone</label>
-                                        <input placeholder="Phone" name="phone" value="{{ old('phone', $car->phone) }}" />
+                                        <input placeholder="Phone" name="phone"
+                                            value="{{ old('phone', $car->phone) }}" />
                                         <p class="error-message">{{ $errors->first('phone') }}</p>
                                     </div>
                                 </div>
@@ -133,7 +137,8 @@
 
                             <div class="form-group @error('published_at') has-error @enderror">
                                 <label>Publish Date</label>
-                                <input type="date" name="published_at" value="{{ old('published_at', $car->published_at) }}" />
+                                <input type="date" name="published_at"
+                                    value="{{ old('published_at', $car->published_at) }}" />
                                 <p class="error-message">
                                     {{ $errors->first('published_at') }}
                                 </p>
@@ -143,11 +148,11 @@
                         <div class="form-images">
                             <p> Manage your images <a href="#">here</a></p>
                             <div id="imagePreviews" class="car-form-images">
-                                @foreach($car->images as $image)
-                                <a href="#" class="car-form-image-preview">
-                                    <img src="{{ $image->getUrl() }}" alt="">
-                                </a>
-                            @endforeach
+                                @foreach ($car->images as $image)
+                                    <a href="#" class="car-form-image-preview">
+                                        <img src="{{ $image->getUrl() }}" alt="">
+                                    </a>
+                                @endforeach
                             </div>
                         </div>
                     </div>
