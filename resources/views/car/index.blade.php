@@ -3,6 +3,13 @@
         <main>
             <div>
                 <div class="container">
+                    @session('success')
+                        <div class="container my-large">
+                            <div class="success-message">
+                                {{ session('success') }}
+                            </div>
+                        </div>
+                    @endsession
                     <h1 class="car-details-page-title">My Cars</h1>
                     <div class="card p-medium">
                         <div class="table-responsive">
@@ -47,10 +54,12 @@
                                                     </svg>
                                                     images
                                                 </a>
-                                                <form action="{{ route('car.destroy', $car) }}" method="POST" class="inline-flex">
+                                                <form action="{{ route('car.destroy', $car) }}" method="POST"
+                                                    class="inline-flex">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button onclick="return confirm('Are you sure?')" class="btn btn-delete inline-flex items-center">
+                                                    <button onclick="return confirm('Are you sure?')"
+                                                        class="btn btn-delete inline-flex items-center">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                                             style="width: 12px; margin-right: 5px">
