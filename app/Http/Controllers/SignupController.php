@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 class SignupController extends Controller
@@ -35,13 +35,17 @@ class SignupController extends Controller
             ]
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => bcrypt($request->password),
         ]);
 
-        return redirect()->route('homepage')->with('success', 'Account created successfully!');
+        event(new Registered($user));
+        Auth::login($user);
+
+        return redirect()->route('homepage')->with('success', 'Account created Successfully. Please check your email
+        to verify your account');
     }
 }
