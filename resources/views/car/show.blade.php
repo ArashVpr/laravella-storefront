@@ -4,7 +4,7 @@
     <main>
         <div class="container">
           <h1 class="car-details-page-title">{{ $car->maker->name }} {{ $car->model->name }} - {{ $car->year }}</h1>
-          <div class="car-details-region">{{ $car->city->name }} - {{ $car->created_at }}</div>
+          <div class="car-details-region">{{ $car->city->name }} - {{ $car->created_at->format('Y/m/d') }}</div>
           
           <div class="car-details-content">
             <div class="car-images-and-description">
@@ -61,7 +61,7 @@
               <div class="card car-detailed-description">
                 <h2 class="car-details-title">Detailed Description</h2>
                 <p>
-                  { !! car->description !! }
+                  {{ $car->description }}
                 </p>
               </div>
   
@@ -86,7 +86,7 @@
             </div>
             <div class="car-details card">
               <div class="flex items-center justify-between">
-                <p class="car-details-price">${{ $car->price }}</p>
+                <p class="car-details-price">${{ number_format($car->price) }}</p>
                 <button class="btn-heart">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
