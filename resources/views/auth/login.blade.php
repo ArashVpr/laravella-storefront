@@ -12,6 +12,9 @@
                         </div>
                     @endsession
                     <h1 class="auth-page-title">Login</h1>
+                    
+                    {{ session('error') }}
+
                     <form action="{{ route('login.store') }}" method="POST">
                         @csrf
                         <div class="form-group @error('email') has-error @enderror">

@@ -42,7 +42,7 @@
 
         <div class="navbar-menu" tabindex="-1">
           <a href="javascript:void(0)" class="navbar-menu-handler">
-            My Account
+            Welcome, {{ auth()->user()->name }}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
