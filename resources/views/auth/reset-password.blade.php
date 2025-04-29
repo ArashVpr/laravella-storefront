@@ -1,36 +1,44 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+<x-base title="Reset Password" bodyClass="page-login">
+    <main>
+        <div class="container-small page-login">
+            <div class="flex" style="gap: 5rem">
+                <div class="auth-page-form">
+                    <x-logo-image />
 
-        <x-validation-errors class="mb-4" />
+                    @session('success')
+                        <div class="my-large">
+                            <div class="success-message">
+                                {{ session('success') }}
+                            </div>
+                        </div>
+                    @endsession
+                    <div> {{ $errors->first('token') }}</div>
+                    <h1 class="auth-page-title">Reset Your Password</h1>
 
-        <form method="POST" action="{{ route('password.update') }}">
-            @csrf
+                    <form action="{{ route('password.update') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="token" value="{{ request('token') }}" />
 
-            <input type="hidden" name="token" value="{{ $request->route('token') }}">
-
-            <div class="block">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
+                        <div class="form-group @error('email') has-error @enderror">
+                            <input type="email" placeholder="Your Email" name="email" value="{{ request('email') }}"
+                                readonly />
+                        </div>
+                        <div class="form-group @error('password') has-error @enderror">
+                            <input type="password" placeholder="New Password" name="password" />
+                            <div class="error-message">
+                                {{ $errors->first('password') }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" placeholder="Confirm New Password" name="password_confirmation" />
+                        </div>
+                        <button class="btn btn-primary btn-login w-full">Reset Password</button>
+                    </form>
+                </div>
+                <div class="auth-page-image">
+                    <img src="/img/car-png-39071.png" alt="" class="img-responsive" />
+                </div>
             </div>
-
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            </div>
-
-            <div class="mt-4">
-                <x-label for="password_confirmation" value="{{ __('Confirm Password') }}" />
-                <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <x-button>
-                    {{ __('Reset Password') }}
-                </x-button>
-            </div>
-        </form>
-    </x-authentication-card>
-</x-guest-layout>
+        </div>
+    </main>
+</x-base>
