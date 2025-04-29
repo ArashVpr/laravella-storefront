@@ -4,9 +4,14 @@
             <div class="flex" style="gap: 5rem">
                 <div class="auth-page-form">
                     <x-logo-image />
-
+                    @session('success')
+                        <div class="my-large">
+                            <div class="success-message">
+                                {{ session('success') }}
+                            </div>
+                        </div>
+                    @endsession
                     <h1 class="auth-page-title">Login</h1>
-
                     <form action="{{ route('login.store') }}" method="POST">
                         @csrf
                         <div class="form-group @error('email') has-error @enderror">
@@ -22,7 +27,8 @@
                             </div>
                         </div>
                         <div class="text-right mb-medium">
-                            <a href="/password-reset.html" class="auth-page-password-reset">Reset Password</a>
+                            <a href="{{ route('password.forgot') }}" class="auth-page-password-reset">Forgot Password
+                                ?</a>
                         </div>
 
                         <button class="btn btn-primary btn-login w-full">Login</button>

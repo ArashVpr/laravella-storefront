@@ -1,34 +1,39 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+<x-base title="Forgot Password" bodyClass="page-login">
+    <main>
+        <div class="container-small page-login">
+            <div class="flex" style="gap: 5rem">
+                <div class="auth-page-form">
+                    <x-logo-image />
 
-        <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-            {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+                    @session('success')
+                        <div class="my-large">
+                            <div class="success-message">
+                                {{ session('success') }}
+                            </div>
+                        </div>
+                    @endsession
+                    <h1 class="auth-page-title">Request password reset</h1>
+
+                    <form action="{{ route('password.email') }}" method="POST">
+                        @csrf
+                        <div class="form-group @error('email') has-error @enderror">
+                            <input type="email" placeholder="Your Email" name="email" value="{{ old('name') }}" />
+                            <div class="error-message">
+                                {{ $errors->first('email') }}
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-login w-full">Request password reset</button>
+
+                        <div class="login-text-dont-have-account">
+                            Already have an account? -
+                            <a href="/login"> Click here to login </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="auth-page-image">
+                    <img src="/img/car-png-39071.png" alt="" class="img-responsive" />
+                </div>
+            </div>
         </div>
-
-        @session('status')
-            <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
-                {{ $value }}
-            </div>
-        @endsession
-
-        <x-validation-errors class="mb-4" />
-
-        <form method="POST" action="{{ route('password.email') }}">
-            @csrf
-
-            <div class="block">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <x-button>
-                    {{ __('Email Password Reset Link') }}
-                </x-button>
-            </div>
-        </form>
-    </x-authentication-card>
-</x-guest-layout>
+    </main>
+</x-base>

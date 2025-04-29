@@ -7,6 +7,7 @@ use App\Models\Car;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class CarController extends Controller
 {
@@ -16,7 +17,7 @@ class CarController extends Controller
     public function index(Request $request)
     {
         $request->session()->get('success');
-        $cars = User::find(1)
+        $cars = Auth::user()
             ->cars()
             ->with(['primaryImage', 'maker', 'model'])
             ->orderBy('created_at', 'desc')
@@ -41,7 +42,6 @@ class CarController extends Controller
 
         // Get request data
         $data = $request->validated();
-        // dd($data);
         // Get features data
         $featuresData = $data['features'] ?? [];
         unset($data['features']);
@@ -49,7 +49,7 @@ class CarController extends Controller
         $images = $request->file('images') ?: [];
         unset($data['images']);
         // Set user ID
-        $data['user_id'] = 1;
+        $data['user_id'] = Auth::id();
         // Create new car
         $car = Car::create($data);
         // Create features
@@ -71,9 +71,6 @@ class CarController extends Controller
      */
     public function show(Car $car)
     {
-        if (!$car->published_at) {
-            return abort(404);
-        }
         return view('car.show', ['car' => $car]);
     }
 
@@ -82,6 +79,10 @@ class CarController extends Controller
      */
     public function edit(Car $car)
     {
+        if (!$car->published_at) {
+            return abort(404);
+        }
+
         return view('car.edit', ['car' => $car]);
     }
 
@@ -90,6 +91,11 @@ class CarController extends Controller
      */
     public function update(StoreCarRequest $request, Car $car)
     {
+        // Check if the authenticated user is the owner of the car
+        if ($car->user_id !== Auth::id()) {
+            abort(403);
+        }
+        // Validate the request
         $data = $request->validated();
         $features = array_merge([
             'abs' => 0,
@@ -118,6 +124,10 @@ class CarController extends Controller
      */
     public function destroy(Car $car)
     {
+        if ($car->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $car->delete();
         return redirect()->route('car.index')->with('success', 'Car deleted successfully');
     }
@@ -192,7 +202,7 @@ class CarController extends Controller
 
     public function watchlist()
     {
-        $cars = User::find(3)
+        $cars = Auth::user()
             ->favoriteCars()
             ->with(['primaryImage', 'city', 'carType', 'fuelType', 'maker', 'model'])
             ->paginate(15);
