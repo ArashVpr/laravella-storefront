@@ -7,6 +7,8 @@ use App\Http\Controllers\CarController;
 use App\Http\Controllers\EmailVerifyController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\SocialiteController;
+use Laravel\Socialite\Facades\Socialite;
 
 Route::get('/', [HomeController::class, 'index'])->name('homepage');
 
@@ -65,3 +67,6 @@ Route::get('/email/verify/{id}/{hash}', [EmailVerifyController::class, 'verify']
 Route::post('/email/verification-notification', [EmailVerifyController::class, 'send'])
     ->middleware(['auth', 'throttle:6,1'])
     ->name('verification.send');
+
+Route::get('/login/oauth/{provider}', [SocialiteController::class, 'redirectToProvider'])->name('login.oauth');
+Route::get('/callback/oauth/{provider}', [SocialiteController::class, 'handleCallback']);
