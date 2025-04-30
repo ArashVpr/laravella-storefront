@@ -60,6 +60,9 @@
           </a>
           <ul class="submenu">
             <li>
+              <a href="{{ route('profile.index') }}">My Profile</a>
+            </li>
+            <li>
               <a href="{{ route('car.index') }}">My Cars</a>
             </li>
             <li>

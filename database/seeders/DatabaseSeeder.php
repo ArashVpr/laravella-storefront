@@ -19,10 +19,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
-
-
-
         DB::table('makers')->insert([
             ['name' => 'Toyota'],
             ['name' => 'Honda'],
