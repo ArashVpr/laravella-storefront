@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCarRequest;
 use App\Models\Car;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -151,7 +150,7 @@ class CarController extends Controller
 
 
         $query = Car::where('created_at', '<', now())
-            ->with(['primaryImage', 'city', 'carType', 'fuelType', 'maker', 'model']);
+            ->with(['primaryImage', 'city', 'carType', 'fuelType', 'maker', 'model', 'favoredUsers']);
 
         if (str_starts_with($sort, '-')) {
             $sortBy = substr($sort, 1);
@@ -200,13 +199,4 @@ class CarController extends Controller
         return view('car.search', ['cars' => $cars]);
     }
 
-    public function watchlist()
-    {
-        $cars = Auth::user()
-            ->favoriteCars()
-            ->with(['primaryImage', 'city', 'carType', 'fuelType', 'maker', 'model'])
-            ->paginate(15);
-
-        return view('car.watchlist', ['cars' => $cars]);
-    }
 }

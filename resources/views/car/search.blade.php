@@ -137,7 +137,8 @@
                                 @if ($cars->total() > 0)
                                     @foreach ($cars as $car)
                                         <!-- Car Item Card -->
-                                        <x-car-items :$car />
+                                        <x-car-items :$car :$car :in-watchlist="$car->favoredUsers->contains(
+                                            \Illuminate\Support\Facades\Auth::user())" />
                                         <!--/ Car Item Card -->
                                     @endforeach
                                 @else

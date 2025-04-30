@@ -66,7 +66,7 @@
               <a href="{{ route('car.index') }}">My Cars</a>
             </li>
             <li>
-              <a href="{{ route('car.watchlist') }}">My Favourite Cars</a>
+              <a href="{{ route('watchlist.index') }}">My Watchlist</a>
             </li>
             <li>
               <form action="{{ route('logout') }}" method="POST">
