@@ -1,28 +1,38 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CarController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WatchlistController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('homepage');
 
-Route::fallback(function () {
-    return 'Nadarim AMUUUUUUUUU';
-});
-
 Route::get('/car/search', [CarController::class, 'search'])->name('car.search');
-Route::get('/car/{car}', [CarController::class, 'show'])->name('car.show');
 
+// AUTHENTICATED and VERIFIED users
+Route::middleware(['auth'])->group(callback: function () {
+    Route::middleware(['verified'])->group(function () {
+        Route::get('/watchlist', [WatchlistController::class, 'index'])
+            ->name('watchlist.index');
+        Route::post('/watchlist/{car}', [WatchlistController::class, 'storeDestroy'])
+            ->name('watchlist.storeDestroy');
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+        Route::resource('car', CarController::class)->except(['show']);
+        Route::get('/car/{car}/images', [CarController::class, 'carImages'])
+            ->name('car.images');
+        Route::put('/car/{car}/images', [CarController::class, 'updateImages'])
+            ->name('car.updateImages');
+        Route::post('/car/{car}/images', [CarController::class, 'addImages'])
+            ->name('car.addImages');
+    });
+
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])
+        ->name('profile.updatePassword');
 });
 
+Route::get('/car/{car}', [CarController::class, 'show'])->name('car.show');
 
 require_once __DIR__ . '/auth.php';
