@@ -1,4 +1,3 @@
-
 <x-app title="Car Details">
 <div>
     <main>
