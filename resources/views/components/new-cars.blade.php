@@ -4,7 +4,8 @@
         <div class="car-items-listing">
             @foreach ($cars as $car)
                 {{-- @if ($car->published_at) --}}
-                    <x-car-items :$car />
+                    <x-car-items :$car :in-watchlist="$car->favoredUsers->contains(
+                        \Illuminate\Support\Facades\Auth::user())"/>
                 {{-- @endif --}}
             @endforeach
         </div>

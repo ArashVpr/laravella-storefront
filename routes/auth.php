@@ -2,15 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SignupController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\EmailVerifyController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SocialiteController;
-use Laravel\Socialite\Facades\Socialite;
-
+use App\Http\Controllers\WatchlistController;
 
 Route::fallback(function () {
     return 'Nadarim AMUUUUUUUUU';
@@ -60,7 +58,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['verified'])->group(function () {
 
-        Route::get('/car/watchlist', [CarController::class, 'watchlist'])->name('car.watchlist');
+        Route::get('/watchlist', [WatchlistController::class, 'index'])->name('watchlist.index');
+        Route::post('/watchlist/{car}', [WatchlistController::class, 'storeDestroy'])->name('watchlist.storeDestroy');
+        
         Route::resource('car', CarController::class)->except(['show']);
     });
 
