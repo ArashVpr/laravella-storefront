@@ -32,6 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
         'google_id',
         'facebook_id',
@@ -80,5 +81,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function cars(): HasMany
     {
         return $this->hasMany(Car::class);
+    }
+
+    public function isOauthUser(): bool
+    {
+        return !$this->password;
     }
 }
