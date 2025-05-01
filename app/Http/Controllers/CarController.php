@@ -197,4 +197,9 @@ class CarController extends Controller
 
         return view('car.search', ['cars' => $cars]);
     }
+
+    public function showPhone(Car $car)
+    {
+        return response()->json(['phone' => $car->phone]);
+    }
 }

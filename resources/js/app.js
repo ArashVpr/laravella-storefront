@@ -247,6 +247,30 @@ document.addEventListener("DOMContentLoaded", function () {
     })
   }
 
+  const initShowPhoneNumber = () => {
+    // Select the element we need to listen to click
+    const span = document.querySelector('.car-details-phone-view');
+  
+    span.addEventListener('click', ev => {
+      ev.preventDefault();
+      // Get the url on which we should make Ajax request
+      const url = span.dataset.url;
+  
+      // Make the request
+      axios.post(url).then(response => {
+        // Get response from backend and take actual phone number
+        const phone = response.data.phone;
+        // Find the <a> element
+        const a = span.parentElement;
+        // and update its href attribute with full phone number received from backend
+        a.href = 'tel:' + phone;
+        // Find the element which contains obfuscated text and update it
+        const phoneEl = a.querySelector('.text-phone')
+        phoneEl.innerText = phone;
+      })
+    })
+  }
+
   initSlider();
   initImagePicker();
   initMobileNavbar();
@@ -256,6 +280,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initCascadingDropdown('#stateSelect', '#citySelect');
   initSortingDropdown()
   initAddToWatchlist()
+  initShowPhoneNumber()
 
   ScrollReveal().reveal(".hero-slide.active .hero-slider-title", {
     delay: 200,
