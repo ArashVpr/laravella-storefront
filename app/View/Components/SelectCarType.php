@@ -6,6 +6,7 @@ use App\Models\CarType;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\Component;
 
 class SelectCarType extends Component
@@ -16,7 +17,9 @@ class SelectCarType extends Component
      */
     public function __construct()
     {
-        $this->carTypes = CarType::orderBy('name')->get();
+        $this->carTypes  = Cache::rememberForever('carTypes', function() {
+            return CarType::orderBy('name')->get();
+        });
     }
 
     /**
