@@ -28,9 +28,9 @@ class CarPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): Response
+    public function create(User $user): bool
     {
-        return $user->id ? Response::allow() : Response::denyWithStatus(403, 'DUDE you can\'t do that');
+        return !!$user->phone;
     }
 
     /**

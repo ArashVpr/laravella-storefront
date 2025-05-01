@@ -5,13 +5,13 @@
                 <div class="auth-page-form">
                     <x-logo-image />
 
-                    @session('success')
+                    {{-- @session('success')
                         <div class="my-large">
                             <div class="success-message">
                                 {{ session('success') }}
                             </div>
                         </div>
-                    @endsession
+                    @endsession --}}
                     <h1 class="auth-page-title">Request password reset</h1>
 
                     <form action="{{ route('password.email') }}" method="POST">
