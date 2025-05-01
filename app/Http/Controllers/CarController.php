@@ -31,7 +31,10 @@ class CarController extends Controller
      */
     public function create()
     {
-        Gate::authorize('create', Car::class);
+        if (!Gate::allows('create', Car::class)) {
+            return redirect()->route('profile.index')
+            ->with('warning', 'Please provide your phone number');
+        };
         
         return view('car.create');
     }

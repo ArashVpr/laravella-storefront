@@ -1,15 +1,6 @@
 <x-app>
     <main>
         <div class="container-small">
-
-            @session('success')
-                <div class="container my-large">
-                    <div class="success-message">
-                        {{ session('success') }}
-                    </div>
-                </div>
-            @endsession
-
             <h1 class="car-details-page-title">My Profile</h1>
             <form action="{{ route('profile.update') }}" method="POST" class="card p-large my-large">
                 @csrf

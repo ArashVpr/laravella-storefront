@@ -3,13 +3,13 @@
         <main>
             <div>
                 <div class="container">
-                    @session('success')
+                    {{-- @session('success')
                         <div class="container my-large">
                             <div class="success-message">
                                 {{ session('success') }}
                             </div>
                         </div>
-                    @endsession
+                    @endsession --}}
                     <h1 class="car-details-page-title">My Cars</h1>
                     <div class="card p-medium">
                         <div class="table-responsive">

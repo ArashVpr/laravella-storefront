@@ -5,13 +5,13 @@
                 <div class="auth-page-form">
                     <x-logo-image />
 
-                    @session('success')
+                    {{-- @session('success')
                         <div class="my-large">
                             <div class="success-message">
                                 {{ session('success') }}
                             </div>
                         </div>
-                    @endsession
+                    @endsession --}}
                     <div> {{ $errors->first('token') }}</div>
                     <h1 class="auth-page-title">Reset Your Password</h1>
 
