@@ -7,6 +7,7 @@ use App\Models\Car;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class CarController extends Controller
 {
@@ -30,6 +31,8 @@ class CarController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', Car::class);
+        
         return view('car.create');
     }
 
@@ -53,7 +56,7 @@ class CarController extends Controller
         $car = Car::create($data);
         // Create features
         $car->features()->create($featuresData);
-        
+
         // Iterate and create images
         foreach ($images as $index => $image) {
             // Save image on file system
@@ -78,9 +81,7 @@ class CarController extends Controller
      */
     public function edit(Car $car)
     {
-        if (!$car->published_at) {
-            return abort(404);
-        }
+        Gate::authorize('update', $car);
 
         return view('car.edit', ['car' => $car]);
     }
@@ -123,9 +124,7 @@ class CarController extends Controller
      */
     public function destroy(Car $car)
     {
-        if ($car->user_id !== Auth::id()) {
-            abort(403);
-        }
+        Gate::authorize('delete', $car);
 
         $car->delete();
         return redirect()->route('car.index')->with('success', 'Car deleted successfully');
@@ -198,5 +197,4 @@ class CarController extends Controller
 
         return view('car.search', ['cars' => $cars]);
     }
-
 }
