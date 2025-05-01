@@ -241,7 +241,11 @@ document.addEventListener("DOMContentLoaded", function () {
           alert(response.data.message)
         })
           .catch(error => {
-            alert("Internal Server Error. Please Try again later!")
+            console.error(error.response)
+            if (error?.response?.status === 401) {
+              alert("Please Login First!")
+            }
+            else alert("Internal Server Error. Please Try again later!")
           })
       })
     })
