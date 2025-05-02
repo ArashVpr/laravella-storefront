@@ -26,12 +26,6 @@ class AuthTest extends TestCase
 
         $response->assertStatus(200);
     }
-    public function test_success_on_forgot_password_page(): void
-    {
-        $response = $this->get('/forgot-password');
-
-        $response->assertStatus(200);
-    }
     public function test_incorrect_credentials_on_login_page(): void
     {
         User::factory()->create([

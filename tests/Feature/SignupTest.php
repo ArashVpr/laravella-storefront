@@ -72,6 +72,7 @@ class SignupTest extends TestCase
 
         $response->assertFound()
         ->assertInvalid(['name', 'email', 'phone', 'password']);
-
     }
+
+ 
 }
