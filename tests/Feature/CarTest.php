@@ -34,4 +34,20 @@ class CarTest extends TestCase
 
         $response->assertOk()->assertSee('Add new car');
     }
+
+    public function test_guest_user_cannot_access_my_cars_page(): void
+    {
+        $response = $this->get('/car');
+        $response->assertRedirect('/login');
+
+        $response->assertFound();
+    }
+    public function test_auth_user_can_access_my_cars_page(): void
+    {
+        $user = User::factory()->create();
+        $response = $this->actingAs($user)->get('/car');
+
+        $response->assertOk();
+    }
+
 }
