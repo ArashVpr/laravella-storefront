@@ -4,7 +4,6 @@
 use App\Http\Controllers\EmailVerifyController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PasswordResetController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SignupController;
 use App\Http\Controllers\SocialiteController;
 use Illuminate\Support\Facades\Route;
