@@ -211,4 +211,15 @@ class CarTest extends TestCase
             ->assertRedirectToRoute('car.index')
             ->assertSessionHas(['success']);
     }
+    
+    public function test_access_forbidden_to_someone_else_car(): void
+    {
+        $this->seed();
+        $userOneCar = User::find(1)->cars()->first(); 
+        $userTwo = User::find(2);
+        $response = $this->actingAs($userTwo)->get(route('car.edit', $userOneCar));
+
+        $response->assertForbidden();
+    }
+    
 }
