@@ -3,92 +3,51 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Notification;
-use Laravel\Fortify\Features;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class PasswordResetTest extends TestCase
 {
-    use RefreshDatabase;
+    /**
+     * A basic feature test example.
+     */
 
-    public function test_reset_password_link_screen_can_be_rendered(): void
+    public function test_success_on_forgot_password_page(): void
     {
-        if (! Features::enabled(Features::resetPasswords())) {
-            $this->markTestSkipped('Password updates are not enabled.');
-        }
+        $response = $this->get('/forgot-password');
+        $response->assertSee('Request password reset');
+
+        $response->assertOk();
+    }
+    public function test_incorrect_email_on_forgot_password_page(): void
+    {
+        User::factory()->create([
+            'email' => 'lexi@yahoo.com',
+            'password' => bcrypt('password'),
+        ]);
 
         $response = $this->get('/forgot-password');
-
-        $response->assertStatus(200);
-    }
-
-    public function test_reset_password_link_can_be_requested(): void
-    {
-        if (! Features::enabled(Features::resetPasswords())) {
-            $this->markTestSkipped('Password updates are not enabled.');
-        }
-
-        Notification::fake();
-
-        $user = User::factory()->create();
-
-        $this->post('/forgot-password', [
-            'email' => $user->email,
+        $response = $this->post(route('password.forgot'), [
+            'email' => 'lexi@gmail.com',
         ]);
 
-        Notification::assertSentTo($user, ResetPassword::class);
+        $response->assertFound()
+            ->assertInvalid(['email']);
     }
-
-    public function test_reset_password_screen_can_be_rendered(): void
+    public function test_correct_email_on_forgot_password_page(): void
     {
-        if (! Features::enabled(Features::resetPasswords())) {
-            $this->markTestSkipped('Password updates are not enabled.');
-        }
-
-        Notification::fake();
-
-        $user = User::factory()->create();
-
-        $this->post('/forgot-password', [
-            'email' => $user->email,
+        User::factory()->create([
+            'email' => 'lexi@yahoo.com',
+            'password' => bcrypt('password'),
         ]);
 
-        Notification::assertSentTo($user, ResetPassword::class, function (object $notification) {
-            $response = $this->get('/reset-password/'.$notification->token);
-
-            $response->assertStatus(200);
-
-            return true;
-        });
-    }
-
-    public function test_password_can_be_reset_with_valid_token(): void
-    {
-        if (! Features::enabled(Features::resetPasswords())) {
-            $this->markTestSkipped('Password updates are not enabled.');
-        }
-
-        Notification::fake();
-
-        $user = User::factory()->create();
-
-        $this->post('/forgot-password', [
-            'email' => $user->email,
+        $response = $this->get('/forgot-password');
+        $response = $this->post(route('password.forgot'), [
+            'email' => 'lexi@yahoo.com',
         ]);
 
-        Notification::assertSentTo($user, ResetPassword::class, function (object $notification) use ($user) {
-            $response = $this->post('/reset-password', [
-                'token' => $notification->token,
-                'email' => $user->email,
-                'password' => 'password',
-                'password_confirmation' => 'password',
-            ]);
-
-            $response->assertSessionHasNoErrors();
-
-            return true;
-        });
+        $response->assertFound()
+            ->assertSessionHas(['success']);
     }
 }

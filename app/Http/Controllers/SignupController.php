@@ -21,7 +21,7 @@ class SignupController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
-            'phone' => 'required|string|max:15|unique:users,phone',
+            'phone' => 'required|string|min:8|max:15|unique:users,phone',
             'password' => [
                 'required',
                 'string',
