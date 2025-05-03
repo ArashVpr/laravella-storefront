@@ -55,7 +55,20 @@ class AuthTest extends TestCase
         $response->assertFound()
         ->assertSessionHas(['success']);
     }
+    public function test_navbar_as_guest(): void
+    {
+        $response = $this->get('/');
 
+        $response->assertSee('Login')
+        ->assertSee('Signup');
+    }
+    public function test_navbar_as_user(): void
+    {
+        $this->seed();
+        $user = User::first();
+        $response = $this->actingAs($user)->get('/');
 
-
+        $response->assertSee('Logout')
+        ->assertSee("Welcome, " . $user->name);
+    }
 }
