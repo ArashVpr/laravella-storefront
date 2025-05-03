@@ -92,16 +92,15 @@ class CarTest extends TestCase
             ->assertRedirectToRoute('car.index')
             ->assertSessionHas(['success']);
 
-            // to check if the car_id is added to the features table
-            $addedCar = Car::latest('id')->first();
-            $features['car_id'] = $addedCar->id;
-            $this->assertDatabaseHas('car_features', $features);
+        // to check if the car_id is added to the features table
+        $addedCar = Car::latest('id')->first();
+        $features['car_id'] = $addedCar->id;
+        $this->assertDatabaseHas('car_features', $features);
 
-            // to check if the car is added to the user table
-            unset($carData['features']);
-            unset($carData['images']);
-            $this->assertDatabaseHas('cars', $carData);
-            
+        // to check if the car is added to the user table
+        unset($carData['features']);
+        unset($carData['images']);
+        $this->assertDatabaseHas('cars', $carData);
     }
     public function test_create_car_errors(): void
     {
@@ -160,5 +159,56 @@ class CarTest extends TestCase
         // $response->ddSession();
         $response->assertFound()
             ->assertInvalid(['maker_id', 'model_id', 'year', 'car_type_id', 'price', 'vin', 'mileage', 'fuel_type_id', 'city_id', 'address', 'phone']);
+    }
+
+    public function test_update_car_functionality(): void
+    {
+        $this->seed();
+        $user = User::first();
+        $firstCar = $user->cars()->first();
+
+        $features = [
+            'air_conditioning' => '1',
+            'power_windows' => '1',
+        ];
+
+        $carData = [
+            'maker_id' => '1',
+            'model_id' => '1',
+            'year' => '2023',
+            'car_type_id' => '1',
+            'price' => '10000',
+            'vin' => '12345678901234567',
+            'mileage' => '10000',
+            'fuel_type_id' => '1',
+            'city_id' => '1',
+            'address' => '123 Main St',
+            'phone' => '1234567890',
+            'description' => 'This is a test car',
+            'published_at' => '2023-10-01',
+            'features' => $features,
+        ];
+
+        $response = $this->actingAs($user)->put(route('car.update', $firstCar), $carData);
+
+        $response->assertFound()
+            ->assertRedirectToRoute('car.index')
+            ->assertSessionHas(['success']);
+
+        // to check if the car_id is updated
+        $carData['id'] = $firstCar->id;
+
+    }
+    public function test_delete_car_functionality(): void
+    {
+        $this->seed();
+        $user = User::first();
+        $firstCar = $user->cars()->first();
+
+        $response = $this->actingAs($user)->delete(route('car.destroy', $firstCar));
+
+        $response->assertFound()
+            ->assertRedirectToRoute('car.index')
+            ->assertSessionHas(['success']);
     }
 }
