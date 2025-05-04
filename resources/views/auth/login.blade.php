@@ -4,13 +4,6 @@
             <div class="flex" style="gap: 5rem">
                 <div class="auth-page-form">
                     <x-logo-image />
-                    {{-- @session('success')
-                        <div class="my-large">
-                            <div class="success-message">
-                                {{ session('success') }}
-                            </div>
-                        </div>
-                    @endsession --}}
                     <h1 class="auth-page-title">Login</h1>
                     
                     {{ session('error') }}
