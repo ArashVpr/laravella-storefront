@@ -3,13 +3,6 @@
         <main>
             <div>
                 <div class="container">
-                    {{-- @session('success')
-                        <div class="container my-large">
-                            <div class="success-message">
-                                {{ session('success') }}
-                            </div>
-                        </div>
-                    @endsession --}}
                     <h1 class="car-details-page-title">My Cars</h1>
                     <div class="card p-medium">
                         <div class="table-responsive">
@@ -27,7 +20,7 @@
                                     @forelse ($cars as $car)
                                         <tr>
                                             <td>
-                                                <img src="{{ $car->primaryImage?->getUrl() ?? '/img/no-image.png' }}"
+                                                <img src=`{{ $car->primaryImage?->getUrl() ?? '/img/no-image.png' }}`
                                                     alt="" class="my-cars-img-thumbnail" />
                                             </td>
                                             <td> {{ $car->getTitle() }}
@@ -45,7 +38,7 @@
                                                     </svg>
                                                     edit
                                                 </a>
-                                                <a href="car_images.html" class="btn btn-edit inline-flex items-center">
+                                                <a href="{{ route('car.images', $car) }}" class="btn btn-edit inline-flex items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                                         style="width: 12px; margin-right: 5px">

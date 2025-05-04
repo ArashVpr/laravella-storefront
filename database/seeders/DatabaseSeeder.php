@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Car;
 use App\Models\CarFeature;
-use App\Models\CarImages;
+use App\Models\CarImage;
 use App\Models\Maker;
 use App\Models\User;
 // use Doctrine\DBAL\Schema\Sequence;
@@ -111,7 +111,7 @@ class DatabaseSeeder extends Seeder
             ->has(
                 Car::factory(20)
                     ->has(
-                        CarImages::factory(5)
+                        CarImage::factory(5)
                             ->sequence(fn(Sequence $sequence) =>
                             ['position' => $sequence->index % 5 + 1]),
                     )

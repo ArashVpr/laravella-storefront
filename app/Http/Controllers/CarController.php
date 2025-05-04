@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class CarController extends Controller
 {
@@ -33,9 +34,9 @@ class CarController extends Controller
     {
         if (!Gate::allows('create', Car::class)) {
             return redirect()->route('profile.index')
-            ->with('warning', 'Please provide your phone number');
+                ->with('warning', 'Please provide your phone number');
         };
-        
+
         return view('car.create');
     }
 
@@ -63,7 +64,7 @@ class CarController extends Controller
         // Iterate and create images
         foreach ($images as $index => $image) {
             // Save image on file system
-            $path = $image->store('public/images');
+            $path = $image->store('images');
             // Create record in the database
             $car->images()->create(['image_path' => $path, 'position' => $index + 1]);
         }
@@ -199,6 +200,84 @@ class CarController extends Controller
         $cars = $query->paginate(15)->withQueryString();
 
         return view('car.search', ['cars' => $cars]);
+    }
+
+    public function carImages(Car $car)
+    {
+        Gate::authorize('update', $car);
+        return view('car.images', ['car' => $car]);
+    }
+
+    public function updateImages(Request $request, Car $car)
+    {
+        Gate::authorize('update', $car);
+
+        // Get Validated data of delete images and positions
+        $data = $request->validate([
+            'delete_images' => 'array',
+            'delete_images.*' => 'integer',
+            'positions' => 'array',
+            'positions.*' => 'integer',
+        ]);
+
+        $deleteImages = $data['delete_images'] ?? [];
+        $positions = $data['positions'] ?? [];
+
+        // if (empty($deleteImages) || empty($positions)) {
+        //     return redirect()->route('car.images', $car)
+        //         ->with('warning', 'No changes were made');
+        // }
+
+        // Select images to delete
+        $imagesToDelete = $car->images()->whereIn('id', $deleteImages)->get();
+
+        // Iterate over images to delete and delete them from file system
+        foreach ($imagesToDelete as $image) {
+            if (Storage::exists($image->image_path)) {
+                Storage::delete($image->image_path);
+            }
+        }
+
+        // Delete images from the database
+        $car->images()->whereIn('id', $deleteImages)->delete();
+
+        // Iterate over positions and update position for each image, by its ID
+        foreach ($positions as $id => $position) {
+            $car->images()->where('id', $id)->update(['position' => $position]);
+        }
+
+        // Redirect back to car.images route
+        return redirect()->route('car.images', $car)
+            ->with('success', 'Car images were updated');
+    }
+
+    public function addImages(Request $request, Car $car)
+    {
+        Gate::authorize('update', $car);
+
+        // Get images from request
+        $images = $request->file('images') ?? [];
+
+        if (empty($images)) {
+            return redirect()->route('car.images', $car)
+                ->with('warning', 'No images were selected');
+        }
+
+        // Select max position of car images
+        $position = $car->images()->max('position') ?? 0;
+        foreach ($images as $image) {
+            // Save it on the file system
+            $path = $image->store('images');
+            // Save it in the database
+            $car->images()->create([
+                'image_path' => $path,
+                'position' => $position + 1
+            ]);
+            $position++;
+        }
+
+        return redirect()->route('car.images', $car)
+            ->with('success', 'New images were added');
     }
 
     public function showPhone(Car $car)

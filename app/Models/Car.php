@@ -26,12 +26,12 @@ class Car extends Model
 
     public function primaryImage(): HasOne
     {
-        return $this->hasOne(CarImages::class)->oldestOfMany('position');
+        return $this->hasOne(CarImage::class)->oldestOfMany('position');
     }
 
     public function images(): HasMany
     {
-        return $this->HasMany(CarImages::class);
+        return $this->HasMany(CarImage::class)->orderBy('position');
     }
 
     public function favoredUsers(): BelongsToMany
@@ -70,7 +70,7 @@ class Car extends Model
     }
     public function carImages(): HasMany
     {
-        return $this->hasMany(CarImages::class);
+        return $this->hasMany(CarImage::class);
     }
     public function carFeatures(): BelongsToMany
     {
