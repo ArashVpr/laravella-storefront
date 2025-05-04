@@ -409,8 +409,8 @@
   }
   
   .logo-wrapper img {
-    /* margin: 1.5rem; */
     margin-left: 0;
+    /* object-fit: contain; */
   }
   
   .navbar-nav {

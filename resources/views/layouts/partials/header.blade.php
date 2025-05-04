@@ -1,7 +1,7 @@
 <header class="navbar">
     <div class="container navbar-content">
       <a href="/" class="logo-wrapper">
-        <img src="/img/logoipsum-265.svg" alt="Logo" />
+        <img src="/img/carhub-logo.png" alt="Logo" />
       </a>
       <button class="btn btn-default btn-navbar-toggle">
         <svg
