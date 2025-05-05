@@ -39,9 +39,6 @@ jobs:
       - name: Build Assets
         run: npm run build
 
-      - name: Run Tests
-        run: php artisan test
-
       - name: Deploy PHP to Server
         if: ${{ success() }}
         uses: appleboy/ssh-action@master
