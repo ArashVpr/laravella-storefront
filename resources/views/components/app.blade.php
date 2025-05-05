@@ -18,6 +18,8 @@
             </div>
         </div>
     @endsession
+
     {{ $slot }}
-    <footer></footer>
+
+    @include('layouts.partials.footer')
 </x-base>
