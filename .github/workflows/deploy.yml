@@ -33,6 +33,9 @@ jobs:
       - name: Create Storage Link
         run: php artisan storage:link
 
+      - name: Test Database Connection
+        run: php -r 'try { new PDO("mysql:host=$DB_HOST;dbname=$DB_DATABASE", $DB_USERNAME, $DB_PASSWORD); echo "Connection successful!"; } catch (PDOException $e) { echo "Connection failed: ", $e->getMessage(); exit(1); }'
+
       - name: Run Migrations
         run: php artisan migrate --force
 
