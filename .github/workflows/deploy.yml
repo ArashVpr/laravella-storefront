@@ -14,12 +14,12 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.3"
+          php-version: "8.4"
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 23
 
       - name: Create .env
         run: cp .env.example .env
@@ -50,7 +50,7 @@ jobs:
           script_stop: true
           script: |
             cd htdocs/srv813866.hstgr.cloud
-            git checkout master
+            git checkout main
             if git rev-parse -q --verify "refs/tags/${{ github.event.release.tag_name }}"; then
               git tag -d ${{ github.event.release.tag_name }}
             fi
