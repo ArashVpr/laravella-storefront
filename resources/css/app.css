@@ -1447,5 +1447,9 @@
     .search-cars-results .car-items-listing {
       grid-template-columns: repeat(1, minmax(0, 1fr));
     }
+
+    .code {
+      color : var(--primary-color);
+    }
   }
   

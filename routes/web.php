@@ -36,9 +36,12 @@ Route::middleware(['auth'])->group(callback: function () {
 
 Route::get('/car/{car}', [CarController::class, 'show'])->name('car.show');
 Route::post('/car/phone/{car}', [CarController::class, 'showPhone'])->name('car.showPhone');
+
 // to download files
 Route::get('/download-cv', function () {
     return Storage::download('VAFAPOUR.pdf');
 })->name('download.cv');
+
+
 
 require __DIR__ . '/auth.php';

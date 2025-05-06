@@ -33,11 +33,17 @@ jobs:
       - name: Create Storage Link
         run: php artisan storage:link
 
+      # - name: Run Migrations
+      #   run: php artisan migrate --force
+
       - name: Install node dependencies
         run: npm ci
 
       - name: Build Assets
         run: npm run build
+
+      # - name: Run Tests
+      #   run: php artisan test
 
       - name: Deploy PHP to Server
         if: ${{ success() }}

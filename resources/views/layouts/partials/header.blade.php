@@ -20,6 +20,26 @@
         </svg>
       </button>
       <div class="navbar-auth">
+        {{-- documentation button --}}
+        <a href="{{ route('docs') }}" class="btn btn-add-new-car">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            style="margin-right: 4px"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+
+          Documentation
+        </a>
+
+        {{-- add new car button --}}
         <a href="{{ route('car.create') }}" class="btn btn-add-new-car">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -38,8 +58,8 @@
 
           Add new Car
         </a>
-        @auth
 
+        @auth
         <div class="navbar-menu" tabindex="-1">
           <a href="javascript:void(0)" class="navbar-menu-handler">
             Welcome, {{ auth()->user()->name }}

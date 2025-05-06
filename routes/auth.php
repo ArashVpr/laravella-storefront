@@ -28,10 +28,14 @@ Route::middleware(['guest'])->group(function () {
         ->name('login.oauth');
     Route::get('/callback/oauth/{provider}', [SocialiteController::class, 'handleCallback']);
 
+    //documentation
+    Route::get('/docs', function () {
+        return view('components.documentation');
+    })->name('docs');
 });
 
 // AUTHENTICATED users
-Route::middleware(['auth'])->group(function(){
+Route::middleware(['auth'])->group(function () {
 
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
