@@ -3,13 +3,6 @@
         <!-- New Cars -->
         <section>
             <div class="container"> 
-                {{-- @session('success')
-                    <div class="container my-large">
-                        <div class="success-message">
-                            {{ session('success') }}
-                        </div>
-                    </div>
-                @endsession --}}
                 <div class="flex justify-between items-center">
 
                     <h2>My Favourite Cars</h2>
