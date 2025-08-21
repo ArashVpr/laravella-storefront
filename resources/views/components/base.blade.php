@@ -7,7 +7,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}"> {{-- // CSRF token for security --}}
-    <title>{{ $title }} | {{ config('app.name') }}</title>
+    <title>{{ $title ? $title . ' | ' . config('app.name') : config('app.name') }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,8 +26,9 @@
     <!-- <link rel="stylesheet" href="css/output.css" /> -->
 </head>
 
-<body @if($bodyClass)class="{{ $bodyClass }}"@endif>
-
+<body @if ($bodyClass) class="{{ $bodyClass }}" @endif>
+    <!-- Skip to main content link for keyboard users -->
+    <a href="#main-content" class="skip-link sr-only focus:not-sr-only">Skip to main content</a>
 
     {{ $slot }}
 

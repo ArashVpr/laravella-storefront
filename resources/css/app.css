@@ -2,6 +2,109 @@
     display: none;
 }
 
+/* Accessibility styles */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.focus\:not-sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+}
+
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary-color);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 1000;
+    border-radius: 0 0 4px 4px;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Focus indicators */
+*:focus {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Remove outline for mouse users, keep for keyboard users */
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+*:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* High contrast focus for buttons */
+.btn:focus-visible {
+    outline: 3px solid #000;
+    outline-offset: 2px;
+}
+
+/* Ensure text meets AA contrast standards */
+.text-muted {
+    color: #6c6c6c; /* Improved contrast from #909090 */
+}
+
+/* Better contrast for links */
+a:not(.btn) {
+    color: #c74c09; /* Darker for better contrast */
+    text-decoration: underline;
+}
+
+a:not(.btn):hover {
+    color: #ba4405;
+    text-decoration: none;
+}
+
+/* Ensure error text has sufficient contrast */
+.error-message, .text-error {
+    color: #d32f2f; /* Better contrast than #e13e3e */
+}
+
+/* Success message contrast */
+.success-message {
+    color: #2e7d32; /* Dark green for better contrast */
+    background-color: #e8f5e8;
+    border: 1px solid #4caf50;
+}
+
+/* Warning message contrast */
+.warning-message {
+    color: #ef6c00; /* Better contrast orange */
+    background-color: #fff3e0;
+    border: 1px solid #ff9800;
+}
+
 :root {
     --primary-font: "Ubuntu", sans-serif;
     --primary-color: #e9580c;
@@ -1452,4 +1555,11 @@
       color : var(--primary-color);
     }
   }
-  
+
+  .announcement-bar {
+    background-color: orange;
+    padding: 0.1rem;
+    font-size: larger;
+    font-weight: bold;
+    text-align: center;
+  }

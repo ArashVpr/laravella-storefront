@@ -1,25 +1,28 @@
 @props(['title' => '', 'bodyClass' => null, 'footerLinks' => ''])
 
 <x-base :$title :$bodyClass>
+    @include('components.announcement-bar')
     @include('layouts.partials.header')
 
-    @session('success')
-        <div class="container my-large">
-            <div class="success-message">
-                {{ session('success') }}
-            </div>
-        </div>
-    @endsession
+    @if (session('success') || session('warning'))
+        <section class="container my-large" role="alert" aria-live="polite">
+            @session('success')
+                <div class="success-message">
+                    {{ session('success') }}
+                </div>
+            @endsession
 
-    @session('warning')
-        <div class="container my-large">
-            <div class="warning-message">
-                {{ session('warning') }}
-            </div>
-        </div>
-    @endsession
+            @session('warning')
+                <div class="warning-message">
+                    {{ session('warning') }}
+                </div>
+            @endsession
+        </section>
+    @endif
 
-    {{ $slot }}
+    <main id="main-content" role="main">
+        {{ $slot }}
+    </main>
 
     @include('layouts.partials.footer')
 </x-base>

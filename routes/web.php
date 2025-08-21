@@ -42,6 +42,10 @@ Route::get('/download-cv', function () {
     return Storage::download('VAFAPOUR.pdf');
 })->name('download.cv');
 
+    //documentation
+    Route::get('/docs', function () {
+        return view('components.documentation');
+    })->name('docs');
 
 
 require __DIR__ . '/auth.php';

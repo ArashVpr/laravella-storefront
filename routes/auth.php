@@ -27,11 +27,6 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/login/oauth/{provider}', [SocialiteController::class, 'redirectToProvider'])
         ->name('login.oauth');
     Route::get('/callback/oauth/{provider}', [SocialiteController::class, 'handleCallback']);
-
-    //documentation
-    Route::get('/docs', function () {
-        return view('components.documentation');
-    })->name('docs');
 });
 
 // AUTHENTICATED users
