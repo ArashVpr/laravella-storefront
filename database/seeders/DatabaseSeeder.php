@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('makers')->insert([
+        $makers = [
             ['name' => 'Toyota'],
             ['name' => 'Honda'],
             ['name' => 'Ford'],
@@ -30,7 +30,11 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Volkswagen'],
             ['name' => 'Hyundai'],
             ['name' => 'Kia'],
-        ]);
+            ['name' => 'Renault'],
+            ['name' => 'Peugeot'],
+            ['name' => 'Citroën'],
+        ];
+        DB::table('makers')->insert($makers);
 
         DB::table('car_types')->insert([
             ['name' => 'Sedan'],
@@ -52,24 +56,63 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Hybrid'],
         ]);
 
-        DB::table('models')->insert([
-            ['name' => 'Corolla', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Camry', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Accord', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Mustang', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Malibu', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Altima', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'X5', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'C-Class', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Tucson', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Civic', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'F-150', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Silverado', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => '3 Series', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Golf', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Elantra', 'maker_id' => Maker::inRandomOrder()->first()->id],
-            ['name' => 'Soul', 'maker_id' => Maker::inRandomOrder()->first()->id],
-        ]);
+        // Real-world car models for each brand
+        $models = [
+            // Toyota
+            ['name' => 'Corolla', 'maker_id' => Maker::where('name', 'Toyota')->first()->id],
+            ['name' => 'Camry', 'maker_id' => Maker::where('name', 'Toyota')->first()->id],
+            ['name' => 'RAV4', 'maker_id' => Maker::where('name', 'Toyota')->first()->id],
+            ['name' => 'Prius', 'maker_id' => Maker::where('name', 'Toyota')->first()->id],
+            // Honda
+            ['name' => 'Civic', 'maker_id' => Maker::where('name', 'Honda')->first()->id],
+            ['name' => 'Accord', 'maker_id' => Maker::where('name', 'Honda')->first()->id],
+            ['name' => 'CR-V', 'maker_id' => Maker::where('name', 'Honda')->first()->id],
+            // Ford
+            ['name' => 'F-150', 'maker_id' => Maker::where('name', 'Ford')->first()->id],
+            ['name' => 'Mustang', 'maker_id' => Maker::where('name', 'Ford')->first()->id],
+            ['name' => 'Focus', 'maker_id' => Maker::where('name', 'Ford')->first()->id],
+            // Chevrolet
+            ['name' => 'Silverado', 'maker_id' => Maker::where('name', 'Chevrolet')->first()->id],
+            ['name' => 'Malibu', 'maker_id' => Maker::where('name', 'Chevrolet')->first()->id],
+            ['name' => 'Equinox', 'maker_id' => Maker::where('name', 'Chevrolet')->first()->id],
+            // Nissan
+            ['name' => 'Altima', 'maker_id' => Maker::where('name', 'Nissan')->first()->id],
+            ['name' => 'Sentra', 'maker_id' => Maker::where('name', 'Nissan')->first()->id],
+            ['name' => 'Rogue', 'maker_id' => Maker::where('name', 'Nissan')->first()->id],
+            // BMW
+            ['name' => '3 Series', 'maker_id' => Maker::where('name', 'BMW')->first()->id],
+            ['name' => '5 Series', 'maker_id' => Maker::where('name', 'BMW')->first()->id],
+            ['name' => 'X5', 'maker_id' => Maker::where('name', 'BMW')->first()->id],
+            // Mercedes-Benz
+            ['name' => 'C-Class', 'maker_id' => Maker::where('name', 'Mercedes-Benz')->first()->id],
+            ['name' => 'E-Class', 'maker_id' => Maker::where('name', 'Mercedes-Benz')->first()->id],
+            ['name' => 'GLA', 'maker_id' => Maker::where('name', 'Mercedes-Benz')->first()->id],
+            // Volkswagen
+            ['name' => 'Golf', 'maker_id' => Maker::where('name', 'Volkswagen')->first()->id],
+            ['name' => 'Passat', 'maker_id' => Maker::where('name', 'Volkswagen')->first()->id],
+            ['name' => 'Tiguan', 'maker_id' => Maker::where('name', 'Volkswagen')->first()->id],
+            // Hyundai
+            ['name' => 'Elantra', 'maker_id' => Maker::where('name', 'Hyundai')->first()->id],
+            ['name' => 'Tucson', 'maker_id' => Maker::where('name', 'Hyundai')->first()->id],
+            ['name' => 'Santa Fe', 'maker_id' => Maker::where('name', 'Hyundai')->first()->id],
+            // Kia
+            ['name' => 'Soul', 'maker_id' => Maker::where('name', 'Kia')->first()->id],
+            ['name' => 'Sportage', 'maker_id' => Maker::where('name', 'Kia')->first()->id],
+            ['name' => 'Sorento', 'maker_id' => Maker::where('name', 'Kia')->first()->id],
+            // Renault
+            ['name' => 'Clio', 'maker_id' => Maker::where('name', 'Renault')->first()->id],
+            ['name' => 'Megane', 'maker_id' => Maker::where('name', 'Renault')->first()->id],
+            ['name' => 'Captur', 'maker_id' => Maker::where('name', 'Renault')->first()->id],
+            // Peugeot
+            ['name' => '208', 'maker_id' => Maker::where('name', 'Peugeot')->first()->id],
+            ['name' => '308', 'maker_id' => Maker::where('name', 'Peugeot')->first()->id],
+            ['name' => '3008', 'maker_id' => Maker::where('name', 'Peugeot')->first()->id],
+            // Citroën
+            ['name' => 'C3', 'maker_id' => Maker::where('name', 'Citroën')->first()->id],
+            ['name' => 'C4', 'maker_id' => Maker::where('name', 'Citroën')->first()->id],
+            ['name' => 'Berlingo', 'maker_id' => Maker::where('name', 'Citroën')->first()->id],
+        ];
+        DB::table('models')->insert($models);
 
         DB::table('states')->insert([
             ['name' => 'Alabama'],
@@ -115,8 +158,9 @@ class DatabaseSeeder extends Seeder
                             ->sequence(fn(Sequence $sequence) =>
                             ['position' => $sequence->index % 5 + 1]),
                     )
-                    ->hasFeatures()
-                    , 'favoriteCars')
+                    ->hasFeatures(),
+                'favoriteCars'
+            )
             ->create();
     }
 }

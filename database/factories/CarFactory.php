@@ -22,10 +22,11 @@ class CarFactory extends Factory
      */
     public function definition(): array
     {
+        $model = Models::inRandomOrder()->first();
         return [
-            'maker_id' => Maker::inRandomOrder()->first()->id,
+            'maker_id' => $model->maker_id, // Ensure maker matches model
             'user_id' => User::inRandomOrder()->first()->id,
-            'model_id' => Models::inRandomOrder()->first()->id,
+            'model_id' => $model->id,
             'car_type_id' => CarType::inRandomOrder()->first()->id,
             'fuel_type_id' => FuelType::inRandomOrder()->first()->id,
             'city_id' => City::inRandomOrder()->first()->id,
