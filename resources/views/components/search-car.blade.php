@@ -55,26 +55,24 @@
                         aria-label="Maximum year" />
                 </div>
                 <div>
-                    <div>
-                        <label for="priceFrom" class="sr-only">Price From</label>
-                        <input type="number" placeholder="Price From" name="price_from" id="priceFrom"
-                            aria-label="Minimum price" />
-                    </div>
-                    <div>
-                        <label for="priceTo" class="sr-only">Price To</label>
-                        <input type="number" placeholder="Price To" name="price_to" id="priceTo"
-                            aria-label="Maximum price" />
-                    </div>
-                    <div>
-                        <label for="fuelTypeSelect" class="sr-only">Fuel Type</label>
-                        <select name="fuel_type_id" id="fuelTypeSelect" aria-label="Select fuel type">
-                            <option value="">Fuel Type</option>
-                            {{-- fuel types from database --}}
-                            <x-select-fuel-type />
-                        </select>
-                    </div>
+                    <label for="priceFrom" class="sr-only">Price From</label>
+                    <input type="number" placeholder="Price From" name="price_from" id="priceFrom"
+                        aria-label="Minimum price" />
                 </div>
                 <div>
+                    <label for="priceTo" class="sr-only">Price To</label>
+                    <input type="number" placeholder="Price To" name="price_to" id="priceTo"
+                        aria-label="Maximum price" />
+                </div>
+                <div>
+                    <label for="fuelTypeSelect" class="sr-only">Fuel Type</label>
+                    <select name="fuel_type_id" id="fuelTypeSelect" aria-label="Select fuel type">
+                        <option value="">Fuel Type</option>
+                        {{-- fuel types from database --}}
+                        <x-select-fuel-type />
+                    </select>
+                </div>
+                <div class="flex flex-col">
                     <button type="button" class="btn btn-find-a-car-reset" aria-label="Reset search form">
                         Reset
                     </button>
@@ -82,6 +80,7 @@
                         Search
                     </button>
                 </div>
+            </div>
         </form>
     </div>
 </section>
