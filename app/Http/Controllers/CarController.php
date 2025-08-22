@@ -267,7 +267,7 @@ class CarController extends Controller
         $position = $car->images()->max('position') ?? 0;
         foreach ($images as $image) {
             // Save it on the file system
-            $path = $image->store('images');
+            $path = $image->store('images', 'public');
             // Save it in the database
             $car->images()->create([
                 'image_path' => $path,
