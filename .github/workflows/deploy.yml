@@ -56,12 +56,15 @@ jobs:
           # script_stop: true
           script: |
             cd htdocs/srv813866.hstgr.cloud
+            echo "Current directory: $(pwd)"
             git checkout main
             if git rev-parse -q --verify "refs/tags/${{ github.event.release.tag_name }}"; then
               git tag -d ${{ github.event.release.tag_name }}
             fi
             git fetch --all
             git checkout ${{ github.event.release.tag_name }}
+            git status
+            git log -1
             composer install
             npm ci
             npm run build
