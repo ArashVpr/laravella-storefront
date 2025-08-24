@@ -33,9 +33,6 @@ jobs:
       - name: Create Storage Link
         run: php artisan storage:link
 
-      # - name: Run Migrations
-      #   run: php artisan migrate --force
-
       - name: Install node dependencies
         run: npm ci
 
@@ -53,7 +50,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
-          # script_stop: true
           script: |
             cd htdocs/srv813866.hstgr.cloud
             git checkout main

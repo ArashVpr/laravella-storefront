@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', [HomeController::class, 'index'])->name('homepage');
+Route::get('erd', function () {
+return view('components.db-schema');
+});
 
 Route::get('/car/search', [CarController::class, 'search'])->name('car.search');
 
