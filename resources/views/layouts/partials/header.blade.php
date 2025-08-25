@@ -11,15 +11,8 @@
             </svg>
         </button>
         <nav class="navbar-auth" id="navbar-menu" role="navigation" aria-label="Main navigation">
-            {{-- documentation button --}}
-            <a href="{{ route('docs') }}" class="btn btn-add-new-car" aria-label="View project documentation">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" style="margin-right: 4px" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-
-                Documentation
-            </a>
+            {{-- Documentation Dropdown Blade Component --}}
+            @include('components.dropdown')
 
             {{-- add new car button --}}
             <a href="{{ route('car.create') }}" class="btn btn-add-new-car" aria-label="Add a new car listing">
@@ -28,7 +21,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                 </svg>
-
                 Add new Car
             </a>
 
