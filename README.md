@@ -1,59 +1,88 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# car-hub.xyz
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![Laravel Logo](https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg)
 
-## About Laravel
+## Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+car-hub.xyz is a Laravel-based web application for managing cars, their features, user authentication, watchlists, and more. It leverages Laravel's Eloquent ORM, Blade templates, and Sanctum for API authentication.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-   Car management: add, edit, delete, and view cars
+-   Manage car features and images
+-   User authentication (login, signup, password reset, OAuth via Google/Facebook)
+-   Watchlist: add/remove cars
+-   Profile management
+-   Search and filter cars
+-   Admin panel (Filament)
 
-## Learning Laravel
+## Accessibility
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-   Semantic HTML for screen readers
+-   High color contrast and readable font sizes
+-   Keyboard-accessible navigation
+-   Properly labeled forms and error messages
+-   Responsive design for all devices
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Database Structure
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Main tables:
 
-## Laravel Sponsors
+-   `users`: User information
+-   `cars`: Car details
+-   `car_features`: Features for each car
+-   `car_images`: Image paths for cars
+-   `favorite_cars`: User watchlist
+-   `personal_access_tokens`: API authentication
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Testing
 
-### Premium Partners
+Feature tests cover authentication, signup, car CRUD, watchlist, profile, password reset, and homepage display.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+**Main Feature Tests:**
 
-## Contributing
+-   AuthTest
+-   SignupTest
+-   WatchlistTest
+-   CarTest
+-   ProfileTest
+-   PasswordResetTest
+-   HomeTest
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Run all tests:
 
-## Code of Conduct
+```bash
+php artisan test
+```
+
+## Installation
+
+1. Clone the repository
+2. Install dependencies:
+    - `composer install`
+    - `npm install`
+3. Copy `.env.example` to `.env`
+4. Generate app key: `php artisan key:generate`
+5. Configure your database in `.env` and run migrations: `php artisan migrate --seed`
+6. Build frontend assets: `npm run dev`
+7. Start the server: `php artisan serve`
+
+## Configuration
+
+-   Set environment variables in `.env` for database, mail, and third-party services
+-   Configure queues in `config/queue.php`
+
+## Deployment
+
+Uses GitHub Actions for CI/CD. See `.github/workflows/deploy.yml` for workflow details.
+
+## Documentation
+
+See [`resources/views/components/documentation.blade.php`](resources/views/components/documentation.blade.php) for full documentation.
+
+## License
+
+MIT
 
 In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
