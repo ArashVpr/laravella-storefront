@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 Route::get('/', [HomeController::class, 'index'])->name('homepage');
 Route::get('erd', function () {
-return view('components.db-schema');
+    return view('components.db-schema');
 });
 
 Route::get('/car/search', [CarController::class, 'search'])->name('car.search');
@@ -42,13 +42,16 @@ Route::post('/car/phone/{car}', [CarController::class, 'showPhone'])->name('car.
 
 // to download files
 Route::get('/download-cv', function () {
-    return Storage::download('VAFAPOUR.pdf');
+    return Storage::download('CA-f.pdf');
 })->name('download.cv');
 
-    //documentation
-    Route::get('/docs', function () {
-        return view('components.documentation');
-    })->name('docs');
+
+Route::get('/docs', function () {
+    return view('components.documentation');
+})->name('docs');
+Route::get('/docs-fr', function () {
+    return view('components.documentation-fr');
+})->name('docs.fr');
 
 
 require __DIR__ . '/auth.php';
