@@ -9,6 +9,26 @@
     <meta name="csrf-token" content="{{ csrf_token() }}"> {{-- // CSRF token for security --}}
     <title>{{ $title ? $title . ' | ' . config('app.name') : config('app.name') }}</title>
 
+    {{-- SEO Meta Tags --}}
+    <meta name="description"
+        content="{{ $metaDescription ?? 'car-hub.xyz is a Laravel-based web application for car management, features, authentication, and more.' }}">
+    <link rel="canonical" href="{{ url()->current() }}" />
+
+    {{-- Open Graph Tags --}}
+    <meta property="og:title" content="{{ $title ? $title . ' | ' . config('app.name') : config('app.name') }}" />
+    <meta property="og:description"
+        content="{{ $metaDescription ?? 'car-hub.xyz is a Laravel-based web application for car management, features, authentication, and more.' }}" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="{{ asset('img/car-png-39071.png') }}" />
+
+    {{-- Twitter Card Tags --}}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ $title ? $title . ' | ' . config('app.name') : config('app.name') }}" />
+    <meta name="twitter:description"
+        content="{{ $metaDescription ?? 'car-hub.xyz is a Laravel-based web application for car management, features, authentication, and more.' }}" />
+    <meta name="twitter:image" content="{{ asset('img/car-png-39071.png') }}" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
