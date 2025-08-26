@@ -1,7 +1,9 @@
 import axios from 'axios';
 import './bootstrap';
+import showCookieBanner from './cookieConsent';
 
 document.addEventListener("DOMContentLoaded", function () {
+  showCookieBanner();
   const initSlider = () => {
     const slides = document.querySelectorAll(".hero-slide");
     let currentIndex = 0; // Track the current slide

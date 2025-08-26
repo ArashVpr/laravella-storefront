@@ -45,6 +45,11 @@ Route::get('/download-cv', function () {
     return Storage::download('CA-f.pdf');
 })->name('download.cv');
 
+// Legal & Compliance pages
+Route::view('/privacy', 'components.legal.privacy')->name('privacy');
+Route::view('/mentions-legales', 'components.legal.mentions-legales')->name('mentions-legales');
+Route::view('/cookies', 'components.legal.cookies')->name('cookies');
+
 
 Route::get('/docs', function () {
     return view('components.documentation');

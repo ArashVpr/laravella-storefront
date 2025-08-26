@@ -24,6 +24,12 @@ car-hub.xyz is a Laravel-based web application for managing cars, their features
 -   Properly labeled forms and error messages
 -   Responsive design for all devices
 
+## Legal & Compliance
+
+-   [Privacy Policy](/privacy): Data retention and contact details included.
+-   [Legal Notice](/mentions-legales): Accessibility audit cited (August 26, 2025).
+-   [Cookies Policy](/cookies): Cookie consent banner implemented.
+
 ## Database Structure
 
 Main tables:
