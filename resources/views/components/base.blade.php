@@ -20,14 +20,14 @@
         content="{{ $metaDescription ?? 'car-hub.xyz is a Laravel-based web application for car management, features, authentication, and more.' }}" />
     <meta property="og:url" content="{{ url()->current() }}" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="{{ asset('img/car-png-39071.png') }}" />
+    <meta property="og:image" content="{{ asset('img/car-png-39071.webp') }}" />
 
     {{-- Twitter Card Tags --}}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ $title ? $title . ' | ' . config('app.name') : config('app.name') }}" />
     <meta name="twitter:description"
         content="{{ $metaDescription ?? 'car-hub.xyz is a Laravel-based web application for car management, features, authentication, and more.' }}" />
-    <meta name="twitter:image" content="{{ asset('img/car-png-39071.png') }}" />
+    <meta name="twitter:image" content="{{ asset('img/car-png-39071.webp') }}" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
