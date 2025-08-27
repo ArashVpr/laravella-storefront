@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://cloudconvert.com/
+HostUrl=https://eu-central.storage.cloudconvert.com/tasks/20055e9e-b021-4846-b7f0-f2c3cb0eeb7a/car-png-39071.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250827%2Ffra%2Fs3%2Faws4_request&X-Amz-Date=20250827T000656Z&X-Amz-Expires=86400&X-Amz-Signature=12b00b442fde8f6f9369c7448eb91d2b72282b5b7826f4fde7e07f031118515b&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22car-png-39071.webp%22&response-content-type=image%2Fwebp&x-id=GetObject

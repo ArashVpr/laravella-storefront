@@ -20,7 +20,7 @@
                     </div>
                 </div>
                 <div class="slide-image">
-                    <img src="/img/car-png-39071.png"
+                    <img src="/img/car-png-39071.webp"
                         alt="Modern car illustration showcasing the best cars available in your region"
                         class="img-responsive" />
                 </div>
@@ -44,7 +44,7 @@
                     </div>
                 </div>
                 <div class="slide-image">
-                    <img src="/img/car-png-39071.png"
+                    <img src="/img/car-png-39071.webp"
                         alt="Car illustration representing selling your vehicle on our platform"
                         class="img-responsive" />
                 </div>

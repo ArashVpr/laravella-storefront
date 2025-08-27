@@ -1476,7 +1476,7 @@ a.pagination-item:hover {
     }
   }
   
-  @media screen and (max-width: 680px) {
+    @media screen and (max-width: 992px) {
     .row {
       flex-direction: column;
     }
