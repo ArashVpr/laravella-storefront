@@ -2,6 +2,36 @@
     $inWatchlist = $car->favoredUsers->contains(\Illuminate\Support\Facades\Auth::user());
 @endphp
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ $car->year }} {{ $car->maker->name }} {{ $car->model->name }}",
+  "brand": { "@type": "Brand", "name": "{{ $car->maker->name }}" },
+  "model": "{{ $car->model->name }}",
+  "vehicleModelDate": "{{ $car->year }}",
+  "description": "{{ Str::limit(trim(preg_replace('/\s+/', ' ', $car->description ?? '')), 300, '') }}",
+  "sku": "{{ $car->vin ?? $car->id }}",
+  "image": [
+    @php
+      $imgs = $car->images->pluck('path')->map(fn($p) => asset('storage/'.$p))->all();
+      if (empty($imgs)) { $imgs = [asset('img/placeholder-car.jpg')]; }
+    @endphp
+    {!! collect($imgs)->map(fn($u) => '"'.$u.'"')->implode(',') !!}
+  ],
+  "url": "{{ url()->current() }}",
+  "category": "vehicle",
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "EUR",
+    "price": "{{ number_format((float)$car->price, 2, '.', '') }}",
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/UsedCondition",
+    "url": "{{ url()->current() }}"
+  }
+}
+</script>
+
 <x-app title="Car Details">
     <div>
         <main>
