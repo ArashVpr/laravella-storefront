@@ -148,5 +148,4 @@
             </div>
         </main>
     </div>
-
 </x-app>

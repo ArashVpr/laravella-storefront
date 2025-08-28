@@ -28,7 +28,7 @@
             {{-- <a href="{{ route('download.cv') }}" target="_blank" style="margin: 0 10px;">Download CV</a> --}}
         </div>
 
-        
+        <div id="wcb" class="carbonbadge"></div>
 
         <p style="font-size: 14px; color: #aaa;">&copy; 2025 Arash Vafapour. All rights reserved.</p>
     </div>

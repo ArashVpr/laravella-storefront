@@ -38,7 +38,6 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertFound()
-        // ->assertSessionHasErrors(['email'])
         ->assertInvalid(['email']);
     }
     public function test_correct_credentials_on_login_page(): void

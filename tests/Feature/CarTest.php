@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Tests\TestCase;
 
 class CarTest extends TestCase
@@ -20,14 +21,6 @@ class CarTest extends TestCase
         $response->assertRedirect('/login');
 
         $response->assertStatus(302);
-
-        // $response->ddSession();
-        // $response->ddHeaders();
-        // $response->dd();
-
-        // $response->dumpSession();
-        // $response->dumpHeaders();
-        // $response->dump();
     }
     public function test_auth_user_can_access_car_create(): void
     {
