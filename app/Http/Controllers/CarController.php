@@ -7,6 +7,7 @@ use App\Models\Car;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
@@ -48,26 +49,25 @@ class CarController extends Controller
 
         // Get request data
         $data = $request->validated();
-        // Get features data
         $featuresData = $data['features'] ?? [];
         unset($data['features']);
-        // Attach images
         $images = $request->file('images') ?: [];
         unset($data['images']);
-        // Set user ID
         $data['user_id'] = Auth::id();
-        // Create new car
-        $car = Car::create($data);
-        // Create features
-        $car->features()->create($featuresData);
 
-        // Iterate and create images
-        foreach ($images as $index => $image) {
-            // Save image on file system
-            $path = $image->store('images');
-            // Create record in the database
-            $car->images()->create(['image_path' => $path, 'position' => $index + 1]);
-        }
+        DB::transaction(function () use ($data, $featuresData, $images) {
+            // Create new car
+            $car = Car::create($data);
+            // Create features
+            $car->features()->create($featuresData);
+
+            // Iterate and create images
+            foreach ($images as $index => $image) {
+                $path = $image->store('images');
+                $car->images()->create(['image_path' => $path, 'position' => $index + 1]);
+            }
+        });
+
         // Redirect to car.index route
         return redirect()->route('car.index')->with('success', 'Car created successfully');
     }
@@ -117,8 +117,10 @@ class CarController extends Controller
         $data = $request->validated();
         unset($data['features']);
 
-        $car->update($data);
-        $car->features()->update($features);
+        DB::transaction(function () use ($car, $data, $features) {
+            $car->update($data);
+            $car->features()->update($features);
+        });
 
         return redirect()->route('car.index')->with('success', 'Car updated successfully');
     }
