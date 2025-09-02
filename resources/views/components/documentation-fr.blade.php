@@ -16,6 +16,7 @@
             <li><a href="#policies">Politiques</a></li>
             <li><a href="#testing">Tests</a></li>
             <li><a href="#accessibility">Accessibilité</a></li>
+            <li><a href="#seo">SEO</a></li>
             <li><a href="#styling-frontend">Style et Frontend</a></li>
             <li><a href="#third-party">Intégrations tierces</a></li>
             <li><a href="#deployment">Déploiement (avec GitHub Actions)</a></li>
@@ -164,6 +165,15 @@
             <li>Design responsive pour tous les appareils.</li>
         </ul>
 
+        <h2 id="seo" style="font-size: 20px; font-weight: bold; margin-top: 30px;">Fonctionnalités SEO</h2>
+        <ul>
+            <li>Titres de page et meta descriptions dynamiques pour chaque page.</li>
+            <li>URLs canoniques pour éviter le contenu dupliqué.</li>
+            <li>Meta tags Open Graph et Twitter Card pour le partage sur les réseaux sociaux.</li>
+            <li>Design responsive pour le classement SEO mobile.</li>
+            <li>Structure HTML propre et sémantique pour un meilleur indexation.</li>
+        </ul>
+
         <h2 id="styling-frontend" style="font-size: 20px; font-weight: bold; margin-top: 30px;">Style et Frontend</h2>
         <ul>
             <li><strong>CSS :</strong> Situé dans <code>app.css</code>.</li>
@@ -173,12 +183,11 @@
         <h2 id="third-party" style="font-size: 20px; font-weight: bold; margin-top: 30px;">Intégrations tierces</h2>
         <ul>
             <li><strong>Socialite :</strong> Connexion OAuth Google et Facebook. Configuré dans
-                <code>services.php</code>.</li>
-            <li><strong>Sanctum :</strong> Authentification API. Configuré dans <code>sanctum.php</code>.</li>
-            <li><strong>Filament Admin Panel :</strong> Panneau d'administration pour la gestion des ressources.
-                Configuré dans <code>AdminPanelProvider.php</code>.</li>
+                <code>services.php</code>.
+            </li>
+            <li><strong>Mailtrap :</strong> Utilisé pour la vérification des emails et les tests d'envoi (<a
+                    href="https://mailtrap.io/" target="_blank">mailtrap.io</a>).</li>
         </ul>
-
         <h2 id="deployment" style="font-size: 20px; font-weight: bold; margin-top: 30px;">Déploiement (avec GitHub
             Actions)</h2>
         <p>L'application utilise GitHub Actions pour l'intégration et le déploiement continus (CI/CD). Le processus de
@@ -204,7 +213,8 @@
             </li>
             <li><strong>Déploiement :</strong> L'application est déployée sur le serveur via
                 <code>appleboy/ssh-action</code>. Le serveur récupère le dernier tag de release, installe les
-                dépendances, compile les assets et optimise l'application Laravel.</li>
+                dépendances, compile les assets et optimise l'application Laravel.
+            </li>
         </ul>
 
         <h2 id="license" style="font-size: 20px; font-weight: bold; margin-top: 30px;">Licence</h2>

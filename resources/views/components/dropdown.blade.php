@@ -11,6 +11,7 @@
     <div class="dropdown-content">
         <a href="{{ route('docs') }}">English</a>
         <a href="{{ route('docs.fr') }}">Français</a>
+        <a href="{{ route('erd') }}">ERD</a>
     </div>
 </div>
 

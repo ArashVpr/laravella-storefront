@@ -16,6 +16,7 @@
             <li><a href="#policies">Policies</a></li>
             <li><a href="#testing">Testing</a></li>
             <li><a href="#accessibility">Accessibility</a></li>
+            <li><a href="#seo">SEO</a></li>
             <li><a href="#styling-frontend">Styling and Frontend</a></li>
             <li><a href="#third-party">Third-Party Integrations</a></li>
             <li><a href="#deployment">Deployment (with GitHub Actions)</a></li>
@@ -25,7 +26,7 @@
         <h2 id="introduction" style="font-size: 20px; font-weight: bold; margin-top: 40px;">Introduction</h2>
         <p>car-hub.xyz is a Laravel-based web application designed for managing cars, their features, and user
             interactions such as watchlists and authentication. It leverages Laravel's built-in features like Eloquent
-            ORM, Blade templates, and Sanctum for API authentication.</p>
+            ORM and Blade templates for authentication.</p>
 
         <h2 id="installation" style="font-size: 20px; font-weight: bold; margin-top: 30px;">Installation</h2>
         <ul>
@@ -158,6 +159,15 @@
             <li>Responsive design ensures usability on all devices.</li>
         </ul>
 
+        <h2 id="seo" style="font-size: 20px; font-weight: bold; margin-top: 30px;">SEO Features</h2>
+        <ul>
+            <li>Dynamic page titles and meta descriptions for each page.</li>
+            <li>Canonical URLs to prevent duplicate content issues.</li>
+            <li>Open Graph and Twitter Card meta tags for rich social sharing.</li>
+            <li>Responsive design for mobile-friendliness (important for SEO ranking).</li>
+            <li>Clean, semantic HTML structure for better indexing.</li>
+        </ul>
+
         <h2 id="styling-frontend" style="font-size: 20px; font-weight: bold; margin-top: 30px;">Styling and Frontend
         </h2>
         <ul>
@@ -170,12 +180,9 @@
         <ul>
             <li><strong>Socialite:</strong> Google and Facebook OAuth login. Configured in <code>services.php</code>.
             </li>
-            <li><strong>Sanctum:</strong> API authentication. Configured in <code>sanctum.php</code>.</li>
-            <li><strong>Filament Admin Panel:</strong> Admin panel for managing resources. Configured in
-                <code>AdminPanelProvider.php</code>.
-            </li>
+            <li><strong>Mailtrap:</strong> Used for email verification and testing email delivery (<a
+                    href="https://mailtrap.io/" target="_blank">mailtrap.io</a>).</li>
         </ul>
-
         <h2 id="deployment" style="font-size: 20px; font-weight: bold; margin-top: 30px;">Deployment (with GitHub
             Actions)</h2>
         <p>The application uses GitHub Actions for Continuous Integration and Deployment (CI/CD). The deployment process

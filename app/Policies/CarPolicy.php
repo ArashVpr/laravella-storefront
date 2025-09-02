@@ -30,7 +30,7 @@ class CarPolicy
      */
     public function create(User $user): bool
     {
-        return !!$user->phone;
+        return !!$user->phone; // User must have a phone number
     }
 
     /**

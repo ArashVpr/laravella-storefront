@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', [HomeController::class, 'index'])->name('homepage');
-Route::get('erd', function () {
-    return view('components.db-schema');
-});
+
 
 Route::get('/car/search', [CarController::class, 'search'])->name('car.search');
 
@@ -57,6 +55,9 @@ Route::get('/docs', function () {
 Route::get('/docs-fr', function () {
     return view('components.documentation-fr');
 })->name('docs.fr');
+Route::get('erd', function () {
+    return view('components.db-schema');
+})->name('erd');
 
 
 require __DIR__ . '/auth.php';
