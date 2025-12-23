@@ -54,7 +54,7 @@ class Car extends Model
 
     public function model(): BelongsTo
     {
-        return $this->belongsTo(models::class);
+        return $this->belongsTo(Models::class);
     }
 
     public function owner()
