@@ -20,11 +20,11 @@ class ProfileController
 
         $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:15', 'unique:users,phone,' . Auth::id()],
+            'phone' => ['required', 'string', 'max:15', 'unique:users,phone,'.Auth::id()],
         ];
 
-        if (!$user->isOauthUser()) {
-            $rules['email'] = ['required', 'string', 'email', 'max:255', 'unique:users,email,' . Auth::id()];
+        if (! $user->isOauthUser()) {
+            $rules['email'] = ['required', 'string', 'email', 'max:255', 'unique:users,email,'.Auth::id()];
         }
 
         $data = $request->validate($rules);
@@ -54,14 +54,14 @@ class ProfileController
                     ->numbers()
                     ->mixedCase()
                     ->symbols()
-                    ->uncompromised()]
+                    ->uncompromised()],
         ]);
-    
+
         // Perform password update
         $request->user()->update([
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
         ]);
-    
+
         // Go back with success message
         return back()->with('success', 'Password updated successfully');
     }

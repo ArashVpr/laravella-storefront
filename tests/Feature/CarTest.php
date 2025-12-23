@@ -4,10 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Car;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Tests\TestCase;
 
 class CarTest extends TestCase
@@ -22,6 +19,7 @@ class CarTest extends TestCase
 
         $response->assertStatus(302);
     }
+
     public function test_auth_user_can_access_car_create(): void
     {
         $user = User::factory()->create();
@@ -37,6 +35,7 @@ class CarTest extends TestCase
 
         $response->assertFound();
     }
+
     public function test_auth_user_can_access_my_cars_page(): void
     {
         $user = User::factory()->create();
@@ -44,6 +43,7 @@ class CarTest extends TestCase
 
         $response->assertOk();
     }
+
     public function test_create_car_functionality(): void
     {
         $this->seed();
@@ -95,6 +95,7 @@ class CarTest extends TestCase
         unset($carData['images']);
         $this->assertDatabaseHas('cars', $carData);
     }
+
     public function test_create_car_errors(): void
     {
         $user = User::factory()->create();
@@ -115,7 +116,7 @@ class CarTest extends TestCase
             'published_at' => '2023-10-01',
             'features' => [
                 'air_conditioning' => '1',
-                'power_windows' => '1'
+                'power_windows' => '1',
             ],
             // 'images' => ['image1.jpg','image2.jpg'],
         ]);
@@ -124,6 +125,7 @@ class CarTest extends TestCase
         $response->assertFound()
             ->assertInvalid(['year']);
     }
+
     public function test_create_car_empty_field_errors(): void
     {
         $user = User::factory()->create();
@@ -144,7 +146,7 @@ class CarTest extends TestCase
             'published_at' => '',
             'features' => [
                 'air_conditioning' => '1',
-                'power_windows' => '1'
+                'power_windows' => '1',
             ],
             // 'images' => ['image1.jpg','image2.jpg'],
         ]);
@@ -192,6 +194,7 @@ class CarTest extends TestCase
         $carData['id'] = $firstCar->id;
 
     }
+
     public function test_delete_car_functionality(): void
     {
         $this->seed();
@@ -204,15 +207,14 @@ class CarTest extends TestCase
             ->assertRedirectToRoute('car.index')
             ->assertSessionHas(['success']);
     }
-    
+
     public function test_access_forbidden_to_someone_else_car(): void
     {
         $this->seed();
-        $userOneCar = User::find(1)->cars()->first(); 
+        $userOneCar = User::find(1)->cars()->first();
         $userTwo = User::find(2);
         $response = $this->actingAs($userTwo)->get(route('car.edit', $userOneCar));
 
         $response->assertForbidden();
     }
-    
 }

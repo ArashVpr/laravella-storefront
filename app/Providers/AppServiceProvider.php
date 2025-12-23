@@ -12,7 +12,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(
+            \Illuminate\Contracts\Console\Kernel::class,
+            \App\Console\Kernel::class
+        );
     }
 
     /**
@@ -21,5 +24,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::defaultView('components.pagination');
+
+        $this->app->resolving(\Illuminate\Console\Command::class, function ($command, $app) {
+            $command->setLaravel($app);
+        });
     }
 }

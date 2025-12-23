@@ -17,7 +17,7 @@
                             </div>
                             <div class="demo-credential-tag mb-small">
                                 <span class="demo-label">Demo Email:</span>
-                                <span class="demo-value">hanna.keeling@example.org</span>
+                                <span class="demo-value">akoelpin@example.net</span>
                             </div>
                         </div>
                         <div class="form-group @error('password') has-error @enderror">

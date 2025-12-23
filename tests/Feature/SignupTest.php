@@ -2,9 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class SignupTest extends TestCase
@@ -24,9 +21,10 @@ class SignupTest extends TestCase
         ]);
 
         $response->assertFound()
-        ->assertRedirectToRoute('homepage')
-        ->assertSessionHas(['success']);
+            ->assertRedirectToRoute('homepage')
+            ->assertSessionHas(['success']);
     }
+
     public function test_errors_on_signup_page(): void
     {
         $response = $this->get('/signup');
@@ -39,9 +37,10 @@ class SignupTest extends TestCase
         ]);
 
         $response->assertFound()
-        ->assertInvalid(['name', 'email', 'phone', 'password']);
+            ->assertInvalid(['name', 'email', 'phone', 'password']);
 
     }
+
     public function test_email_and_phone_errors_on_signup_page(): void
     {
         $response = $this->get('/signup');
@@ -54,9 +53,10 @@ class SignupTest extends TestCase
         ]);
 
         $response->assertFound()
-        ->assertInvalid(['email', 'phone']);
+            ->assertInvalid(['email', 'phone']);
 
     }
+
     public function test_empty_field_errors_on_signup_page(): void
     {
         $response = $this->get('/signup');
@@ -71,8 +71,6 @@ class SignupTest extends TestCase
         // $response->ddSession();
 
         $response->assertFound()
-        ->assertInvalid(['name', 'email', 'phone', 'password']);
+            ->assertInvalid(['name', 'email', 'phone', 'password']);
     }
-
- 
 }

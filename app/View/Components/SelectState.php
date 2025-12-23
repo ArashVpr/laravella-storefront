@@ -12,12 +12,13 @@ use Illuminate\View\Component;
 class SelectState extends Component
 {
     public Collection $states;
+
     /**
      * Create a new component instance.
      */
     public function __construct()
     {
-        $this->states = Cache::rememberForever('states', function() {
+        $this->states = Cache::rememberForever('states', function () {
             return State::orderBy('name')->get();
         });
     }

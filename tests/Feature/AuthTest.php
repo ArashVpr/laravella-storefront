@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -17,15 +15,17 @@ class AuthTest extends TestCase
         $response = $this->get('/login');
 
         $response->assertStatus(200)
-        ->assertSee('Login')
-        ->assertSee('<a href="'. route('password.forgot').'"', false);
+            ->assertSee('Login')
+            ->assertSee('<a href="'.route('password.forgot').'"', false);
     }
+
     public function test_success_on_signup_page(): void
     {
         $response = $this->get('/signup');
 
         $response->assertStatus(200);
     }
+
     public function test_incorrect_credentials_on_login_page(): void
     {
         User::factory()->create([
@@ -38,8 +38,9 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertFound()
-        ->assertInvalid(['email']);
+            ->assertInvalid(['email']);
     }
+
     public function test_correct_credentials_on_login_page(): void
     {
         User::factory()->create([
@@ -52,15 +53,17 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertFound()
-        ->assertSessionHas(['success']);
+            ->assertSessionHas(['success']);
     }
+
     public function test_navbar_as_guest(): void
     {
         $response = $this->get('/');
 
         $response->assertSee('Login')
-        ->assertSee('Signup');
+            ->assertSee('Signup');
     }
+
     public function test_navbar_as_user(): void
     {
         $this->seed();
@@ -68,6 +71,6 @@ class AuthTest extends TestCase
         $response = $this->actingAs($user)->get('/');
 
         $response->assertSee('Logout')
-        ->assertSee("Welcome, " . $user->name);
+            ->assertSee('Welcome, '.$user->name);
     }
 }

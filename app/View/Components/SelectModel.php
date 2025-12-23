@@ -12,12 +12,13 @@ use Illuminate\View\Component;
 class SelectModel extends Component
 {
     public Collection $models;
+
     /**
      * Create a new component instance.
      */
     public function __construct()
     {
-        $this->models = Cache::rememberForever('models', function() {
+        $this->models = Cache::rememberForever('models', function () {
             return Models::orderBy('name')->get();
         });
     }

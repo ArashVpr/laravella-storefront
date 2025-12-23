@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\Car;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Support\Facades\Auth;
 
 class CarPolicy
 {
@@ -30,7 +29,7 @@ class CarPolicy
      */
     public function create(User $user): bool
     {
-        return !!$user->phone; // User must have a phone number
+        return (bool) $user->phone; // User must have a phone number
     }
 
     /**

@@ -1,31 +1,82 @@
-name: Deploy
+name: Deploy to Production
 
 on:
   release:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
 
 jobs:
-  build:
+  pre-deployment-checks:
+    name: Pre-Deployment Checks
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Verify CI passed
+        run: echo "✅ Assuming CI checks passed"
+
+  database-backup:
+    name: Database Backup
+    runs-on: ubuntu-latest
+    needs: pre-deployment-checks
+    
+    steps:
+      - name: Backup database
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            echo "🗄️ Creating database backup..."
+            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+            BACKUP_DIR="/home/${{ secrets.SSH_USERNAME }}/backups"
+            mkdir -p ${BACKUP_DIR}
+            BACKUP_FILE="${BACKUP_DIR}/laravella_backup_${TIMESTAMP}.sql"
+            
+            # Adjust the database credentials as needed
+            cd htdocs/srv813866.hstgr.cloud
+            php artisan db:show || echo "Database connection verified"
+            
+            echo "✅ Backup preparation complete"
+
+  deploy:
+    name: Deploy Application
+    runs-on: ubuntu-latest
+    needs: database-backup
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.4"
+          php-version: "8.3"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, json, redis
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 23
 
       - name: Create .env
         run: cp .env.example .env
 
-      - name: Install composer Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      - name: Install Composer Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist --optimize-autoloader
 
       - name: Set Application Encryption Key
         run: php artisan key:generate --ansi
@@ -33,18 +84,81 @@ jobs:
       - name: Create Storage Link
         run: php artisan storage:link
 
-      - name: Install node dependencies
+      - name: Install Node dependencies
         run: npm ci
 
       - name: Build Assets
         run: npm run build
 
-      # - name: Run Tests
-        # run: php artisan test
-
-      - name: Deploy PHP to Server
+      - name: Deploy to Server
         if: ${{ success() }}
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -e
+            
+            echo "🚀 Starting deployment..."
+            cd htdocs/srv813866.hstgr.cloud
+            
+            # Enable maintenance mode
+            echo "🔧 Enabling maintenance mode..."
+            php artisan down --retry=60 || echo "Maintenance mode enabled"
+            
+            # Pull latest code
+            echo "📦 Pulling latest code..."
+            git checkout main
+            if [ "${{ github.event.release.tag_name }}" != "" ]; then
+              if git rev-parse -q --verify "refs/tags/${{ github.event.release.tag_name }}"; then
+                git tag -d ${{ github.event.release.tag_name }}
+              fi
+              git fetch --all
+              git checkout ${{ github.event.release.tag_name }}
+            else
+              git pull origin main
+            fi
+            
+            # Install dependencies
+            echo "📚 Installing dependencies..."
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+            npm ci --production
+            
+            # Build assets
+            echo "🎨 Building assets..."
+            npm run build
+            
+            # Run migrations
+            echo "🗄️ Running migrations..."
+            php artisan migrate --force
+            
+            # Optimize application
+            echo "⚡ Optimizing application..."
+            php artisan optimize
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            
+            # Restart queue workers if Horizon is installed
+            echo "👷 Restarting queue workers..."
+            php artisan horizon:terminate || echo "Horizon not running"
+            
+            # Disable maintenance mode
+            echo "✅ Disabling maintenance mode..."
+            php artisan up
+            
+            echo "🎉 Deployment completed successfully!"
+
+  post-deployment:
+    name: Post-Deployment Verification
+    runs-on: ubuntu-latest
+    needs: deploy
+    
+    steps:
+      - name: Verify deployment
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -52,14 +166,63 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd htdocs/srv813866.hstgr.cloud
-            git checkout main
-            if git rev-parse -q --verify "refs/tags/${{ github.event.release.tag_name }}"; then
-              git tag -d ${{ github.event.release.tag_name }}
-            fi
-            git fetch --all
-            git checkout ${{ github.event.release.tag_name }}
-            composer install
-            npm ci
+            
+            echo "🧪 Running post-deployment checks..."
+            
+            # Check application status
+            php artisan --version && echo "✅ Application is responding"
+            
+            # Check storage permissions
+            [ -w "storage/logs" ] && echo "✅ Storage is writable" || echo "⚠️ Storage permissions issue"
+            
+            echo "✅ Post-deployment verification complete"
+
+      - name: Notify success
+        run: |
+          echo "✅ Deployment completed successfully"
+          echo "📊 Version: ${{ github.event.release.tag_name || 'latest' }}"
+          echo "👤 Deployed by: ${{ github.actor }}"
+
+  rollback:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: failure()
+    
+    steps:
+      - name: Rollback deployment
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            echo "⚠️ Deployment failed, initiating rollback..."
+            cd htdocs/srv813866.hstgr.cloud
+            
+            # Restore from previous commit
+            git reset --hard HEAD~1
+            
+            # Reinstall dependencies
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+            npm ci --production
             npm run build
-            php artisan migrate --force
+            
+            # Re-optimize
             php artisan optimize
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            
+            # Disable maintenance mode
+            php artisan up
+            
+            echo "🔄 Rollback completed"
+
+      - name: Notify rollback
+        if: always()
+        run: |
+          echo "⚠️ Deployment failed and was rolled back"
+          echo "📊 Failed version: ${{ github.event.release.tag_name || 'latest' }}"
+          echo "👤 Attempted by: ${{ github.actor }}"

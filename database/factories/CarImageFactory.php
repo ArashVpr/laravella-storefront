@@ -18,9 +18,10 @@ class CarImageFactory extends Factory
     public function definition(): array
     {
         return [
-            'image_path' => function(array $attributes) {
+            'image_path' => function (array $attributes) {
                 $car = Car::find($attributes['car_id']);
-                return sprintf("https://placehold.co/600x400/orange/white?text=%s", $car->maker->name);
+
+                return sprintf('https://placehold.co/600x400/orange/white?text=%s', $car->maker->name);
             },
             'position' => fake()->numberBetween(1, 5),
         ];

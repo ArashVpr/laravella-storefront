@@ -31,8 +31,8 @@ class SignupController extends Controller
                     ->numbers()
                     ->mixedCase()
                     ->symbols()
-                    ->uncompromised()
-            ]
+                    ->uncompromised(),
+            ],
         ]);
 
         $user = User::create([

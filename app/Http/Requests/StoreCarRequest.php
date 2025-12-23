@@ -25,7 +25,7 @@ class StoreCarRequest extends FormRequest
         return [
             'maker_id' => 'required',
             'model_id' => 'required',
-            'year' => ['required', 'integer', 'min:1900', 'max:' . date('Y')],
+            'year' => ['required', 'integer', 'min:1900', 'max:'.date('Y')],
             'car_type_id' => 'required|exists:car_types,id',
             'price' => 'required|integer|min:0',
             'vin' => 'required|string|max:17',
@@ -43,7 +43,7 @@ class StoreCarRequest extends FormRequest
         ];
     }
 
-    // public function messages() 
+    // public function messages()
     // {
     //     // return [];
     // }

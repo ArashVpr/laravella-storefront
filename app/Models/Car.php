@@ -4,13 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Models\CarType;
-use App\Models\Models;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Car extends Model
 {
@@ -44,7 +42,6 @@ class Car extends Model
         return $this->belongsTo(CarType::class);
     }
 
-
     public function fuelType(): BelongsTo
     {
         return $this->belongsTo(FuelType::class);
@@ -64,14 +61,17 @@ class Car extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);
     }
+
     public function carImages(): HasMany
     {
         return $this->hasMany(CarImage::class);
     }
+
     public function carFeatures(): BelongsToMany
     {
         return $this->belongsToMany(CarFeature::class, 'car_id');
@@ -84,7 +84,6 @@ class Car extends Model
 
     public function getTitle()
     {
-        return $this->year . ' - ' . $this->maker->name . ' ' . $this->model->name;
+        return $this->year.' - '.$this->maker->name.' '.$this->model->name;
     }
-
 }

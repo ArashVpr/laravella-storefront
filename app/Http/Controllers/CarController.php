@@ -33,10 +33,10 @@ class CarController extends Controller
      */
     public function create()
     {
-        if (!Gate::allows('create', Car::class)) {
+        if (! Gate::allows('create', Car::class)) {
             return redirect()->route('profile.index')
                 ->with('warning', 'Please provide your phone number');
-        };
+        }
 
         return view('car.create');
     }
@@ -133,6 +133,7 @@ class CarController extends Controller
         Gate::authorize('delete', $car);
 
         $car->delete();
+
         return redirect()->route('car.index')->with('success', 'Car deleted successfully');
     }
 
@@ -152,7 +153,6 @@ class CarController extends Controller
         $yearTo = $request->integer('year_to');
         $mileage = $request->integer('mileage');
         $sort = $request->input('sort', '-created_at');
-
 
         $query = Car::where('created_at', '<', now())
             ->with(['primaryImage', 'city', 'carType', 'fuelType', 'maker', 'model', 'favoredUsers']);
@@ -207,6 +207,7 @@ class CarController extends Controller
     public function carImages(Car $car)
     {
         Gate::authorize('update', $car);
+
         return view('car.images', ['car' => $car]);
     }
 
@@ -273,7 +274,7 @@ class CarController extends Controller
             // Save it in the database
             $car->images()->create([
                 'image_path' => $path,
-                'position' => $position + 1
+                'position' => $position + 1,
             ]);
             $position++;
         }

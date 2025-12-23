@@ -3,14 +3,13 @@
 namespace Database\Seeders;
 
 use App\Models\Car;
-use App\Models\CarFeature;
 use App\Models\CarImage;
 use App\Models\Maker;
 use App\Models\User;
 // use Doctrine\DBAL\Schema\Sequence;
 use Illuminate\Database\Eloquent\Factories\Sequence;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -155,8 +154,7 @@ class DatabaseSeeder extends Seeder
                 Car::factory(20)
                     ->has(
                         CarImage::factory(5)
-                            ->sequence(fn(Sequence $sequence) =>
-                            ['position' => $sequence->index % 5 + 1]),
+                            ->sequence(fn (Sequence $sequence) => ['position' => $sequence->index % 5 + 1]),
                     )
                     ->hasFeatures(),
                 'favoriteCars'

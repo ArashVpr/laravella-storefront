@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Car;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class WatchlistController
@@ -33,16 +32,16 @@ class WatchlistController
 
             return response()->json([
                 'added' => false,
-                'message' => 'Car was removed from watchlist'
+                'message' => 'Car was removed from watchlist',
             ]);
         }
 
         // Add the car into favourite cars of the user
         $user->favoriteCars()->attach($car);
-        
+
         return response()->json([
             'added' => true,
-            'message' => 'Car was added to watchlist'
+            'message' => 'Car was added to watchlist',
         ]);
     }
 }

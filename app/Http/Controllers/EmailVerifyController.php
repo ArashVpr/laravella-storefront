@@ -11,6 +11,7 @@ class EmailVerifyController
     {
         // Will be called when user clicks on the verification link in email
         $request->fulfill();
+
         // Redirect to the homepage or any other page
         return redirect()->route('homepage')->with('success', 'Email verified successfully. You can now add new cars!');
     }
@@ -25,9 +26,10 @@ class EmailVerifyController
     public function send(Request $request)
     {
         $request->user()->sendEmailVerificationNotification();
+
         return back()->with('success', 'Verification link sent');
 
-        // Will be called, if user loses his/her verification link and wants 
+        // Will be called, if user loses his/her verification link and wants
         // to resend the verification email
     }
 }

@@ -12,12 +12,13 @@ use Illuminate\View\Component;
 class SelectCity extends Component
 {
     public Collection $cities;
+
     /**
      * Create a new component instance.
      */
     public function __construct()
     {
-        $this->cities = Cache::rememberForever('cities', function() {
+        $this->cities = Cache::rememberForever('cities', function () {
             return City::orderBy('name')->get();
         });
     }

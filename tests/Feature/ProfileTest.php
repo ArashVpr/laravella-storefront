@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
@@ -19,6 +17,7 @@ class ProfileTest extends TestCase
 
         $response->assertFound();
     }
+
     public function test_auth_user_can_access_profile_page(): void
     {
         $user = User::factory()->create();

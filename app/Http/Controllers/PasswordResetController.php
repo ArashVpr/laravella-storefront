@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 
-
 class PasswordResetController
 {
     public function showForgotPassword()
@@ -55,15 +54,15 @@ class PasswordResetController
                     ->numbers()
                     ->mixedCase()
                     ->symbols()
-                    ->uncompromised()
-            ]
+                    ->uncompromised(),
+            ],
         ]);
 
         $status = Password::reset(
             $request->only(['email', 'password', 'password_confirmation', 'token']),
             function (User $user, string $password) {
                 $user->forceFill([
-                    'password' => Hash::make($password)
+                    'password' => Hash::make($password),
                 ])->setRememberToken(Str::random(60));
 
                 $user->save();
@@ -75,7 +74,7 @@ class PasswordResetController
         if ($status === Password::PASSWORD_RESET) {
             return redirect()->route('login')->with('success', __($status));
         }
-        
+
         // If there was an error, redirect user back with email error and with email input
         return back()->withErrors(['email' => __($status)]);
     }

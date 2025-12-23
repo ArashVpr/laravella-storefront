@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 Route::get('/', [HomeController::class, 'index'])->name('homepage');
 
-
 Route::get('/car/search', [CarController::class, 'search'])->name('car.search');
 
 // AUTHENTICATED and VERIFIED users
@@ -48,7 +47,6 @@ Route::view('/privacy', 'components.legal.privacy')->name('privacy');
 Route::view('/mentions-legales', 'components.legal.mentions-legales')->name('mentions-legales');
 Route::view('/cookies', 'components.legal.cookies')->name('cookies');
 
-
 Route::get('/docs', function () {
     return view('components.documentation');
 })->name('docs');
@@ -59,5 +57,11 @@ Route::get('erd', function () {
     return view('components.db-schema');
 })->name('erd');
 
+// Monitoring dashboards (local environment only for now)
+if (app()->environment('local')) {
+    Route::get('/pulse', function () {
+        return view('pulse::dashboard');
+    })->name('pulse');
+}
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

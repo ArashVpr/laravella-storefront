@@ -20,6 +20,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
+
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
@@ -36,7 +37,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'google_id',
         'facebook_id',
-        'email_verified_at'
+        'email_verified_at',
     ];
 
     /**
@@ -76,8 +77,8 @@ class User extends Authenticatable implements MustVerifyEmail
     public function favoriteCars(): BelongsToMany
     {
         return $this->belongsToMany(Car::class, 'favorite_cars')
-        ->withPivot('id')
-        ->orderBy('favorite_cars.id', 'desc');
+            ->withPivot('id')
+            ->orderBy('favorite_cars.id', 'desc');
     }
 
     public function cars(): HasMany
@@ -87,6 +88,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isOauthUser(): bool
     {
-        return !$this->password;
+        return ! $this->password;
     }
 }

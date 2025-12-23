@@ -11,6 +11,7 @@ use Illuminate\View\Component;
 class SelectRadioCarType extends Component
 {
     public Collection $radioCarTypes;
+
     /**
      * Create a new component instance.
      */

@@ -2,8 +2,6 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class HomeTest extends TestCase
@@ -16,6 +14,7 @@ class HomeTest extends TestCase
         $response = $this->get('/');
         $response->assertOk()->assertSee('No cars found');
     }
+
     public function test_when_there_are_cars(): void
     {
         // seed the database before testing

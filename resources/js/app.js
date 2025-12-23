@@ -255,19 +255,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const initShowPhoneNumber = () => {
     // Select the element we need to listen to click
-      const span = document.querySelector('.car-details-phone-view');
-      if (!span) return;
-      span.addEventListener('click', ev => {
-        ev.preventDefault();
-        // Get the url on which we should make Ajax request
-        const url = span.dataset.url;
+    const span = document.querySelector('.car-details-phone-view');
+    if (!span) return;
+    span.addEventListener('click', ev => {
+      ev.preventDefault();
+      // Get the url on which we should make Ajax request
+      const url = span.dataset.url;
 
-        // Make the request
-        axios.post(url).then(response => {
-          // Get response from backend and take actual phone number
-          const phone = response.data.phone;
-          // Find the <a> element
-          const a = span.parentElement;
+      // Make the request
+      axios.post(url).then(response => {
+        // Get response from backend and take actual phone number
+        const phone = response.data.phone;
+        // Find the <a> element
+        const a = span.parentElement;
         // and update its href attribute with full phone number received from backend
         a.href = 'tel:' + phone;
         // Find the element which contains obfuscated text and update it

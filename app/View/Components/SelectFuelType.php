@@ -11,13 +11,14 @@ use Illuminate\View\Component;
 
 class SelectFuelType extends Component
 {
-    Public Collection $fuelTypes;
+    public Collection $fuelTypes;
+
     /**
      * Create a new component instance.
      */
     public function __construct()
     {
-        $this->fuelTypes = Cache::rememberForever('fuelTypes', function() {
+        $this->fuelTypes = Cache::rememberForever('fuelTypes', function () {
             return FuelType::orderBy('name')->get();
         });
     }

@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class PasswordResetTest extends TestCase
@@ -12,7 +10,6 @@ class PasswordResetTest extends TestCase
     /**
      * A basic feature test example.
      */
-
     public function test_success_on_forgot_password_page(): void
     {
         $response = $this->get('/forgot-password');
@@ -20,6 +17,7 @@ class PasswordResetTest extends TestCase
 
         $response->assertOk();
     }
+
     public function test_incorrect_email_on_forgot_password_page(): void
     {
         User::factory()->create([
@@ -35,6 +33,7 @@ class PasswordResetTest extends TestCase
         $response->assertFound()
             ->assertInvalid(['email']);
     }
+
     public function test_correct_email_on_forgot_password_page(): void
     {
         User::factory()->create([

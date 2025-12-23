@@ -17,7 +17,7 @@ class LoginController
         // Get Validated data
         $credentials = $request->validate([
             'email' => ['required', 'email'],
-            'password' => ['required', 'string']
+            'password' => ['required', 'string'],
         ]);
 
         // Try to authenticate with given email and password
@@ -32,19 +32,19 @@ class LoginController
         }
 
         // If attempt was not successful, redirect back into login form with error on email and with email input data
-        return  redirect()->back()->withErrors([
-            'email' => 'The provided credentials do not match our records'
+        return redirect()->back()->withErrors([
+            'email' => 'The provided credentials do not match our records',
         ])->onlyInput('email');
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
-        // Regenerate session 
+        // Regenerate session
         $request->session()->regenerate();
         // Regenerate CSRF Token
         $request->session()->regenerateToken();
-        
+
         return redirect()->route('homepage')
             ->with('success', 'You have been logged out');
     }

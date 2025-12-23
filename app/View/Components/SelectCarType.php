@@ -12,12 +12,13 @@ use Illuminate\View\Component;
 class SelectCarType extends Component
 {
     public Collection $carTypes;
+
     /**
      * Create a new component instance.
      */
     public function __construct()
     {
-        $this->carTypes  = Cache::rememberForever('carTypes', function() {
+        $this->carTypes = Cache::rememberForever('carTypes', function () {
             return CarType::orderBy('name')->get();
         });
     }

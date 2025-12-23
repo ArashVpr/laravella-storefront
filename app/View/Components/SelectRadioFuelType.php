@@ -10,7 +10,8 @@ use Illuminate\View\Component;
 
 class SelectRadioFuelType extends Component
 {
-    Public Collection $radioFuelTypes;
+    public Collection $radioFuelTypes;
+
     /**
      * Create a new component instance.
      */

@@ -2,22 +2,23 @@
 
 namespace App\View\Components;
 
+use App\Models\Maker;
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
-use App\Models\Maker;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\View\Component;
 
 class SelectMaker extends Component
 {
     public Collection $makers;
+
     /**
      * Create a new component instance.
      */
     public function __construct()
     {
-        $this->makers = Cache::rememberForever('makers', function() {
+        $this->makers = Cache::rememberForever('makers', function () {
             return Maker::orderBy('name')->get();
         });
     }
