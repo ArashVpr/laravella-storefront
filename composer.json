@@ -18,7 +18,8 @@
         "laravel/socialite": "^5.20",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.0",
-        "meilisearch/meilisearch-php": "^1.16"
+        "meilisearch/meilisearch-php": "^1.16",
+        "stripe/stripe-php": "^19.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.15",

@@ -3,6 +3,7 @@
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\WatchlistController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -26,6 +27,12 @@ Route::middleware(['auth'])->group(callback: function () {
             ->name('car.updateImages');
         Route::post('/car/{car}/images', [CarController::class, 'addImages'])
             ->name('car.addImages');
+
+        // Stripe Payment Routes
+        Route::post('/stripe/checkout/{car}', [StripePaymentController::class, 'createCheckoutSession'])
+            ->name('stripe.checkout');
+        Route::get('/stripe/success', [StripePaymentController::class, 'success'])
+            ->name('stripe.success');
     });
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
@@ -36,6 +43,11 @@ Route::middleware(['auth'])->group(callback: function () {
 
 Route::get('/car/{car}', [CarController::class, 'show'])->name('car.show');
 Route::post('/car/phone/{car}', [CarController::class, 'showPhone'])->name('car.showPhone');
+
+// Stripe Webhook (no auth/CSRF protection)
+Route::post('/stripe/webhook', [StripePaymentController::class, 'webhook'])
+    ->name('stripe.webhook')
+    ->withoutMiddleware(['web']);
 
 // to download files
 Route::get('/download-cv', function () {

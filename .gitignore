@@ -9,6 +9,7 @@
 .env
 .env.backup
 .env.production
+.env.session.bak
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
@@ -37,5 +38,7 @@ meilisearch
 *.mdb
 *.lock.mdb
 
-.gitignore
+*.md
+
+
 

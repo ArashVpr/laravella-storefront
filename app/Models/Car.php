@@ -18,6 +18,11 @@ class Car extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'is_featured' => 'boolean',
+        'featured_until' => 'datetime',
+    ];
+
     public function features(): HasOne
     {
         return $this->hasOne(CarFeature::class, 'car_id');
@@ -78,6 +83,11 @@ class Car extends Model
         return $this->belongsToMany(CarFeature::class, 'car_id');
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function formatDate()
     {
         return $this->created_at->format('Y-m-d');
@@ -86,6 +96,44 @@ class Car extends Model
     public function getTitle()
     {
         return $this->year.' - '.$this->maker->name.' '.$this->model->name;
+    }
+
+    /**
+     * Check if the car is currently featured.
+     */
+    public function isFeatured(): bool
+    {
+        if (!$this->is_featured) {
+            return false;
+        }
+
+        if ($this->featured_until && $this->featured_until->isPast()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Mark the car as featured.
+     */
+    public function markAsFeatured(int $days = 30): void
+    {
+        $this->update([
+            'is_featured' => true,
+            'featured_until' => now()->addDays($days),
+        ]);
+    }
+
+    /**
+     * Remove featured status.
+     */
+    public function removeFeatured(): void
+    {
+        $this->update([
+            'is_featured' => false,
+            'featured_until' => null,
+        ]);
     }
 
     /**
