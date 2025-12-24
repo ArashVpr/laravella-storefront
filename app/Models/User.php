@@ -39,6 +39,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'google_id',
         'facebook_id',
         'email_verified_at',
+        'is_admin',
     ];
 
     /**
@@ -72,7 +73,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    /**
+     * Check if the user is an admin.
+     */
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
     }
 
     public function favoriteCars(): BelongsToMany

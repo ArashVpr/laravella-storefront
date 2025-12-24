@@ -42,3 +42,11 @@ meilisearch
 
 
 
+
+# Filament published assets (generated)
+/public/js/filament/
+/public/css/filament/
+/public/fonts/filament/
+
+
+
