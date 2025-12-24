@@ -63,5 +63,10 @@ class NotificationBell extends Component
         return view('livewire.notification-bell');
     }
 
+    public function refreshNotifications()
+    {
+        $this->loadNotifications();
+    }
+
     protected $listeners = ['notificationReceived' => 'loadNotifications'];
 }

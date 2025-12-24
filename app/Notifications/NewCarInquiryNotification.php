@@ -4,11 +4,13 @@ namespace App\Notifications;
 
 use App\Models\Car;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewCarInquiryNotification extends Notification implements ShouldQueue
+class NewCarInquiryNotification extends Notification implements ShouldQueue, ShouldBroadcast
 {
     use Queueable;
 
@@ -34,7 +36,7 @@ class NewCarInquiryNotification extends Notification implements ShouldQueue
             $channels[] = 'broadcast';
         }
         
-        return empty($channels) ? ['database', 'mail'] : $channels;
+        return empty($channels) ? ['database', 'mail', 'broadcast'] : $channels;
     }
 
     public function toMail(object $notifiable): MailMessage

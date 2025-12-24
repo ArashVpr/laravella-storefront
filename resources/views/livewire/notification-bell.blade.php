@@ -1,4 +1,31 @@
-<div class="relative" x-data="{ open: @entangle('showDropdown') }">
+<div class="relative" 
+     x-data="{ open: @entangle('showDropdown') }"
+     x-init="
+        @auth
+        // Listen for real-time notifications via Laravel Echo
+        if (window.Echo) {
+            window.Echo.private('App.Models.User.{{ auth()->id() }}')
+                .notification((notification) => {
+                    console.log('Real-time notification received:', notification);
+                    // Trigger Livewire method to refresh notifications
+                    @this.call('refreshNotifications');
+                    
+                    // Show browser notification if permitted
+                    if (Notification.permission === 'granted') {
+                        new Notification(notification.message || 'New notification', {
+                            body: notification.message,
+                            icon: '/favicon.ico'
+                        });
+                    }
+                });
+        }
+        
+        // Request browser notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+        @endauth
+     ">
     <!-- Notification Bell Button -->
     <button 
         @click="open = !open"

@@ -4,11 +4,13 @@ namespace App\Notifications;
 
 use App\Models\Car;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class CarFeaturedExpiringNotification extends Notification implements ShouldQueue
+class CarFeaturedExpiringNotification extends Notification implements ShouldQueue, ShouldBroadcast
 {
     use Queueable;
 
@@ -28,20 +30,28 @@ class CarFeaturedExpiringNotification extends Notification implements ShouldQueu
         if ($preferences?->wantsEmailFor('featured_expiring')) {
             $channels[] = 'mail';
         }
+        if ($preferences?->wantsPushFor('featured_expiring')) {
+            $channels[] = 'broadcast';
+        }
         
-        return empty($channels) ? ['database', 'mail'] : $channels;
+        return empty($channels) ? ['database', 'mail', 'broadcast'] : $channels;
     }
 
     public function toMail(object $notifiable): MailMessage
     {
         $daysText = $this->daysRemaining === 1 ? '1 day' : "{$this->daysRemaining} days";
         
-        return (new MailMessage)
+        $message = (new MailMessage)
             ->subject('⏰ Featured Listing Expiring Soon')
             ->greeting('Heads Up!')
             ->line("Your featured listing is expiring in {$daysText}.")
-            ->line('**' . $this->car->getTitle() . '**')
-            ->line("Expires on: " . $this->car->featured_until->format('M d, Y'))
+            ->line('**' . $this->car->getTitle() . '**');
+        
+        if ($this->car->featured_until) {
+            $message->line("Expires on: " . $this->car->featured_until->format('M d, Y'));
+        }
+        
+        return $message
             ->line("Want to extend your premium visibility?")
             ->action('Renew Featured Status', route('stripe.checkout', $this->car))
             ->line("Don't miss out on potential buyers!");
@@ -54,10 +64,11 @@ class CarFeaturedExpiringNotification extends Notification implements ShouldQueu
             'car_id' => $this->car->id,
             'car_title' => $this->car->getTitle(),
             'days_remaining' => $this->daysRemaining,
-            'expires_at' => $this->car->featured_until->toIso8601String(),
+            'expires_at' => $this->car->featured_until?->toIso8601String(),
             'url' => route('car.show', $this->car),
             'renew_url' => route('stripe.checkout', $this->car),
-            'message' => "Your featured listing expires in {$this->daysRemaining} day(s).",
+            'message' => "Your featured listing for {$this->car->getTitle()} expires in " . 
+                         ($this->daysRemaining === 1 ? '1 day' : "{$this->daysRemaining} days") . ".",
         ];
     }
 }
