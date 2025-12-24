@@ -30,3 +30,12 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Meilisearch
+data.ms/
+meilisearch
+*.mdb
+*.lock.mdb
+
+.gitignore
+

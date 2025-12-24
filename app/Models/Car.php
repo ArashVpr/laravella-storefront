@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 
 class Car extends Model
 {
     /** @use HasFactory<\Database\Factories\CarFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Searchable;
 
     protected $guarded = [];
 
@@ -85,5 +86,39 @@ class Car extends Model
     public function getTitle()
     {
         return $this->year.' - '.$this->maker->name.' '.$this->model->name;
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->getTitle(),
+            'year' => $this->year,
+            'price' => $this->price,
+            'mileage' => $this->mileage,
+            'description' => $this->description,
+            'maker' => $this->maker->name,
+            'model' => $this->model->name,
+            'fuel_type' => $this->fuelType->name,
+            'car_type' => $this->carType->name,
+            'city' => $this->city->name,
+            'state' => $this->city->state->name,
+            'location' => $this->city->name . ', ' . $this->city->state->name,
+            'is_featured' => (bool) $this->is_featured,
+            'created_at' => $this->created_at->timestamp,
+        ];
+    }
+
+    /**
+     * Get the name of the index associated with the model.
+     */
+    public function searchableAs(): string
+    {
+        return 'cars_index';
     }
 }

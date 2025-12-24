@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\FuelType;
+use Illuminate\Support\Facades\DB;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,7 +20,10 @@ class SelectFuelType extends Component
     public function __construct()
     {
         $this->fuelTypes = Cache::rememberForever('fuelTypes', function () {
-            return FuelType::orderBy('name')->get();
+            return FuelType::select(DB::raw('MIN(id) as id'), 'name')
+                ->groupBy('name')
+                ->orderBy('name')
+                ->get();
         });
     }
 

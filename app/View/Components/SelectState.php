@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\State;
+use Illuminate\Support\Facades\DB;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,7 +20,10 @@ class SelectState extends Component
     public function __construct()
     {
         $this->states = Cache::rememberForever('states', function () {
-            return State::orderBy('name')->get();
+            return State::select(DB::raw('MIN(id) as id'), 'name')
+                ->groupBy('name')
+                ->orderBy('name')
+                ->get();
         });
     }
 

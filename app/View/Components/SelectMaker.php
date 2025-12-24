@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\Maker;
+use Illuminate\Support\Facades\DB;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,7 +20,10 @@ class SelectMaker extends Component
     public function __construct()
     {
         $this->makers = Cache::rememberForever('makers', function () {
-            return Maker::orderBy('name')->get();
+            return Maker::select(DB::raw('MIN(id) as id'), 'name')
+                ->groupBy('name')
+                ->orderBy('name')
+                ->get();
         });
     }
 

@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\City;
+use Illuminate\Support\Facades\DB;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,7 +20,10 @@ class SelectCity extends Component
     public function __construct()
     {
         $this->cities = Cache::rememberForever('cities', function () {
-            return City::orderBy('name')->get();
+            return City::select(DB::raw('MIN(id) as id'), 'name', 'state_id')
+                ->groupBy('name', 'state_id')
+                ->orderBy('name')
+                ->get();
         });
     }
 

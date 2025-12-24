@@ -139,67 +139,126 @@ class CarController extends Controller
 
     public function search(Request $request)
     {
-        $maker = $request->integer('maker_id');
-        $model = $request->integer('model_id');
-        $city = $request->integer('city_id');
-        $state = $request->integer('state_id');
-        $carType = $request->integer('car_type_id');
-        $fuelType = $request->integer('fuel_type_id');
+        // Get search parameters
+        $q = $request->input('q', ''); // Text search query
+        $makerId = $request->integer('maker_id');
+        $modelId = $request->integer('model_id');
+        $cityId = $request->integer('city_id');
+        $stateId = $request->integer('state_id');
+        $carTypeId = $request->integer('car_type_id');
+        $fuelTypeId = $request->integer('fuel_type_id');
         $yearFrom = $request->integer('year_from');
         $yearTo = $request->integer('year_to');
         $priceFrom = $request->integer('price_from');
         $priceTo = $request->integer('price_to');
-        $yearFrom = $request->integer('year_from');
-        $yearTo = $request->integer('year_to');
         $mileage = $request->integer('mileage');
         $sort = $request->input('sort', '-created_at');
 
-        $query = Car::where('created_at', '<', now())
-            ->with(['primaryImage', 'city', 'carType', 'fuelType', 'maker', 'model', 'favoredUsers']);
+        // Determine if we should use Scout search or fallback to Eloquent
+        $hasFilters = $makerId || $modelId || $cityId || $stateId || $carTypeId || 
+                      $fuelTypeId || $yearFrom || $yearTo || $priceFrom || $priceTo || $mileage;
+        $useScout = !empty($q) || $hasFilters;
 
-        if (str_starts_with($sort, '-')) {
-            $sortBy = substr($sort, 1);
-            $query->orderBy($sortBy, 'desc');
+        if ($useScout) {
+            // Use Meilisearch for filtering and search
+            $filters = [];
+
+            // Build Meilisearch filters from form inputs
+            if ($makerId) {
+                $maker = \App\Models\Maker::find($makerId);
+                if ($maker) {
+                    $filters[] = 'maker = "' . addslashes($maker->name) . '"';
+                }
+            }
+            if ($modelId) {
+                $model = \App\Models\Models::find($modelId);
+                if ($model) {
+                    $filters[] = 'model = "' . addslashes($model->name) . '"';
+                }
+            }
+            if ($cityId) {
+                $city = \App\Models\City::find($cityId);
+                if ($city) {
+                    $filters[] = 'city = "' . addslashes($city->name) . '"';
+                }
+            }
+            if ($stateId) {
+                $state = \App\Models\State::find($stateId);
+                if ($state) {
+                    $filters[] = 'state = "' . addslashes($state->name) . '"';
+                }
+            }
+            if ($carTypeId) {
+                $carType = \App\Models\CarType::find($carTypeId);
+                if ($carType) {
+                    $filters[] = 'car_type = "' . addslashes($carType->name) . '"';
+                }
+            }
+            if ($fuelTypeId) {
+                $fuelType = \App\Models\FuelType::find($fuelTypeId);
+                if ($fuelType) {
+                    $filters[] = 'fuel_type = "' . addslashes($fuelType->name) . '"';
+                }
+            }
+            if ($yearFrom) {
+                $filters[] = 'year >= ' . $yearFrom;
+            }
+            if ($yearTo) {
+                $filters[] = 'year <= ' . $yearTo;
+            }
+            if ($priceFrom) {
+                $filters[] = 'price >= ' . $priceFrom;
+            }
+            if ($priceTo) {
+                $filters[] = 'price <= ' . $priceTo;
+            }
+            if ($mileage) {
+                $filters[] = 'mileage <= ' . $mileage;
+            }
+
+            // Determine sort field and order
+            if (str_starts_with($sort, '-')) {
+                $sortField = substr($sort, 1);
+                $sortOrder = 'desc';
+            } else {
+                $sortField = $sort;
+                $sortOrder = 'asc';
+            }
+
+            // Map sort fields to searchable attributes
+            $sortableFields = ['price', 'year', 'created_at', 'mileage'];
+            if (!in_array($sortField, $sortableFields)) {
+                $sortField = 'created_at';
+            }
+
+            // Perform Meilisearch search
+            $cars = Car::search($q, function ($meilisearch, $query, $options) use ($filters, $sortField, $sortOrder) {
+                if (!empty($filters)) {
+                    $options['filter'] = implode(' AND ', $filters);
+                }
+                $options['sort'] = [$sortField . ':' . $sortOrder];
+                return $meilisearch->search($query, $options);
+            })
+            ->query(function ($query) {
+                // Eager load relationships for better performance
+                return $query->with(['primaryImage', 'city.state', 'carType', 'fuelType', 'maker', 'model', 'favoredUsers']);
+            })
+            ->paginate(15)
+            ->withQueryString();
         } else {
-            $query->orderBy($sort);
-        }
+            // Fallback to traditional Eloquent query (if no filters)
+            $query = Car::where('created_at', '<', now())
+                ->with(['primaryImage', 'city', 'carType', 'fuelType', 'maker', 'model', 'favoredUsers']);
 
-        if ($maker) {
-            $query->where('maker_id', $maker);
-        }
-        if ($model) {
-            $query->where('model_id', $model);
-        }
-        if ($state) {
-            $query->join('cities', 'cities.id', '=', 'cars.city_id')
-                ->where('cities.state_id', $state);
-        }
-        if ($city) {
-            $query->where('city_id', $city);
-        }
-        if ($carType) {
-            $query->where('car_type_id', $carType);
-        }
-        if ($fuelType) {
-            $query->where('fuel_type_id', $fuelType);
-        }
-        if ($yearFrom) {
-            $query->where('year', '>=', $yearFrom);
-        }
-        if ($yearTo) {
-            $query->where('year', '<=', $yearTo);
-        }
-        if ($priceFrom) {
-            $query->where('price', '>=', $priceFrom);
-        }
-        if ($priceTo) {
-            $query->where('price', '<=', $priceTo);
-        }
-        if ($mileage) {
-            $query->where('mileage', '<=', $mileage);
-        }
+            if (str_starts_with($sort, '-')) {
+                $sortBy = substr($sort, 1);
+                $query->orderBy($sortBy, 'desc');
+            } else {
+                $query->orderBy($sort);
+            }
 
-        $cars = $query->paginate(15)->withQueryString();
+            $cars = $query->paginate(15)->withQueryString();
+        }
 
         return view('car.search', ['cars' => $cars]);
     }
