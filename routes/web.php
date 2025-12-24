@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\WatchlistController;
@@ -33,6 +34,16 @@ Route::middleware(['auth'])->group(callback: function () {
             ->name('stripe.checkout');
         Route::get('/stripe/success', [StripePaymentController::class, 'success'])
             ->name('stripe.success');
+
+        // Notification Routes
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/', [NotificationController::class, 'index'])->name('index');
+            Route::get('/unread-count', [NotificationController::class, 'unreadCount'])->name('unread-count');
+            Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('mark-read');
+            Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+            Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+            Route::delete('/clear-read/all', [NotificationController::class, 'clearRead'])->name('clear-read');
+        });
     });
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Car;
 use App\Models\Payment;
+use App\Notifications\PaymentSuccessfulNotification;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
@@ -254,6 +255,9 @@ class StripePaymentController extends Controller
         if ($payment->car) {
             $durationDays = $payment->metadata['duration_days'] ?? config('stripe.featured_listing.duration_days');
             $payment->car->markAsFeatured($durationDays);
+
+            // Send notification to car owner
+            $payment->user->notify(new PaymentSuccessfulNotification($payment, $payment->car));
 
             Log::info('Car marked as featured', [
                 'car_id' => $payment->car_id,
