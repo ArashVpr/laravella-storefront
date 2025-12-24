@@ -10,11 +10,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Car extends Model
+class Car extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\CarFactory> */
-    use HasFactory, SoftDeletes, Searchable;
+    use HasFactory, SoftDeletes, Searchable, InteractsWithMedia;
 
     protected $guarded = [];
 
@@ -168,5 +171,66 @@ class Car extends Model
     public function searchableAs(): string
     {
         return 'cars_index';
+    }
+
+    /**
+     * Register media collections for the car.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'image/jpg']);
+    }
+
+    /**
+     * Register media conversions for car images.
+     */
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        // Thumbnail - 300x200
+        $this->addMediaConversion('thumbnail')
+            ->width(300)
+            ->height(200)
+            ->sharpen(10)
+            ->optimize()
+            ->performOnCollections('images');
+
+        // Medium - 800x600
+        $this->addMediaConversion('medium')
+            ->width(800)
+            ->height(600)
+            ->sharpen(10)
+            ->optimize()
+            ->performOnCollections('images');
+
+        // Large - 1200x900
+        $this->addMediaConversion('large')
+            ->width(1200)
+            ->height(900)
+            ->sharpen(10)
+            ->optimize()
+            ->performOnCollections('images');
+
+        // WebP conversions for better performance
+        $this->addMediaConversion('thumbnail-webp')
+            ->width(300)
+            ->height(200)
+            ->format('webp')
+            ->optimize()
+            ->performOnCollections('images');
+
+        $this->addMediaConversion('medium-webp')
+            ->width(800)
+            ->height(600)
+            ->format('webp')
+            ->optimize()
+            ->performOnCollections('images');
+
+        $this->addMediaConversion('large-webp')
+            ->width(1200)
+            ->height(900)
+            ->format('webp')
+            ->optimize()
+            ->performOnCollections('images');
     }
 }
