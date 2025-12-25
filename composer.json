@@ -21,6 +21,7 @@
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.0",
         "meilisearch/meilisearch-php": "^1.16",
+        "sentry/sentry-laravel": "^4.20",
         "spatie/laravel-medialibrary": "^11.0",
         "stripe/stripe-php": "^19.1"
     },
