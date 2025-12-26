@@ -18,6 +18,11 @@ npm-debug.log
 yarn-error.log
 /auth.json
 /.fleet
+
+# Lighthouse GraphQL IDE helpers
+schema-directives.graphql
+programmatic-types.graphql
+_lighthouse_ide_helper.php
 /.idea
 /.nova
 /.vscode
