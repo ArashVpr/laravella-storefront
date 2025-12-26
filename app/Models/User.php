@@ -40,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'facebook_id',
         'email_verified_at',
         'is_admin',
+        'is_premium',
     ];
 
     /**
@@ -74,6 +75,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_premium' => 'boolean',
         ];
     }
 

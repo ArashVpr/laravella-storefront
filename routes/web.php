@@ -186,6 +186,56 @@ if (app()->environment('local')) {
             ]);
         })->name('sentry.test.message');
     });
+    
+    // Feature Flags Test Routes (local only)
+    Route::prefix('feature-test')->group(function () {
+        Route::get('/', function () {
+            $user = auth()->user();
+            $features = \Laravel\Pennant\Feature::all([
+                'enhanced-search',
+                'new-car-ui',
+                'premium-watchlist',
+                'seller-analytics',
+                'real-time-chat',
+                'webp-images',
+            ]);
+            
+            if ($user) {
+                $userFeatures = \Laravel\Pennant\Feature::for($user)->all([
+                    'enhanced-search',
+                    'new-car-ui',
+                    'premium-watchlist',
+                    'seller-analytics',
+                    'real-time-chat',
+                    'webp-images',
+                ]);
+            } else {
+                $userFeatures = [];
+            }
+            
+            return view('feature-test', compact('features', 'userFeatures', 'user'));
+        })->name('feature.test');
+        
+        Route::post('/toggle-premium', function () {
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['error' => 'Not authenticated'], 401);
+            }
+            
+            $user->is_premium = !$user->is_premium;
+            $user->save();
+            
+            // Clear cached feature values
+            DB::table('features')
+                ->where('scope', 'App\Models\User|' . $user->id)
+                ->delete();
+            
+            return response()->json([
+                'is_premium' => $user->is_premium,
+                'message' => $user->is_premium ? 'Upgraded to premium' : 'Downgraded to free'
+            ]);
+        })->middleware('auth')->name('feature.toggle-premium');
+    });
 }
 
 require __DIR__.'/auth.php';
