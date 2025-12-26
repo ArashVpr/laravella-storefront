@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Contracts\Console\Kernel::class,
             \App\Console\Kernel::class
         );
+
+        // Register A/B Testing service
+        $this->app->singleton('abtest', function ($app) {
+            return new \App\Services\AbTestingService();
+        });
     }
 
     /**
@@ -37,6 +42,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Define feature flags
         $this->defineFeatureFlags();
+
+        // Register A/B testing Blade directives
+        $this->registerAbTestDirectives();
     }
 
     /**
@@ -85,6 +93,31 @@ class AppServiceProvider extends ServiceProvider
         Feature::define('webp-images', function () {
             // Enabled for all users (already implemented)
             return true;
+        });
+    }
+
+    /**
+     * Register A/B testing Blade directives
+     */
+    protected function registerAbTestDirectives(): void
+    {
+        // @abtest('experiment-name', 'variant-name')
+        \Blade::directive('abtest', function ($expression) {
+            return "<?php if(app('abtest')->isInVariant({$expression}, auth()->id(), session()->getId())): ?>";
+        });
+
+        \Blade::directive('endabtest', function () {
+            return '<?php endif; ?>';
+        });
+
+        // @abvariant('experiment-name')
+        \Blade::directive('abvariant', function ($expression) {
+            return "<?php \$__abVariant = app('abtest')->getVariant({$expression}, auth()->id(), session()->getId()); ?>";
+        });
+
+        // @conversion('experiment-name', 'goal-name')
+        \Blade::directive('conversion', function ($expression) {
+            return "<?php app('abtest')->trackConversion({$expression}, auth()->id(), session()->getId()); ?>";
         });
     }
 }
