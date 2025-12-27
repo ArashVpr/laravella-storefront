@@ -242,6 +242,30 @@ php artisan serve
 npm run dev
 ```
 
+### Performance Testing
+
+Run Lighthouse CI audits to measure performance, accessibility, best practices, and SEO:
+
+```bash
+# Automated test script (recommended)
+bash scripts/lighthouse-ci.sh
+
+# Using npm (desktop)
+npm run lhci:desktop
+
+# Using npm (mobile)
+npm run lhci:mobile
+```
+
+**Performance Budgets:**
+- Performance: ≥70%
+- Accessibility: ≥90%
+- Best Practices: ≥90%
+- SEO: ≥90%
+
+See [LIGHTHOUSE-CI-SUMMARY.md](LIGHTHOUSE-CI-SUMMARY.md) for detailed results and [docs/LIGHTHOUSE-CI.md](docs/LIGHTHOUSE-CI.md) for complete documentation.
+
+
 Visit `http://localhost:8000` in your browser.
 
 ### Docker Setup (Alternative)

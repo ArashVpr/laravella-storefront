@@ -23,6 +23,14 @@ yarn-error.log
 schema-directives.graphql
 programmatic-types.graphql
 _lighthouse_ide_helper.php
+
+# Lighthouse CI reports
+.lighthouseci/
+lighthouse-reports/
+lighthouse-report.html
+lighthouse-test.json
+lighthouserc-test.json
+
 /.idea
 /.nova
 /.vscode
@@ -44,9 +52,6 @@ meilisearch
 *.lock.mdb
 
 *.md
-
-
-
 
 # Filament published assets (generated)
 /public/js/filament/
