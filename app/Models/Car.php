@@ -98,7 +98,9 @@ class Car extends Model implements HasMedia
 
     public function getTitle()
     {
-        return $this->year.' - '.$this->maker->name.' '.$this->model->name;
+        $maker = $this->maker?->name ?? 'Unknown';
+        $model = $this->model?->name ?? 'Unknown';
+        return $this->year.' - '.$maker.' '.$model;
     }
 
     /**
@@ -153,13 +155,13 @@ class Car extends Model implements HasMedia
             'price' => $this->price,
             'mileage' => $this->mileage,
             'description' => $this->description,
-            'maker' => $this->maker->name,
-            'model' => $this->model->name,
-            'fuel_type' => $this->fuelType->name,
-            'car_type' => $this->carType->name,
-            'city' => $this->city->name,
-            'state' => $this->city->state->name,
-            'location' => $this->city->name . ', ' . $this->city->state->name,
+            'maker' => $this->maker?->name ?? '',
+            'model' => $this->model?->name ?? '',
+            'fuel_type' => $this->fuelType?->name ?? '',
+            'car_type' => $this->carType?->name ?? '',
+            'city' => $this->city?->name ?? '',
+            'state' => $this->city?->state?->name ?? '',
+            'location' => ($this->city?->name ?? '') . ($this->city?->state ? ', ' . $this->city->state->name : ''),
             'is_featured' => (bool) $this->is_featured,
             'created_at' => $this->created_at->timestamp,
         ];

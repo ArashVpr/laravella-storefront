@@ -40,6 +40,7 @@ class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
         // Permissions Policy (formerly Feature Policy)
+        // Note: 'unload' is not restricted to allow beforeunload event handlers
         $permissionsPolicy = implode(', ', [
             'geolocation=(self)',
             'microphone=()',
@@ -74,7 +75,7 @@ class SecurityHeaders
             "default-src 'self'",
 
             // Scripts: Allow self, inline with nonce, eval for development
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://cdn.jsdelivr.net https://unpkg.com https://js.pusher.com",
+            $this->buildScriptSrc(),
 
             // Styles: Allow self, inline styles, Google Fonts
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net",
@@ -85,8 +86,8 @@ class SecurityHeaders
             // Fonts: Allow self, data URIs, Google Fonts
             "font-src 'self' data: https://fonts.gstatic.com https://fonts.bunny.net",
 
-            // Connect (AJAX/WebSocket): Allow self, Pusher, Reverb
-            "connect-src 'self' https://ws-*.pusher.com wss://ws-*.pusher.com https://sockjs-*.pusher.com https://reverb.car-hub.xyz wss://reverb.car-hub.xyz",
+            // Connect (AJAX/WebSocket): Environment-aware configuration
+            $this->buildConnectSrc(),
 
             // Media: Allow self
             "media-src 'self'",
@@ -111,5 +112,45 @@ class SecurityHeaders
         ];
 
         return implode('; ', array_filter($policies));
+    }
+
+    /**
+     * Build connect-src directive based on environment
+     *
+     * @return string
+     */
+    protected function buildConnectSrc(): string
+    {
+        $sources = [
+            "'self'",
+            // Pusher WebSocket (use leading wildcard for subdomains)
+            'https://*.pusher.com',
+            'wss://*.pusher.com',
+            // Production WebSocket server
+            'https://reverb.car-hub.xyz',
+            'wss://reverb.car-hub.xyz',
+            // Website Carbon API
+            'https://api.websitecarbon.com',
+        ];
+
+        // Add localhost WebSocket for development
+        if (config('app.env') !== 'production') {
+            $sources[] = 'ws://localhost:*';
+            $sources[] = 'wss://localhost:*';
+            $sources[] = 'http://localhost:*';
+            $sources[] = 'https://localhost:*';
+        }
+
+        return 'connect-src ' . implode(' ', $sources);
+    }
+
+    /**
+     * Build script-src directive
+     *
+     * @return string
+     */
+    protected function buildScriptSrc(): string
+    {
+        return "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://js.pusher.com";
     }
 }

@@ -1,76 +1,64 @@
 <?php
 
-namespace Tests\Feature;
-
 use App\Models\User;
-use Tests\TestCase;
 
-class AuthTest extends TestCase
-{
-    /**
-     * A basic feature test example.
-     */
-    public function test_success_on_login_page(): void
-    {
-        $response = $this->get('/login');
+test('login page loads successfully', function () {
+    $response = $this->get('/login');
 
-        $response->assertStatus(200)
-            ->assertSee('Login')
-            ->assertSee('<a href="'.route('password.forgot').'"', false);
-    }
+    $response->assertStatus(200)
+        ->assertSee('Login')
+        ->assertSee('<a href="'.route('password.forgot').'"', false);
+});
 
-    public function test_success_on_signup_page(): void
-    {
-        $response = $this->get('/signup');
+test('signup page loads successfully', function () {
+    $response = $this->get('/signup');
 
-        $response->assertStatus(200);
-    }
+    $response->assertStatus(200);
+});
 
-    public function test_incorrect_credentials_on_login_page(): void
-    {
-        User::factory()->create([
-            'email' => 'lexi@yahoo.com',
-            'password' => bcrypt('password'),
-        ]);
-        $response = $this->post(route('login.store'), [
-            'email' => 'lexi@yahoo.com',
-            'password' => 'wrong-password',
-        ]);
+test('login fails with incorrect credentials', function () {
+    User::factory()->create([
+        'email' => 'lexi@yahoo.com',
+        'password' => bcrypt('password'),
+    ]);
+    
+    $response = $this->post(route('login.store'), [
+        'email' => 'lexi@yahoo.com',
+        'password' => 'wrong-password',
+    ]);
 
-        $response->assertFound()
-            ->assertInvalid(['email']);
-    }
+    $response->assertFound()
+        ->assertInvalid(['email']);
+});
 
-    public function test_correct_credentials_on_login_page(): void
-    {
-        User::factory()->create([
-            'email' => 'lexi@yahoo.com',
-            'password' => bcrypt('password'),
-        ]);
-        $response = $this->post(route('login.store'), [
-            'email' => 'lexi@yahoo.com',
-            'password' => 'password',
-        ]);
+test('login succeeds with correct credentials', function () {
+    User::factory()->create([
+        'email' => 'lexi@yahoo.com',
+        'password' => bcrypt('password'),
+    ]);
+    
+    $response = $this->post(route('login.store'), [
+        'email' => 'lexi@yahoo.com',
+        'password' => 'password',
+    ]);
 
-        $response->assertFound()
-            ->assertSessionHas(['success']);
-    }
+    $response->assertFound()
+        ->assertSessionHas(['success']);
+});
 
-    public function test_navbar_as_guest(): void
-    {
-        $response = $this->get('/');
+test('navbar shows login and signup for guests', function () {
+    $response = $this->get('/');
 
-        $response->assertSee('Login')
-            ->assertSee('Signup');
-    }
+    $response->assertSee('Login')
+        ->assertSee('Signup');
+});
 
-    public function test_navbar_as_user(): void
-    {
-        $this->seed();
-        $user = User::first();
-        $response = $this->actingAs($user)->get('/');
+test('navbar shows logout and user name for authenticated users', function () {
+    $this->seed();
+    $user = User::first();
+    
+    $response = $this->actingAs($user)->get('/');
 
-        $response->assertSee('Logout')
-            ->assertSee('Welcome, '.$user->name);
-    }
-}
+    $response->assertSee('Logout')
+        ->assertSee('Welcome, '.$user->name);
+});

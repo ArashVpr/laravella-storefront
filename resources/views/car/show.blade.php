@@ -86,17 +86,17 @@
                             <h2 class="car-details-title">Car Specifications</h2>
                             <ul class="car-specifications">
 
-                                <x-car-features :value="$car->features->abs">ABS</x-car-features>
-                                <x-car-features :value="$car->features->air_conditioning">Air Conditioning</x-car-features>
-                                <x-car-features :value="$car->features->power_windows">Power Windows</x-car-features>
-                                <x-car-features :value="$car->features->power_door_locks">Power Door Lock</x-car-features>
-                                <x-car-features :value="$car->features->cruise_control">Cruise Control</x-car-features>
-                                <x-car-features :value="$car->features->bluetooth_connectivity">Bluetooth</x-car-features>
-                                <x-car-features :value="$car->features->gps_navigation">GPS Navigation</x-car-features>
-                                <x-car-features :value="$car->features->heated_seats">Heated Seats</x-car-features>
-                                <x-car-features :value="$car->features->climate_control">Climate Control</x-car-features>
-                                <x-car-features :value="$car->features->rear_parking_sensors">Rear Parking Sensors</x-car-features>
-                                <x-car-features :value="$car->features->leather_seats">Leather Seats</x-car-features>
+                                <x-car-features :value="$car->features?->abs ?? false">ABS</x-car-features>
+                                <x-car-features :value="$car->features?->air_conditioning ?? false">Air Conditioning</x-car-features>
+                                <x-car-features :value="$car->features?->power_windows ?? false">Power Windows</x-car-features>
+                                <x-car-features :value="$car->features?->power_door_locks ?? false">Power Door Lock</x-car-features>
+                                <x-car-features :value="$car->features?->cruise_control ?? false">Cruise Control</x-car-features>
+                                <x-car-features :value="$car->features?->bluetooth_connectivity ?? false">Bluetooth</x-car-features>
+                                <x-car-features :value="$car->features?->gps_navigation ?? false">GPS Navigation</x-car-features>
+                                <x-car-features :value="$car->features?->heated_seats ?? false">Heated Seats</x-car-features>
+                                <x-car-features :value="$car->features?->climate_control ?? false">Climate Control</x-car-features>
+                                <x-car-features :value="$car->features?->rear_parking_sensors ?? false">Rear Parking Sensors</x-car-features>
+                                <x-car-features :value="$car->features?->leather_seats ?? false">Leather Seats</x-car-features>
 
                             </ul>
                         </div>
