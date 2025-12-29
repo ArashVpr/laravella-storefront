@@ -149,21 +149,18 @@ class Car extends Model implements HasMedia
     public function toSearchableArray(): array
     {
         return [
-            'id' => $this->id,
-            'title' => $this->getTitle(),
-            'year' => $this->year,
-            'price' => $this->price,
-            'mileage' => $this->mileage,
-            'description' => $this->description,
-            'maker' => $this->maker?->name ?? '',
-            'model' => $this->model?->name ?? '',
-            'fuel_type' => $this->fuelType?->name ?? '',
-            'car_type' => $this->carType?->name ?? '',
-            'city' => $this->city?->name ?? '',
-            'state' => $this->city?->state?->name ?? '',
-            'location' => ($this->city?->name ?? '') . ($this->city?->state ? ', ' . $this->city->state->name : ''),
+            'id' => (int) $this->id,
+            'year' => (int) $this->year,
+            'price' => (float) $this->price,
+            'mileage' => (int) $this->mileage,
+            'description' => $this->description ?? '',
+            'maker_id' => $this->maker_id,
+            'model_id' => $this->model_id,
+            'car_type_id' => $this->car_type_id,
+            'fuel_type_id' => $this->fuel_type_id,
+            'city_id' => $this->city_id,
             'is_featured' => (bool) $this->is_featured,
-            'created_at' => $this->created_at->timestamp,
+            'created_at' => $this->created_at ? $this->created_at->timestamp : null,
         ];
     }
 

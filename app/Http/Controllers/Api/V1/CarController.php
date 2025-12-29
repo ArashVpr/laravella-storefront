@@ -147,93 +147,98 @@ class CarController extends Controller
     }
 
     /**
-     * Search cars with advanced filters using Meilisearch.
+     * Search cars with advanced filters.
      */
     public function search(Request $request): JsonResponse
     {
         $query = $request->input('q', '');
-        $filters = [];
+        
+        // Build Eloquent query
+        $carQuery = Car::query()->with(['maker', 'model', 'fuelType', 'carType', 'city.state', 'images', 'owner']);
 
-        // Build Meilisearch filters
+        // Apply text search if provided
+        if (!empty($query)) {
+            $carQuery->where(function ($carQuery) use ($query) {
+                $carQuery->where('description', 'like', "%{$query}%")
+                    ->orWhereHas('maker', function ($q) use ($query) {
+                        $q->where('name', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('model', function ($q) use ($query) {
+                        $q->where('name', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('fuelType', function ($q) use ($query) {
+                        $q->where('name', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('carType', function ($q) use ($query) {
+                        $q->where('name', 'like', "%{$query}%");
+                    })
+                    ->orWhere('year', 'like', "%{$query}%");
+            });
+        }
+
+        // Apply filters
         if ($request->filled('maker')) {
-            $filters[] = 'maker = "' . addslashes($request->maker) . '"';
+            $carQuery->whereHas('maker', function ($q) use ($request) {
+                $q->where('name', $request->maker);
+            });
         }
 
         if ($request->filled('year')) {
-            $filters[] = 'year = ' . $request->year;
+            $carQuery->where('year', $request->year);
         }
 
         if ($request->filled('min_price')) {
-            $filters[] = 'price >= ' . $request->min_price;
+            $carQuery->where('price', '>=', $request->min_price);
         }
 
         if ($request->filled('max_price')) {
-            $filters[] = 'price <= ' . $request->max_price;
+            $carQuery->where('price', '<=', $request->max_price);
         }
 
         if ($request->filled('fuel_type')) {
-            $filters[] = 'fuel_type = "' . addslashes($request->fuel_type) . '"';
+            $carQuery->whereHas('fuelType', function ($q) use ($request) {
+                $q->where('name', $request->fuel_type);
+            });
         }
 
         if ($request->filled('city')) {
-            $filters[] = 'city = "' . addslashes($request->city) . '"';
+            $carQuery->whereHas('city', function ($q) use ($request) {
+                $q->where('name', $request->city);
+            });
         }
 
         if ($request->filled('state')) {
-            $filters[] = 'state = "' . addslashes($request->state) . '"';
+            $carQuery->whereHas('city.state', function ($q) use ($request) {
+                $q->where('name', $request->state);
+            });
         }
 
         if ($request->filled('is_featured')) {
-            $filters[] = 'is_featured = ' . ($request->boolean('is_featured') ? 'true' : 'false');
+            $carQuery->where('is_featured', $request->boolean('is_featured'));
         }
 
-        // Sorting
+        // Apply sorting
         $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');
-        $sort = [$sortBy . ':' . $sortOrder];
+        
+        $allowedSortFields = ['price', 'year', 'created_at', 'mileage'];
+        if (in_array($sortBy, $allowedSortFields)) {
+            $carQuery->orderBy($sortBy, $sortOrder);
+        } else {
+            $carQuery->orderBy('created_at', 'desc');
+        }
 
-        // Perform search
+        // Pagination
         $perPage = (int) min($request->input('per_page', 20), 100);
-        $page = (int) $request->input('page', 1);
-
-        $searchParams = [
-            'filter' => implode(' AND ', $filters),
-            'sort' => $sort,
-            'limit' => $perPage,
-            'offset' => ($page - 1) * $perPage,
-        ];
-
-        $results = Car::search($query, function ($meilisearch, $query, $options) use ($searchParams) {
-            if (!empty($searchParams['filter'])) {
-                $options['filter'] = $searchParams['filter'];
-            }
-            $options['sort'] = $searchParams['sort'];
-            $options['limit'] = $searchParams['limit'];
-            $options['offset'] = $searchParams['offset'];
-
-            return $meilisearch->search($query, $options);
-        })->get();
-
-        // Get total count for pagination
-        $total = Car::search($query, function ($meilisearch, $query, $options) use ($searchParams) {
-            if (!empty($searchParams['filter'])) {
-                $options['filter'] = $searchParams['filter'];
-            }
-            $options['limit'] = 0;
-
-            return $meilisearch->search($query, $options);
-        })->raw()['estimatedTotalHits'] ?? 0;
-
-        // Load relationships
-        $results->load(['maker', 'model', 'fuelType', 'carType', 'city.state', 'images', 'owner']);
+        $results = $carQuery->paginate($perPage);
 
         return response()->json([
-            'data' => CarResource::collection($results),
+            'data' => CarResource::collection($results->items()),
             'meta' => [
-                'current_page' => $page,
-                'per_page' => $perPage,
-                'total' => $total,
-                'last_page' => ceil($total / $perPage),
+                'current_page' => $results->currentPage(),
+                'per_page' => $results->perPage(),
+                'total' => $results->total(),
+                'last_page' => $results->lastPage(),
             ],
         ]);
     }
