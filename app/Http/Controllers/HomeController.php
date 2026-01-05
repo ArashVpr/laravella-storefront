@@ -22,8 +22,7 @@ class HomeController extends Controller
 
         // Get latest cars (excluding already featured ones)
         $cars = Cache::remember('home-latest-cars', 60, function () use ($featuredCars) {
-            return Car::where('created_at', '<', now())
-                ->whereNotIn('id', $featuredCars->pluck('id'))
+            return Car::whereNotIn('id', $featuredCars->pluck('id'))
                 ->with(['primaryImage', 'city', 'carType', 'fuelType', 'maker', 'model', 'favoredUsers'])
                 ->orderBy('created_at', 'desc')
                 ->limit(24)
