@@ -54,6 +54,9 @@ class CarResource extends Resource
         ];
     }
 
+    /**
+     * @return Builder<Car>
+     */
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {
         return parent::getRecordRouteBindingEloquentQuery()

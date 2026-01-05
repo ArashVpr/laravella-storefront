@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Fields;
 
+use App\Models\Car as CarModel;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
@@ -10,7 +11,7 @@ class Car
     /**
      * Check if the car is in the current user's watchlist
      */
-    public function inWatchlist($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): bool
+    public function inWatchlist(CarModel $rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): bool
     {
         $user = $context->user();
         
@@ -18,13 +19,13 @@ class Car
             return false;
         }
         
-        return $user->watchlist()->where('car_id', $rootValue->id)->exists();
+        return $user->favoriteCars()->where('car_id', $rootValue->id)->exists();
     }
     
     /**
      * Get car images from Spatie Media Library
      */
-    public function images($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): array
+    public function images(CarModel $rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo): array
     {
         $media = $rootValue->getMedia('car-images');
         
