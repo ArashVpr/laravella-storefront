@@ -244,7 +244,8 @@ jobs:
         run: php artisan migrate --force
 
       - name: Test database connection
-        run: 'php artisan tinker --execute="echo '\''Testing DB connection...'\''; try { DB::connection()->getPdo(); echo '\''DB connected successfully'\''; } catch (Exception \$e) { echo '\''DB connection failed: '\'' . \$e->getMessage(); exit(1); }"'
+        run: |
+          php artisan tinker --execute="echo 'Testing DB connection...'; try { DB::connection()->getPdo(); echo 'DB connected successfully'; } catch (Exception \$e) { echo 'DB connection failed: ' . \$e->getMessage(); exit(1); }"
 
       - name: Create minimal test data
         run: |
