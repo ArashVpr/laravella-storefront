@@ -48,18 +48,22 @@ Route::view('/mentions-legales', 'components.legal.mentions-legales')->name('men
 Route::view('/cookies', 'components.legal.cookies')->name('cookies');
 
 Route::get('/docs', function () {
-    return view(/** @phpstan-ignore-next-line */ 'components.documentation');
+    /** @phpstan-ignore argument.type */
+    return view('components.documentation');
 })->name('docs');
 Route::get('/docs-fr', function () {
-    return view(/** @phpstan-ignore-next-line */ 'components.documentation-fr');
+    /** @phpstan-ignore argument.type */
+    return view('components.documentation-fr');
 })->name('docs.fr');
 Route::get('erd', function () {
-    return view(/** @phpstan-ignore-next-line */ 'components.db-schema');
+    /** @phpstan-ignore argument.type */
+    return view('components.db-schema');
 })->name('erd');
 
 // Monitoring dashboards (local environment only for now)
 if (app()->environment('local')) {
     Route::get('/pulse', function () {
+        /** @phpstan-ignore argument.type */
         return view('pulse::dashboard');
     })->name('pulse');
 }
