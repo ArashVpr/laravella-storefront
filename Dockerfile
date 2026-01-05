@@ -10,7 +10,9 @@ RUN apk add --no-cache $PHPIZE_DEPS \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /app
-COPY composer.json composer.lock ./
+COPY composer.json composer.lock artisan ./
+COPY bootstrap bootstrap/
+COPY app app/
 RUN composer install \
     --no-dev \
     --prefer-dist \
