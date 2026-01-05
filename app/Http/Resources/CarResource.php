@@ -39,7 +39,7 @@ class CarResource extends JsonResource
                 'id' => $this->fuelType->id,
                 'name' => $this->fuelType->name,
             ],
-            'car_type' => $this->when($this->carType, [
+            'car_type' => $this->when($this->carType !== null, [
                 'id' => $this->carType?->id,
                 'name' => $this->carType?->name,
             ]),
@@ -60,7 +60,7 @@ class CarResource extends JsonResource
                 ),
                 'email' => $this->when(false, $this->owner->email), // Never expose email via API
             ],
-            'is_favorite' => $this->when($request->user(), function () use ($request) {
+            'is_favorite' => $this->when($request->user() !== null, function () use ($request) {
                 return $request->user()->favoriteCars()->where('car_id', $this->id)->exists();
             }),
             'created_at' => $this->created_at?->toIso8601String(),

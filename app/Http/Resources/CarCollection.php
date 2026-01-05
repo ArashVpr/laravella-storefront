@@ -2,12 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\CarResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
- * @property LengthAwarePaginator $resource
+ * @property LengthAwarePaginator<CarResource> $resource
+ * @mixin LengthAwarePaginator<CarResource>
  */
 class CarCollection extends ResourceCollection
 {

@@ -30,6 +30,7 @@ class SocialiteController
             }
 
             // Get the user information from the provider
+            /** @phpstan-ignore-next-line */
             $user = Socialite::driver($provider)->stateless()->user();
 
             // Based on the email select user from the database

@@ -8,6 +8,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @mixin CarFeature
+ * @property bool $gps
+ * @property bool $camera
+ * @property bool $bluetooth
+ * @property bool $air_conditioner
+ * @property bool $abs
+ * @property bool $leather_seats
+ * @property bool $sunroof
  */
 class CarFeaturesResource extends JsonResource
 {

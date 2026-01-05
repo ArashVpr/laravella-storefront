@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Maker extends Model
 {
-    /** @use HasFactory<\Database\Factories\MakerFactory> */
     use HasFactory;
 
     protected $fillable = ['name'];

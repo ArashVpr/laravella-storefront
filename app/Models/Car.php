@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string $title
+ */
 class Car extends Model
 {
     /** @use HasFactory<\Database\Factories\CarFactory> */
