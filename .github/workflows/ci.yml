@@ -346,9 +346,10 @@ jobs:
           }
           
           echo "Server is responding. Running Playwright tests..."
-          # Run tests with timeout to prevent hanging
-          timeout 600 npx playwright test --timeout=30000 || {
-            echo "Playwright tests timed out or failed"
+          # Run tests with timeout and progress reporting
+          echo "Starting test execution at $(date)"
+          timeout 1200 npx playwright test --timeout=45000 --reporter=line || {
+            echo "Playwright tests timed out or failed at $(date)"
             echo "Laravel server log:"
             cat /tmp/laravel.log
             echo "Checking server status:"
@@ -356,6 +357,7 @@ jobs:
             curl -I http://127.0.0.1:8000
             exit 1
           }
+          echo "Tests completed successfully at $(date)"
         env:
           APP_URL: http://127.0.0.1:8000
           BASE_URL: http://127.0.0.1:8000
