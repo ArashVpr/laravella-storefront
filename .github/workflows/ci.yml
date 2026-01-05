@@ -237,6 +237,8 @@ jobs:
           echo "MAIL_MAILER=log" >> .env
           echo "TELESCOPE_ENABLED=false" >> .env
           echo "PULSE_ENABLED=false" >> .env
+          echo "APP_ENV=testing" >> .env
+          echo "APP_DEBUG=false" >> .env
       
       - name: Run migrations
         run: php artisan migrate --force
@@ -261,6 +263,10 @@ jobs:
 
       - name: Optimize Laravel for testing
         run: |
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan route:clear
+          php artisan view:clear
           php artisan config:cache
           php artisan route:cache
           php artisan view:cache
@@ -285,15 +291,24 @@ jobs:
       
       - name: Start Laravel server
         run: |
+          echo "Starting Laravel server..."
           nohup php artisan serve --host=127.0.0.1 --port=8000 > /tmp/laravel.log 2>&1 &
           SERVER_PID=$!
           echo $SERVER_PID > /tmp/laravel.pid
           sleep 5
           echo "Laravel server started with PID $SERVER_PID"
+          
+          # Check if server process is running
+          if kill -0 $SERVER_PID 2>/dev/null; then
+            echo "Server process is running"
+          else
+            echo "Server process failed to start"
+            cat /tmp/laravel.log
+            exit 1
+          fi
+          
           echo "Checking if server is responding..."
           curl -s -o /dev/null -w "Server response: %{http_code}\n" http://127.0.0.1:8000 || echo "Server not responding yet"
-          # Keep server running for tests
-          echo "Server is ready for tests"
         env:
           APP_ENV: testing
       
@@ -312,15 +327,35 @@ jobs:
       
       - name: Run Playwright tests
         run: |
-          # Check if server is still running
+          # Check if server is still running and responding
           if ! kill -0 $(cat /tmp/laravel.pid) 2>/dev/null; then
             echo "Server is not running, restarting..."
             nohup php artisan serve --host=127.0.0.1 --port=8000 > /tmp/laravel.log 2>&1 &
             echo $! > /tmp/laravel.pid
             sleep 5
           fi
-          echo "Running Playwright tests..."
-          npx playwright test
+          
+          # Verify server is responding before running tests
+          echo "Verifying server is responding..."
+          timeout 30 bash -c "until curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000 | grep -q 200; do sleep 2; echo 'Waiting for server response...'; done" || {
+            echo "Server failed to respond. Laravel log:"
+            cat /tmp/laravel.log
+            echo "Testing direct connection:"
+            curl -v http://127.0.0.1:8000 2>&1 | head -20
+            exit 1
+          }
+          
+          echo "Server is responding. Running Playwright tests..."
+          # Run tests with timeout to prevent hanging
+          timeout 600 npx playwright test --timeout=30000 || {
+            echo "Playwright tests timed out or failed"
+            echo "Laravel server log:"
+            cat /tmp/laravel.log
+            echo "Checking server status:"
+            ps aux | grep artisan
+            curl -I http://127.0.0.1:8000
+            exit 1
+          }
         env:
           APP_URL: http://127.0.0.1:8000
           BASE_URL: http://127.0.0.1:8000
