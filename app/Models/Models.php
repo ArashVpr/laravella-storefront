@@ -11,6 +11,8 @@ class Models extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'name',
         'maker_id',

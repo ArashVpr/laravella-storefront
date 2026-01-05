@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class City extends Model
 {
+    public $timestamps = false;
+
     protected $fillable = [
         'name',
         'state_id',

@@ -263,8 +263,6 @@ jobs:
             'year' => 2020, 'price' => 20000, 'mileage' => 50000, 'vin' => 'TESTVIN123', 'address' => '123 Test St',
             'phone' => '555-1234', 'description' => 'Test car', 'published_at' => now()
           ]);
-          echo 'Car created with ID: ' . \$car->id . PHP_EOL;
-          echo 'Total cars in DB: ' . \App\Models\Car::count() . PHP_EOL;
           "
 
       - name: Optimize Laravel for testing
