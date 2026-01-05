@@ -71,6 +71,11 @@
                     </div>
                 @endif
 
+                <!-- Notification Bell -->
+                <div class="ms-3 relative">
+                    @livewire('notification-bell')
+                </div>
+
                 <!-- Settings Dropdown -->
                 <div class="ms-3 relative">
                     <x-dropdown align="right" width="48">

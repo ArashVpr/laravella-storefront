@@ -10,14 +10,29 @@ class HomeController extends Controller
 {
     public function index(): \Illuminate\View\View
     {
-        $cars = Cache::remember('home-cars', 60, function () {
-            return Car::where('created_at', '<', now())
+        // Get featured cars (active featured listings)
+        $featuredCars = Cache::remember('home-featured-cars', 30, function () {
+            return Car::where('is_featured', true)
+                ->where('featured_until', '>', now())
                 ->with(['primaryImage', 'city', 'carType', 'fuelType', 'maker', 'model', 'favoredUsers'])
-                ->orderBy('created_at', 'desc')
-                ->limit(30)
+                ->orderBy('featured_until', 'desc')
+                ->limit(6)
                 ->get();
         });
 
-        return view('home.index', ['cars' => $cars]);
+        // Get latest cars (excluding already featured ones)
+        $cars = Cache::remember('home-latest-cars', 60, function () use ($featuredCars) {
+            return Car::where('created_at', '<', now())
+                ->whereNotIn('id', $featuredCars->pluck('id'))
+                ->with(['primaryImage', 'city', 'carType', 'fuelType', 'maker', 'model', 'favoredUsers'])
+                ->orderBy('created_at', 'desc')
+                ->limit(24)
+                ->get();
+        });
+
+        return view('home.index', [
+            'featuredCars' => $featuredCars,
+            'cars' => $cars
+        ]);
     }
 }

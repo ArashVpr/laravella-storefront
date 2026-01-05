@@ -86,22 +86,40 @@
                             <h2 class="car-details-title">Car Specifications</h2>
                             <ul class="car-specifications">
 
-                                <x-car-features :value="$car->features->abs">ABS</x-car-features>
-                                <x-car-features :value="$car->features->air_conditioning">Air Conditioning</x-car-features>
-                                <x-car-features :value="$car->features->power_windows">Power Windows</x-car-features>
-                                <x-car-features :value="$car->features->power_door_locks">Power Door Lock</x-car-features>
-                                <x-car-features :value="$car->features->cruise_control">Cruise Control</x-car-features>
-                                <x-car-features :value="$car->features->bluetooth_connectivity">Bluetooth</x-car-features>
-                                <x-car-features :value="$car->features->gps_navigation">GPS Navigation</x-car-features>
-                                <x-car-features :value="$car->features->heated_seats">Heated Seats</x-car-features>
-                                <x-car-features :value="$car->features->climate_control">Climate Control</x-car-features>
-                                <x-car-features :value="$car->features->rear_parking_sensors">Rear Parking Sensors</x-car-features>
-                                <x-car-features :value="$car->features->leather_seats">Leather Seats</x-car-features>
+                                <x-car-features :value="$car->features?->abs ?? false">ABS</x-car-features>
+                                <x-car-features :value="$car->features?->air_conditioning ?? false">Air Conditioning</x-car-features>
+                                <x-car-features :value="$car->features?->power_windows ?? false">Power Windows</x-car-features>
+                                <x-car-features :value="$car->features?->power_door_locks ?? false">Power Door Lock</x-car-features>
+                                <x-car-features :value="$car->features?->cruise_control ?? false">Cruise Control</x-car-features>
+                                <x-car-features :value="$car->features?->bluetooth_connectivity ?? false">Bluetooth</x-car-features>
+                                <x-car-features :value="$car->features?->gps_navigation ?? false">GPS Navigation</x-car-features>
+                                <x-car-features :value="$car->features?->heated_seats ?? false">Heated Seats</x-car-features>
+                                <x-car-features :value="$car->features?->climate_control ?? false">Climate Control</x-car-features>
+                                <x-car-features :value="$car->features?->rear_parking_sensors ?? false">Rear Parking Sensors</x-car-features>
+                                <x-car-features :value="$car->features?->leather_seats ?? false">Leather Seats</x-car-features>
 
                             </ul>
                         </div>
                     </div>
                     <div class="car-details card">
+                        {{-- Featured Badge --}}
+                        @if($car->isFeatured())
+                            <div class="mb-4 p-3 bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-orange-300 rounded-lg">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <svg class="h-5 w-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                    <span class="font-bold text-orange-600 uppercase tracking-wide">Featured Listing</span>
+                                    <svg class="h-5 w-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                </div>
+                                <p class="text-center text-orange-700 text-xs mt-1">
+                                    Featured until {{ $car->featured_until->format('M d, Y') }}
+                                </p>
+                            </div>
+                        @endif
+
                         <div class="flex items-center justify-between">
                             <p class="car-details-price">${{ number_format($car->price) }}</p>
                             <button class="btn-heart text-primary"
@@ -122,6 +140,41 @@
                         </div>
 
                         <hr />
+
+                        {{-- Make Featured Button (Owner Only) --}}
+                        @auth
+                            @if($car->user_id === auth()->id() && !$car->isFeatured())
+                                <div class="my-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <div class="flex items-start space-x-3">
+                                        <svg class="h-6 w-6 text-blue-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                        </svg>
+                                        <div class="flex-1">
+                                            <h3 class="text-lg font-semibold text-gray-900 mb-1">Boost Your Listing!</h3>
+                                            <p class="text-sm text-gray-600 mb-3">
+                                                Get more visibility with a featured listing. Your car will appear at the top of search results with a special badge for {{ config('stripe.featured_listing.duration_days') }} days.
+                                            </p>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-2xl font-bold text-gray-900">
+                                                    ${{ number_format(config('stripe.featured_listing.price') / 100, 2) }}
+                                                </span>
+                                                <form action="{{ route('stripe.checkout', $car) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" 
+                                                            class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg">
+                                                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                        </svg>
+                                                        Make Featured
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endauth
+
                         <table class="car-details-table">
                             <tbody>
                                 <tr>

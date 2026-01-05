@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\WatchlistController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -26,6 +28,22 @@ Route::middleware(['auth'])->group(callback: function () {
             ->name('car.updateImages');
         Route::post('/car/{car}/images', [CarController::class, 'addImages'])
             ->name('car.addImages');
+
+        // Stripe Payment Routes
+        Route::post('/stripe/checkout/{car}', [StripePaymentController::class, 'createCheckoutSession'])
+            ->name('stripe.checkout');
+        Route::get('/stripe/success', [StripePaymentController::class, 'success'])
+            ->name('stripe.success');
+
+        // Notification Routes
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/', [NotificationController::class, 'index'])->name('index');
+            Route::get('/unread-count', [NotificationController::class, 'unreadCount'])->name('unread-count');
+            Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('mark-read');
+            Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+            Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+            Route::delete('/clear-read/all', [NotificationController::class, 'clearRead'])->name('clear-read');
+        });
     });
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
@@ -36,6 +54,11 @@ Route::middleware(['auth'])->group(callback: function () {
 
 Route::get('/car/{car}', [CarController::class, 'show'])->name('car.show');
 Route::post('/car/phone/{car}', [CarController::class, 'showPhone'])->name('car.showPhone');
+
+// Stripe Webhook (no auth/CSRF protection)
+Route::post('/stripe/webhook', [StripePaymentController::class, 'webhook'])
+    ->name('stripe.webhook')
+    ->withoutMiddleware(['web']);
 
 // to download files
 Route::get('/download-cv', function () {
@@ -76,6 +99,157 @@ if (app()->environment('local')) {
         /** @var view-string $viewName */
         return view($viewName);
     })->name('pulse');
+    
+    // Sentry Test Routes (local only)
+    Route::prefix('sentry-test')->group(function () {
+        Route::get('/exception', function () {
+            throw new \Exception('Test Exception: This is a test error sent to Sentry');
+        })->name('sentry.test.exception');
+        
+        Route::get('/error', function () {
+            trigger_error('Test Error: This is a test PHP error', E_USER_ERROR);
+        })->name('sentry.test.error');
+        
+        Route::get('/warning', function () {
+            trigger_error('Test Warning: This is a test PHP warning', E_USER_WARNING);
+        })->name('sentry.test.warning');
+        
+        Route::get('/breadcrumbs', function () {
+            \Sentry\addBreadcrumb(new \Sentry\Breadcrumb(
+                \Sentry\Breadcrumb::LEVEL_INFO,
+                \Sentry\Breadcrumb::TYPE_USER,
+                'user',
+                'User visited test page'
+            ));
+            
+            \Sentry\addBreadcrumb(new \Sentry\Breadcrumb(
+                \Sentry\Breadcrumb::LEVEL_INFO,
+                \Sentry\Breadcrumb::TYPE_NAVIGATION,
+                'navigation',
+                'Navigated to breadcrumbs test'
+            ));
+            
+            \Sentry\captureMessage('Test Message with Breadcrumbs', \Sentry\Severity::info());
+            
+            return response()->json([
+                'message' => 'Message with breadcrumbs sent to Sentry',
+                'check' => 'View your Sentry dashboard'
+            ]);
+        })->name('sentry.test.breadcrumbs');
+        
+        Route::get('/context', function () {
+            \Sentry\configureScope(function (\Sentry\State\Scope $scope): void {
+                $scope->setUser([
+                    'id' => auth()->id() ?? 999,
+                    'username' => auth()->user()->name ?? 'Test User',
+                    'email' => auth()->user()->email ?? 'test@example.com',
+                ]);
+                
+                $scope->setTag('page.locale', 'en');
+                $scope->setTag('environment', config('app.env'));
+                
+                $scope->setContext('character', [
+                    'role' => 'tester',
+                    'level' => 99,
+                    'premium' => true,
+                ]);
+            });
+            
+            throw new \RuntimeException('Test Exception with Context and User Info');
+        })->name('sentry.test.context');
+        
+        Route::get('/performance', function () {
+            $transaction = \Sentry\startTransaction(
+                \Sentry\Tracing\TransactionContext::make()
+                    ->setName('Test Performance Transaction')
+                    ->setOp('http.server')
+            );
+            
+            \Sentry\SentrySdk::getCurrentHub()->setSpan($transaction);
+            
+            // Simulate some work
+            $span1 = $transaction->startChild(\Sentry\Tracing\SpanContext::make()
+                ->setOp('db.query')
+                ->setDescription('SELECT * FROM cars LIMIT 10')
+            );
+            usleep(50000); // 50ms
+            $span1->finish();
+            
+            $span2 = $transaction->startChild(\Sentry\Tracing\SpanContext::make()
+                ->setOp('http.client')
+                ->setDescription('GET https://api.example.com/data')
+            );
+            usleep(100000); // 100ms
+            $span2->finish();
+            
+            $transaction->finish();
+            
+            return response()->json([
+                'message' => 'Performance trace sent to Sentry',
+                'transaction' => 'Test Performance Transaction',
+                'check' => 'View Performance tab in Sentry'
+            ]);
+        })->name('sentry.test.performance');
+        
+        Route::get('/capture-message', function () {
+            \Sentry\captureMessage('This is a test informational message', \Sentry\Severity::info());
+            
+            return response()->json([
+                'message' => 'Info message captured',
+                'check' => 'View Issues in Sentry dashboard'
+            ]);
+        })->name('sentry.test.message');
+    });
+    
+    // Feature Flags Test Routes (local only)
+    Route::prefix('feature-test')->group(function () {
+        Route::get('/', function () {
+            $user = auth()->user();
+            $features = \Laravel\Pennant\Feature::all([
+                'enhanced-search',
+                'new-car-ui',
+                'premium-watchlist',
+                'seller-analytics',
+                'real-time-chat',
+                'webp-images',
+            ]);
+            
+            if ($user) {
+                $userFeatures = \Laravel\Pennant\Feature::for($user)->all([
+                    'enhanced-search',
+                    'new-car-ui',
+                    'premium-watchlist',
+                    'seller-analytics',
+                    'real-time-chat',
+                    'webp-images',
+                ]);
+            } else {
+                $userFeatures = [];
+            }
+            
+            return view('feature-test', compact('features', 'userFeatures', 'user'));
+        })->name('feature.test');
+        
+        Route::post('/toggle-premium', function () {
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['error' => 'Not authenticated'], 401);
+            }
+            
+            $user->is_premium = !$user->is_premium;
+            $user->save();
+            
+            // Clear cached feature values
+            DB::table('features')
+                ->where('scope', 'App\Models\User|' . $user->id)
+                ->delete();
+            
+            return response()->json([
+                'is_premium' => $user->is_premium,
+                'message' => $user->is_premium ? 'Upgraded to premium' : 'Downgraded to free'
+            ]);
+        })->middleware('auth')->name('feature.toggle-premium');
+    });
 }
 
 require __DIR__.'/auth.php';

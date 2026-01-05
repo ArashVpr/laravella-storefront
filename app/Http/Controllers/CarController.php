@@ -139,49 +139,64 @@ class CarController extends Controller
 
     public function search(Request $request): \Illuminate\View\View
     {
-        $maker = $request->integer('maker_id');
-        $model = $request->integer('model_id');
-        $city = $request->integer('city_id');
-        $state = $request->integer('state_id');
-        $carType = $request->integer('car_type_id');
-        $fuelType = $request->integer('fuel_type_id');
+        // Get search parameters
+        $q = $request->input('q', ''); // Text search query
+        $makerId = $request->integer('maker_id');
+        $modelId = $request->integer('model_id');
+        $cityId = $request->integer('city_id');
+        $stateId = $request->integer('state_id');
+        $carTypeId = $request->integer('car_type_id');
+        $fuelTypeId = $request->integer('fuel_type_id');
         $yearFrom = $request->integer('year_from');
         $yearTo = $request->integer('year_to');
         $priceFrom = $request->integer('price_from');
         $priceTo = $request->integer('price_to');
-        $yearFrom = $request->integer('year_from');
-        $yearTo = $request->integer('year_to');
         $mileage = $request->integer('mileage');
         $sort = $request->input('sort', '-created_at');
 
-        $query = Car::where('created_at', '<', now())
-            ->with(['primaryImage', 'city', 'carType', 'fuelType', 'maker', 'model', 'favoredUsers']);
+        // Build Eloquent query
+        $query = Car::query()->with(['primaryImage', 'city.state', 'carType', 'fuelType', 'maker', 'model', 'favoredUsers']);
 
-        if (str_starts_with($sort, '-')) {
-            $sortBy = substr($sort, 1);
-            $query->orderBy($sortBy, 'desc');
-        } else {
-            $query->orderBy($sort);
+        // Apply text search if provided
+        if (!empty($q)) {
+            $query->where(function ($query) use ($q) {
+                $query->where('description', 'like', "%{$q}%")
+                    ->orWhereHas('maker', function ($query) use ($q) {
+                        $query->where('name', 'like', "%{$q}%");
+                    })
+                    ->orWhereHas('model', function ($query) use ($q) {
+                        $query->where('name', 'like', "%{$q}%");
+                    })
+                    ->orWhereHas('fuelType', function ($query) use ($q) {
+                        $query->where('name', 'like', "%{$q}%");
+                    })
+                    ->orWhereHas('carType', function ($query) use ($q) {
+                        $query->where('name', 'like', "%{$q}%");
+                    })
+                    ->orWhere('year', 'like', "%{$q}%");
+            });
         }
 
-        if ($maker) {
-            $query->where('maker_id', $maker);
+        // Apply filters
+        if ($makerId) {
+            $query->where('maker_id', $makerId);
         }
-        if ($model) {
-            $query->where('model_id', $model);
+        if ($modelId) {
+            $query->where('model_id', $modelId);
         }
-        if ($state) {
-            $query->join('cities', 'cities.id', '=', 'cars.city_id')
-                ->where('cities.state_id', $state);
+        if ($cityId) {
+            $query->where('city_id', $cityId);
         }
-        if ($city) {
-            $query->where('city_id', $city);
+        if ($stateId) {
+            $query->whereHas('city', function ($query) use ($stateId) {
+                $query->where('state_id', $stateId);
+            });
         }
-        if ($carType) {
-            $query->where('car_type_id', $carType);
+        if ($carTypeId) {
+            $query->where('car_type_id', $carTypeId);
         }
-        if ($fuelType) {
-            $query->where('fuel_type_id', $fuelType);
+        if ($fuelTypeId) {
+            $query->where('fuel_type_id', $fuelTypeId);
         }
         if ($yearFrom) {
             $query->where('year', '>=', $yearFrom);
@@ -197,6 +212,23 @@ class CarController extends Controller
         }
         if ($mileage) {
             $query->where('mileage', '<=', $mileage);
+        }
+
+        // Apply sorting
+        if (str_starts_with($sort, '-')) {
+            $sortField = substr($sort, 1);
+            $sortOrder = 'desc';
+        } else {
+            $sortField = $sort;
+            $sortOrder = 'asc';
+        }
+
+        // Validate sort field
+        $allowedSortFields = ['price', 'year', 'created_at', 'mileage'];
+        if (in_array($sortField, $allowedSortFields)) {
+            $query->orderBy($sortField, $sortOrder);
+        } else {
+            $query->orderBy('created_at', 'desc');
         }
 
         $cars = $query->paginate(15)->withQueryString();

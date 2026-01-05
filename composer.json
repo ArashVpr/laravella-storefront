@@ -8,14 +8,24 @@
     "require": {
         "php": "^8.2",
         "dedoc/scramble": "*",
+        "filament/filament": "^4.0",
+        "http-interop/http-factory-guzzle": "^1.2",
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.41",
         "laravel/jetstream": "^5.3",
+        "laravel/pennant": "^1.18",
         "laravel/pulse": "^1.4",
+        "laravel/reverb": "^1.6",
         "laravel/sanctum": "^4.0",
+        "laravel/scout": "^10.23",
         "laravel/socialite": "^5.20",
         "laravel/tinker": "^2.10.1",
-        "livewire/livewire": "^3.0"
+        "livewire/livewire": "^3.0",
+        "meilisearch/meilisearch-php": "^1.16",
+        "nuwave/lighthouse": "^6.64",
+        "sentry/sentry-laravel": "^4.20",
+        "spatie/laravel-medialibrary": "^11.0",
+        "stripe/stripe-php": "^19.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.15",
@@ -25,12 +35,12 @@
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",
         "laravel/telescope": "^5.16",
+        "mll-lab/laravel-graphiql": "^4.0",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "pestphp/pest": "*",
-        "pestphp/pest-plugin-laravel": "*",
-        "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^11.5.3"
+        "pestphp/pest": "^3.8",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "phpstan/phpstan": "^2.1"
     },
     "autoload": {
         "psr-4": {
@@ -47,7 +57,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

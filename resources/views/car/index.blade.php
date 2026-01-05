@@ -13,6 +13,7 @@
                                         <th>Title</th>
                                         <th>Date</th>
                                         <th>Published</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -20,13 +21,35 @@
                                     @forelse ($cars as $car)
                                         <tr>
                                             <td>
-                                                <img src=`{{ $car->primaryImage?->getUrl() ?? '/img/no-image.png' }}`
-                                                    alt="" class="my-cars-img-thumbnail" />
+                                                <div class="relative inline-block">
+                                                    <img src=`{{ $car->primaryImage?->getUrl() ?? '/img/no-image.png' }}`
+                                                        alt="" class="my-cars-img-thumbnail" />
+                                                    @if($car->isFeatured())
+                                                        <div class="absolute -top-1 -right-1">
+                                                            <svg class="h-5 w-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                            </svg>
+                                                        </div>
+                                                    @endif
+                                                </div>
                                             </td>
                                             <td> {{ $car->getTitle() }}
                                             </td>
                                             <td>{{ $car->formatDate() }}</td>
                                             <td>{{ $car->published_at ? 'YES' : 'NO' }}</td>
+                                            <td>
+                                                @if($car->isFeatured())
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">
+                                                        <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                        </svg>
+                                                        Featured
+                                                    </span>
+                                                    <small class="block text-gray-500 mt-1">Until {{ $car->featured_until->format('M d') }}</small>
+                                                @else
+                                                    <span class="text-gray-400 text-xs">Standard</span>
+                                                @endif
+                                            </td>
                                             <td class="">
                                                 <a href="{{ route('car.edit', $car) }}"
                                                     class="btn btn-edit inline-flex items-center">
@@ -47,6 +70,17 @@
                                                     </svg>
                                                     images
                                                 </a>
+                                                @if(!$car->isFeatured())
+                                                    <form action="{{ route('stripe.checkout', $car) }}" method="POST" class="inline-flex">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-edit inline-flex items-center" style="background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); color: white; border: none;">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 12px; margin-right: 5px">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+                                                            </svg>
+                                                            promote
+                                                        </button>
+                                                    </form>
+                                                @endif
                                                 <form action="{{ route('car.destroy', $car) }}" method="POST"
                                                     class="inline-flex">
                                                     @csrf

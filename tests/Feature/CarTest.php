@@ -1,220 +1,200 @@
 <?php
 
-namespace Tests\Feature;
-
 use App\Models\Car;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
-use Tests\TestCase;
 
-class CarTest extends TestCase
-{
-    /**
-     * A basic feature test example.
-     */
-    public function test_redirect_to_login_page_when_accessing_car_create_as_guest_user(): void
-    {
-        $response = $this->get('/car/create');
-        $response->assertRedirect('/login');
+test('guest user is redirected to login when accessing car create', function () {
+    $response = $this->get('/car/create');
+    
+    $response->assertRedirect('/login')
+        ->assertStatus(302);
+});
 
-        $response->assertStatus(302);
-    }
+test('authenticated user can access car create page', function () {
+    $user = User::factory()->create();
+    $response = $this->actingAs($user)->get('/car/create');
 
-    public function test_auth_user_can_access_car_create(): void
-    {
-        $user = User::factory()->create();
-        $response = $this->actingAs($user)->get('/car/create');
+    $response->assertOk()
+        ->assertSee('Add new car');
+});
 
-        $response->assertOk()->assertSee('Add new car');
-    }
+test('guest user cannot access my cars page', function () {
+    $response = $this->get('/car');
+    
+    $response->assertRedirect('/login')
+        ->assertFound();
+});
 
-    public function test_guest_user_cannot_access_my_cars_page(): void
-    {
-        $response = $this->get('/car');
-        $response->assertRedirect('/login');
+test('authenticated user can access my cars page', function () {
+    $user = User::factory()->create();
+    $response = $this->actingAs($user)->get('/car');
 
-        $response->assertFound();
-    }
+    $response->assertOk();
+});
 
-    public function test_auth_user_can_access_my_cars_page(): void
-    {
-        $user = User::factory()->create();
-        $response = $this->actingAs($user)->get('/car');
+test('authenticated user can create a car with images and features', function () {
+    $this->seed();
+    $user = User::factory()->create();
+    
+    $images = [
+        UploadedFile::fake()->image('1.jpg'),
+        UploadedFile::fake()->image('2.jpg'),
+        UploadedFile::fake()->image('3.jpg'),
+        UploadedFile::fake()->image('4.jpg'),
+        UploadedFile::fake()->image('5.jpg'),
+    ];
 
-        $response->assertOk();
-    }
+    $features = [
+        'air_conditioning' => '1',
+        'power_windows' => '1',
+    ];
 
-    public function test_create_car_functionality(): void
-    {
-        $this->seed();
-        $user = User::factory()->create();
-        $images = [
-            UploadedFile::fake()->image('1.jpg'),
-            UploadedFile::fake()->image('2.jpg'),
-            UploadedFile::fake()->image('3.jpg'),
-            UploadedFile::fake()->image('4.jpg'),
-            UploadedFile::fake()->image('5.jpg'),
-        ];
+    $carData = [
+        'maker_id' => '1',
+        'model_id' => '1',
+        'year' => '2023',
+        'car_type_id' => '1',
+        'price' => '10000',
+        'vin' => '12345678901234567',
+        'mileage' => '10000',
+        'fuel_type_id' => '1',
+        'city_id' => '1',
+        'address' => '123 Main St',
+        'phone' => '1234567890',
+        'description' => 'This is a test car',
+        'published_at' => '2023-10-01',
+        'features' => $features,
+        'images' => $images,
+    ];
 
-        $features = [
+    $response = $this->actingAs($user)->post(route('car.store'), $carData);
+
+    $response->assertFound()
+        ->assertRedirectToRoute('car.index')
+        ->assertSessionHas(['success']);
+
+    // Verify features are added to the database
+    $addedCar = Car::latest('id')->first();
+    $features['car_id'] = $addedCar->id;
+    $this->assertDatabaseHas('car_features', $features);
+
+    // Verify car is added to the database
+    unset($carData['features']);
+    unset($carData['images']);
+    $this->assertDatabaseHas('cars', $carData);
+});
+
+test('car creation shows validation errors for invalid data', function () {
+    $user = User::factory()->create();
+    $this->seed();
+    
+    $response = $this->actingAs($user)->post(route('car.store'), [
+        'maker_id' => '1',
+        'model_id' => '1',
+        'year' => '',
+        'car_type_id' => '1',
+        'price' => '10000',
+        'vin' => '12345678901234567',
+        'mileage' => '10000',
+        'fuel_type_id' => '1',
+        'city_id' => '1',
+        'address' => '123 Main St',
+        'phone' => '1234567890',
+        'description' => 'This is a test car',
+        'published_at' => '2023-10-01',
+        'features' => [
             'air_conditioning' => '1',
             'power_windows' => '1',
-        ];
+        ],
+    ]);
 
-        $carData = [
-            'maker_id' => '1',
-            'model_id' => '1',
-            'year' => '2023',
-            'car_type_id' => '1',
-            'price' => '10000',
-            'vin' => '12345678901234567',
-            'mileage' => '10000',
-            'fuel_type_id' => '1',
-            'city_id' => '1',
-            'address' => '123 Main St',
-            'phone' => '1234567890',
-            'description' => 'This is a test car',
-            'published_at' => '2023-10-01',
-            'features' => $features,
-            'images' => $images,
-        ];
+    $response->assertFound()
+        ->assertInvalid(['year']);
+});
 
-        $response = $this->actingAs($user)->post(route('car.store'), $carData);
-
-        $response->assertFound()
-            ->assertRedirectToRoute('car.index')
-            ->assertSessionHas(['success']);
-
-        // to check if the car_id is added to the features table
-        $addedCar = Car::latest('id')->first();
-        $features['car_id'] = $addedCar->id;
-        $this->assertDatabaseHas('car_features', $features);
-
-        // to check if the car is added to the user table
-        unset($carData['features']);
-        unset($carData['images']);
-        $this->assertDatabaseHas('cars', $carData);
-    }
-
-    public function test_create_car_errors(): void
-    {
-        $user = User::factory()->create();
-        $this->seed();
-        $response = $this->actingAs($user)->post(route('car.store'), [
-            'maker_id' => '1',
-            'model_id' => '1',
-            'year' => '',
-            'car_type_id' => '1',
-            'price' => '10000',
-            'vin' => '12345678901234567',
-            'mileage' => '10000',
-            'fuel_type_id' => '1',
-            'city_id' => '1',
-            'address' => '123 Main St',
-            'phone' => '1234567890',
-            'description' => 'This is a test car',
-            'published_at' => '2023-10-01',
-            'features' => [
-                'air_conditioning' => '1',
-                'power_windows' => '1',
-            ],
-            // 'images' => ['image1.jpg','image2.jpg'],
-        ]);
-
-        // $response->ddSession();
-        $response->assertFound()
-            ->assertInvalid(['year']);
-    }
-
-    public function test_create_car_empty_field_errors(): void
-    {
-        $user = User::factory()->create();
-        $this->seed();
-        $response = $this->actingAs($user)->post(route('car.store'), [
-            'maker_id' => '',
-            'model_id' => '',
-            'year' => '',
-            'car_type_id' => '',
-            'price' => '',
-            'vin' => '',
-            'mileage' => '',
-            'fuel_type_id' => '',
-            'city_id' => '',
-            'address' => '',
-            'phone' => '',
-            'description' => '',
-            'published_at' => '',
-            'features' => [
-                'air_conditioning' => '1',
-                'power_windows' => '1',
-            ],
-            // 'images' => ['image1.jpg','image2.jpg'],
-        ]);
-
-        // $response->ddSession();
-        $response->assertFound()
-            ->assertInvalid(['maker_id', 'model_id', 'year', 'car_type_id', 'price', 'vin', 'mileage', 'fuel_type_id', 'city_id', 'address', 'phone']);
-    }
-
-    public function test_update_car_functionality(): void
-    {
-        $this->seed();
-        $user = User::first();
-        $firstCar = $user->cars()->first();
-
-        $features = [
+test('car creation shows errors for all empty required fields', function () {
+    $user = User::factory()->create();
+    $this->seed();
+    
+    $response = $this->actingAs($user)->post(route('car.store'), [
+        'maker_id' => '',
+        'model_id' => '',
+        'year' => '',
+        'car_type_id' => '',
+        'price' => '',
+        'vin' => '',
+        'mileage' => '',
+        'fuel_type_id' => '',
+        'city_id' => '',
+        'address' => '',
+        'phone' => '',
+        'description' => '',
+        'published_at' => '',
+        'features' => [
             'air_conditioning' => '1',
             'power_windows' => '1',
-        ];
+        ],
+    ]);
 
-        $carData = [
-            'maker_id' => '1',
-            'model_id' => '1',
-            'year' => '2023',
-            'car_type_id' => '1',
-            'price' => '10000',
-            'vin' => '12345678901234567',
-            'mileage' => '10000',
-            'fuel_type_id' => '1',
-            'city_id' => '1',
-            'address' => '123 Main St',
-            'phone' => '1234567890',
-            'description' => 'This is a test car',
-            'published_at' => '2023-10-01',
-            'features' => $features,
-        ];
+    $response->assertFound()
+        ->assertInvalid(['maker_id', 'model_id', 'year', 'car_type_id', 'price', 'vin', 'mileage', 'fuel_type_id', 'city_id', 'address', 'phone']);
+});
 
-        $response = $this->actingAs($user)->put(route('car.update', $firstCar), $carData);
+test('authenticated user can update their car', function () {
+    $this->seed();
+    $user = User::first();
+    $firstCar = $user->cars()->first();
 
-        $response->assertFound()
-            ->assertRedirectToRoute('car.index')
-            ->assertSessionHas(['success']);
+    $features = [
+        'air_conditioning' => '1',
+        'power_windows' => '1',
+    ];
 
-        // to check if the car_id is updated
-        $carData['id'] = $firstCar->id;
+    $carData = [
+        'maker_id' => '1',
+        'model_id' => '1',
+        'year' => '2023',
+        'car_type_id' => '1',
+        'price' => '10000',
+        'vin' => '12345678901234567',
+        'mileage' => '10000',
+        'fuel_type_id' => '1',
+        'city_id' => '1',
+        'address' => '123 Main St',
+        'phone' => '1234567890',
+        'description' => 'This is a test car',
+        'published_at' => '2023-10-01',
+        'features' => $features,
+    ];
 
-    }
+    $response = $this->actingAs($user)->put(route('car.update', $firstCar), $carData);
 
-    public function test_delete_car_functionality(): void
-    {
-        $this->seed();
-        $user = User::first();
-        $firstCar = $user->cars()->first();
+    $response->assertFound()
+        ->assertRedirectToRoute('car.index')
+        ->assertSessionHas(['success']);
 
-        $response = $this->actingAs($user)->delete(route('car.destroy', $firstCar));
+    $carData['id'] = $firstCar->id;
+});
 
-        $response->assertFound()
-            ->assertRedirectToRoute('car.index')
-            ->assertSessionHas(['success']);
-    }
+test('authenticated user can delete their car', function () {
+    $this->seed();
+    $user = User::first();
+    $firstCar = $user->cars()->first();
 
-    public function test_access_forbidden_to_someone_else_car(): void
-    {
-        $this->seed();
-        $userOneCar = User::find(1)->cars()->first();
-        $userTwo = User::find(2);
-        $response = $this->actingAs($userTwo)->get(route('car.edit', $userOneCar));
+    $response = $this->actingAs($user)->delete(route('car.destroy', $firstCar));
 
-        $response->assertForbidden();
-    }
-}
+    $response->assertFound()
+        ->assertRedirectToRoute('car.index')
+        ->assertSessionHas(['success']);
+});
+
+test('user cannot access another users car for editing', function () {
+    $this->seed();
+    $userOneCar = User::find(1)->cars()->first();
+    $userTwo = User::find(2);
+    
+    $response = $this->actingAs($userTwo)->get(route('car.edit', $userOneCar));
+
+    $response->assertForbidden();
+});

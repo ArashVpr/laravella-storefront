@@ -1,28 +1,17 @@
 <?php
 
-namespace Tests\Feature;
-
 use App\Models\User;
-use Tests\TestCase;
 
-class WatchlistTest extends TestCase
-{
-    /**
-     * A basic feature test example.
-     */
-    public function test_guest_user_cannot_access_watchlist_page(): void
-    {
-        $response = $this->get('/watchlist');
-        $response->assertRedirect('/login');
+test('guest user cannot access watchlist page', function () {
+    $response = $this->get('/watchlist');
+    
+    $response->assertRedirect('/login')
+        ->assertFound();
+});
 
-        $response->assertFound();
-    }
+test('authenticated user can access watchlist page', function () {
+    $user = User::factory()->create();
+    $response = $this->actingAs($user)->get('/watchlist');
 
-    public function test_auth_user_can_access_watchlist_page(): void
-    {
-        $user = User::factory()->create();
-        $response = $this->actingAs($user)->get('/watchlist');
-
-        $response->assertOk();
-    }
-}
+    $response->assertOk();
+});

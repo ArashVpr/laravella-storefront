@@ -1,0 +1,279 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"Indicates what fields are available at the top level of a query operation."
+type Query {
+    # User Queries
+    "Find a single user by ID."
+    user(id: ID! @eq): User @find
+
+    "List multiple users with pagination."
+    users(
+      name: String @where(operator: "like")
+      first: Int = 15
+      page: Int
+    ): [User!]! @paginate
+
+    # Car Queries
+    "Find a single car by ID."
+    car(id: ID! @eq): Car @find
+
+    "List all cars with filtering and pagination."
+    cars(
+      make: String @where(operator: "like")
+      model: String @where(operator: "like")
+      minPrice: Float @where(key: "price", operator: ">=")
+      maxPrice: Float @where(key: "price", operator: "<=")
+      minYear: Int @where(key: "year", operator: ">=")
+      maxYear: Int @where(key: "year", operator: "<=")
+      mileageMax: Int @where(key: "mileage", operator: "<=")
+      transmission: String @eq
+      fuelType: String @eq
+      orderBy: [OrderByClause!] @orderBy
+      first: Int = 15
+      page: Int
+    ): [Car!]! @paginate
+
+    "Search cars by keyword."
+    searchCars(
+      search: String
+      minPrice: Float
+      maxPrice: Float
+      minYear: Int
+      maxYear: Int
+      first: Int = 15
+      page: Int
+    ): [Car!]! @field(resolver: "App\\GraphQL\\Queries\\SearchCars")
+
+    # Watchlist Queries
+    "Get user's watchlist cars."
+    myWatchlist(
+      first: Int = 15
+      page: Int
+    ): [Car!]! @field(resolver: "App\\GraphQL\\Queries\\MyWatchlist") @guard
+
+    # Stats
+    "Get marketplace statistics."
+    stats: Stats
+}
+
+"Order by clause for sorting."
+input OrderByClause {
+    column: String!
+    order: SortOrder!
+}
+
+"Sort order."
+enum SortOrder {
+    ASC
+    DESC
+}
+
+"Mutation operations."
+type Mutation {
+    # Auth Mutations
+    "Register a new user."
+    register(input: RegisterInput! @spread): AuthPayload @field(resolver: "App\\GraphQL\\Mutations\\Register")
+    
+    "Login a user."
+    login(input: LoginInput! @spread): AuthPayload @field(resolver: "App\\GraphQL\\Mutations\\Login")
+    
+    "Logout the current user."
+    logout: LogoutResponse @guard @field(resolver: "App\\GraphQL\\Mutations\\Logout")
+
+    # Car Mutations
+    "Create a new car listing."
+    createCar(input: CreateCarInput! @spread): Car @guard @field(resolver: "App\\GraphQL\\Mutations\\CreateCar")
+    
+    "Update an existing car listing."
+    updateCar(input: UpdateCarInput! @spread): Car @guard @field(resolver: "App\\GraphQL\\Mutations\\UpdateCar")
+    
+    "Delete a car listing."
+    deleteCar(id: ID!): DeleteResponse @guard @field(resolver: "App\\GraphQL\\Mutations\\DeleteCar")
+
+    # Watchlist Mutations
+    "Add a car to watchlist."
+    addToWatchlist(carId: ID!): WatchlistResponse @guard @field(resolver: "App\\GraphQL\\Mutations\\AddToWatchlist")
+    
+    "Remove a car from watchlist."
+    removeFromWatchlist(carId: ID!): WatchlistResponse @guard @field(resolver: "App\\GraphQL\\Mutations\\RemoveFromWatchlist")
+    
+    "Toggle car in watchlist."
+    toggleWatchlist(carId: ID!): WatchlistResponse @guard @field(resolver: "App\\GraphQL\\Mutations\\ToggleWatchlist")
+
+    # Profile Mutations
+    "Update user profile."
+    updateProfile(input: UpdateProfileInput! @spread): User @guard @field(resolver: "App\\GraphQL\\Mutations\\UpdateProfile")
+}
+
+# Input Types
+"Input for user registration."
+input RegisterInput {
+    name: String! @rules(apply: ["required", "string", "max:255"])
+    email: String! @rules(apply: ["required", "email", "unique:users,email"])
+    password: String! @rules(apply: ["required", "min:8", "confirmed"])
+    password_confirmation: String!
+}
+
+"Input for user login."
+input LoginInput {
+    email: String! @rules(apply: ["required", "email"])
+    password: String! @rules(apply: ["required"])
+    remember: Boolean
+}
+
+"Input for creating a car."
+input CreateCarInput {
+    make: String! @rules(apply: ["required", "string", "max:255"])
+    model: String! @rules(apply: ["required", "string", "max:255"])
+    year: Int! @rules(apply: ["required", "integer", "min:1900", "max:2026"])
+    price: Float! @rules(apply: ["required", "numeric", "min:0"])
+    mileage: Int! @rules(apply: ["required", "integer", "min:0"])
+    transmission: String! @rules(apply: ["required", "in:automatic,manual,semi-automatic"])
+    fuelType: String! @rules(apply: ["required", "in:petrol,diesel,electric,hybrid"])
+    description: String @rules(apply: ["nullable", "string", "max:5000"])
+    color: String @rules(apply: ["nullable", "string", "max:50"])
+    vin: String @rules(apply: ["nullable", "string", "max:17"])
+    engineSize: Float @rules(apply: ["nullable", "numeric", "min:0"])
+    doors: Int @rules(apply: ["nullable", "integer", "min:2", "max:7"])
+    seats: Int @rules(apply: ["nullable", "integer", "min:2", "max:9"])
+    phoneNumber: String @rules(apply: ["required", "string", "max:20"])
+}
+
+"Input for updating a car."
+input UpdateCarInput {
+    id: ID! @rules(apply: ["required"])
+    make: String @rules(apply: ["string", "max:255"])
+    model: String @rules(apply: ["string", "max:255"])
+    year: Int @rules(apply: ["integer", "min:1900", "max:2026"])
+    price: Float @rules(apply: ["numeric", "min:0"])
+    mileage: Int @rules(apply: ["integer", "min:0"])
+    transmission: String @rules(apply: ["in:automatic,manual,semi-automatic"])
+    fuelType: String @rules(apply: ["in:petrol,diesel,electric,hybrid"])
+    description: String @rules(apply: ["nullable", "string", "max:5000"])
+    color: String @rules(apply: ["nullable", "string", "max:50"])
+    engineSize: Float @rules(apply: ["nullable", "numeric", "min:0"])
+    doors: Int @rules(apply: ["nullable", "integer", "min:2", "max:7"])
+    seats: Int @rules(apply: ["nullable", "integer", "min:2", "max:9"])
+    phoneNumber: String @rules(apply: ["string", "max:20"])
+    isActive: Boolean
+}
+
+"Input for updating user profile."
+input UpdateProfileInput {
+    name: String @rules(apply: ["string", "max:255"])
+    email: String @rules(apply: ["email", "unique:users,email"])
+    current_password: String @rules(apply: ["required_with:password"])
+    password: String @rules(apply: ["min:8", "confirmed"])
+    password_confirmation: String
+}
+
+# Response Types
+"Authentication payload with user and token."
+type AuthPayload {
+    user: User!
+    token: String!
+    expiresAt: DateTime
+}
+
+"Logout response."
+type LogoutResponse {
+    message: String!
+    success: Boolean!
+}
+
+"Watchlist mutation response."
+type WatchlistResponse {
+    message: String!
+    success: Boolean!
+    car: Car
+    inWatchlist: Boolean!
+}
+
+"Generic delete response."
+type DeleteResponse {
+    message: String!
+    success: Boolean!
+}
+
+"Marketplace statistics."
+type Stats {
+    totalCars: Int!
+    totalUsers: Int!
+    averagePrice: Float
+    newestListings: [Car!]!
+    popularMakes: [MakeCount!]!
+}
+
+"Make with count."
+type MakeCount {
+    make: String!
+    count: Int!
+}
+
+# Core Types
+"Account of a person who uses this application."
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    email_verified_at: DateTime
+    phone_number: String
+    is_premium: Boolean!
+    created_at: DateTime!
+    updated_at: DateTime!
+    
+    "Cars listed by this user."
+    cars(
+      first: Int = 10
+      page: Int
+    ): [Car!]! @hasMany
+    
+    "Cars in user's watchlist."
+    watchlist(
+      first: Int = 10
+      page: Int
+    ): [Car!]! @belongsToMany
+}
+
+"A car listing in the marketplace."
+type Car {
+    id: ID!
+    make: String!
+    model: String!
+    year: Int!
+    price: Float!
+    mileage: Int!
+    transmission: String!
+    fuel_type: String!
+    description: String
+    color: String
+    vin: String
+    engine_size: Float
+    doors: Int
+    seats: Int
+    phone_number: String!
+    views: Int!
+    created_at: DateTime!
+    updated_at: DateTime!
+    
+    "User who listed this car."
+    owner: User! @belongsTo
+    
+    "Images for this car."
+    images: [CarImage!]!
+    
+    "Check if current user has this in watchlist."
+    inWatchlist: Boolean
+}
+
+"Car image."
+type CarImage {
+    id: ID!
+    url: String!
+    thumbnail: String
+    order: Int
+}
+
+# Pagination is handled by Lighthouse's built-in @paginate directive
+# which automatically provides paginatorInfo and data fields

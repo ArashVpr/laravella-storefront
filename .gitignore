@@ -9,6 +9,7 @@
 .env
 .env.backup
 .env.production
+.env.session.bak
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
@@ -17,6 +18,19 @@ npm-debug.log
 yarn-error.log
 /auth.json
 /.fleet
+
+# Lighthouse GraphQL IDE helpers
+schema-directives.graphql
+programmatic-types.graphql
+_lighthouse_ide_helper.php
+
+# Lighthouse CI reports
+.lighthouseci/
+lighthouse-reports/
+lighthouse-report.html
+lighthouse-test.json
+lighthouserc-test.json
+
 /.idea
 /.nova
 /.vscode
@@ -31,9 +45,18 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
 *.bak
 *.mdb
 *.log
+*.lock.mdb
 
 meilisearch
 instance-uid
@@ -43,3 +66,14 @@ VERSION
 *.md
 lighthouse-reports/
 
+# Meilisearch
+data.ms/
+
+# Filament published assets (generated)
+/public/js/filament/
+/public/css/filament/
+/public/fonts/filament/
+
+
+/PWA images/
+/public/

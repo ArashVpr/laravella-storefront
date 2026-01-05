@@ -8,6 +8,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -28,7 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
@@ -38,12 +39,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'google_id',
         'facebook_id',
         'email_verified_at',
+        'is_admin',
+        'is_premium',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -55,7 +58,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * The accessors to append to the model's array form.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $appends = [
         'profile_photo_url',
@@ -71,12 +74,19 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
+            'is_premium' => 'boolean',
         ];
     }
 
     /**
-     * @return BelongsToMany<Car, $this>
+     * Check if the user is an admin.
      */
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
+    }
+
     public function favoriteCars(): BelongsToMany
     {
         return $this->belongsToMany(Car::class, 'favorite_cars')
@@ -84,12 +94,19 @@ class User extends Authenticatable implements MustVerifyEmail
             ->orderBy('favorite_cars.id', 'desc');
     }
 
-    /**
-     * @return HasMany<Car, $this>
-     */
     public function cars(): HasMany
     {
         return $this->hasMany(Car::class);
+    }
+
+    public function notificationPreferences(): HasOne
+    {
+        return $this->hasOne(NotificationPreference::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 
     public function isOauthUser(): bool

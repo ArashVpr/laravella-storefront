@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\CarType;
+use Illuminate\Support\Facades\DB;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,7 +21,10 @@ class SelectCarType extends Component
     public function __construct()
     {
         $this->carTypes = Cache::rememberForever('carTypes', function () {
-            return CarType::orderBy('name')->get();
+            return CarType::select(DB::raw('MIN(id) as id'), 'name')
+                ->groupBy('name')
+                ->orderBy('name')
+                ->get();
         });
     }
 

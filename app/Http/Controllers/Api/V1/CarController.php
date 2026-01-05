@@ -149,8 +149,97 @@ class CarController extends Controller
     /**
      * Search cars with advanced filters.
      */
-    public function search(Request $request): CarCollection
+    public function search(Request $request): JsonResponse
     {
-        return $this->index($request);
+        $query = $request->input('q', '');
+        
+        // Build Eloquent query
+        $carQuery = Car::query()->with(['maker', 'model', 'fuelType', 'carType', 'city.state', 'images', 'owner']);
+
+        // Apply text search if provided
+        if (!empty($query)) {
+            $carQuery->where(function ($carQuery) use ($query) {
+                $carQuery->where('description', 'like', "%{$query}%")
+                    ->orWhereHas('maker', function ($q) use ($query) {
+                        $q->where('name', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('model', function ($q) use ($query) {
+                        $q->where('name', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('fuelType', function ($q) use ($query) {
+                        $q->where('name', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('carType', function ($q) use ($query) {
+                        $q->where('name', 'like', "%{$query}%");
+                    })
+                    ->orWhere('year', 'like', "%{$query}%");
+            });
+        }
+
+        // Apply filters
+        if ($request->filled('maker')) {
+            $carQuery->whereHas('maker', function ($q) use ($request) {
+                $q->where('name', $request->maker);
+            });
+        }
+
+        if ($request->filled('year')) {
+            $carQuery->where('year', $request->year);
+        }
+
+        if ($request->filled('min_price')) {
+            $carQuery->where('price', '>=', $request->min_price);
+        }
+
+        if ($request->filled('max_price')) {
+            $carQuery->where('price', '<=', $request->max_price);
+        }
+
+        if ($request->filled('fuel_type')) {
+            $carQuery->whereHas('fuelType', function ($q) use ($request) {
+                $q->where('name', $request->fuel_type);
+            });
+        }
+
+        if ($request->filled('city')) {
+            $carQuery->whereHas('city', function ($q) use ($request) {
+                $q->where('name', $request->city);
+            });
+        }
+
+        if ($request->filled('state')) {
+            $carQuery->whereHas('city.state', function ($q) use ($request) {
+                $q->where('name', $request->state);
+            });
+        }
+
+        if ($request->filled('is_featured')) {
+            $carQuery->where('is_featured', $request->boolean('is_featured'));
+        }
+
+        // Apply sorting
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortOrder = $request->input('sort_order', 'desc');
+        
+        $allowedSortFields = ['price', 'year', 'created_at', 'mileage'];
+        if (in_array($sortBy, $allowedSortFields)) {
+            $carQuery->orderBy($sortBy, $sortOrder);
+        } else {
+            $carQuery->orderBy('created_at', 'desc');
+        }
+
+        // Pagination
+        $perPage = (int) min($request->input('per_page', 20), 100);
+        $results = $carQuery->paginate($perPage);
+
+        return response()->json([
+            'data' => CarResource::collection($results->items()),
+            'meta' => [
+                'current_page' => $results->currentPage(),
+                'per_page' => $results->perPage(),
+                'total' => $results->total(),
+                'last_page' => $results->lastPage(),
+            ],
+        ]);
     }
 }
