@@ -261,7 +261,7 @@ jobs:
           \App\Models\Car::create([
             'maker_id' => 1, 'model_id' => 1, 'user_id' => 2, 'car_type_id' => 1, 'fuel_type_id' => 1, 'city_id' => 1,
             'year' => 2020, 'price' => 20000, 'mileage' => 50000, 'vin' => 'TESTVIN123', 'address' => '123 Test St',
-            'phone' => '555-1234', 'description' => 'Test car'
+            'phone' => '555-1234', 'description' => 'Test car', 'published_at' => now()
           ]);
           "
 
