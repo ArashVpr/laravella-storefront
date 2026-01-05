@@ -30,3 +30,16 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+*.bak
+*.mdb
+*.log
+
+meilisearch
+instance-uid
+VERSION
+*.graphql
+*.txt
+*.md
+lighthouse-reports/
+
