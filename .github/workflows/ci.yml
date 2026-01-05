@@ -224,11 +224,44 @@ jobs:
           echo "DB_DATABASE=testing" >> .env
           echo "DB_USERNAME=root" >> .env
           echo "DB_PASSWORD=password" >> .env
+          echo "REDIS_HOST=127.0.0.1" >> .env
+          echo "REDIS_PORT=6379" >> .env
           echo "APP_URL=http://127.0.0.1:8000" >> .env
+          echo "SESSION_DRIVER=file" >> .env
+          echo "CACHE_STORE=file" >> .env
+          echo "QUEUE_CONNECTION=sync" >> .env
+          echo "BROADCAST_CONNECTION=null" >> .env
+          echo "REVERB_APP_ID=" >> .env
+          echo "REVERB_APP_KEY=" >> .env
+          echo "REVERB_APP_SECRET=" >> .env
+          echo "MAIL_MAILER=log" >> .env
       
       - name: Run migrations
-        run: php artisan migrate --force --seed
-      
+        run: php artisan migrate --force
+
+      - name: Create minimal test data
+        run: |
+          php artisan tinker --execute="
+          \App\Models\Maker::create(['name' => 'Toyota']);
+          \App\Models\Models::create(['name' => 'Corolla', 'maker_id' => 1]);
+          \App\Models\CarType::create(['name' => 'Sedan']);
+          \App\Models\FuelType::create(['name' => 'Gasoline']);
+          \App\Models\State::create(['name' => 'California']);
+          \App\Models\City::create(['name' => 'Los Angeles', 'state_id' => 1]);
+          \App\Models\User::create(['name' => 'Test User', 'email' => 'test@example.com', 'password' => bcrypt('password'), 'email_verified_at' => now()]);
+          \App\Models\Car::create([
+            'maker_id' => 1, 'model_id' => 1, 'user_id' => 1, 'car_type_id' => 1, 'fuel_type_id' => 1, 'city_id' => 1,
+            'year' => 2020, 'price' => 20000, 'mileage' => 50000, 'vin' => 'TESTVIN123', 'address' => '123 Test St',
+            'phone' => '555-1234', 'description' => 'Test car'
+          ]);
+          "
+
+      - name: Optimize Laravel for testing
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -251,15 +284,23 @@ jobs:
         run: |
           php artisan serve --host=127.0.0.1 --port=8000 > /tmp/laravel.log 2>&1 &
           echo $! > /tmp/laravel.pid
+          sleep 2
+          echo "Laravel server started with PID $(cat /tmp/laravel.pid)"
+          echo "Checking if server is responding..."
+          curl -s -o /dev/null -w "Server response: %{http_code}\n" http://127.0.0.1:8000 || echo "Server not responding yet"
         env:
           APP_ENV: testing
       
       - name: Wait for server to be ready
         run: |
           set -x
-          timeout 60 bash -c "until curl --retry 10 --retry-delay 2 --retry-connrefused -f http://127.0.0.1:8000; do sleep 1; done" || {
-            echo "Server failed to start. Laravel log:"
+          timeout 60 bash -c "until curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000 | grep -q 200; do sleep 2; echo 'Waiting for server...'; done" || {
+            echo "Server failed to respond with HTTP 200. Laravel log:"
             cat /tmp/laravel.log
+            echo "Last few lines of Laravel log:"
+            tail -20 /tmp/laravel.log
+            echo "Testing direct connection:"
+            curl -v http://127.0.0.1:8000 2>&1 | head -20
             exit 1
           }
       
