@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController
 {
-    public function create()
+    public function create(): \Illuminate\View\View
     {
         return view('auth.login');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         // Get Validated data
         $credentials = $request->validate([
@@ -37,7 +37,7 @@ class LoginController
         ])->onlyInput('email');
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): \Illuminate\Http\RedirectResponse
     {
         Auth::logout();
         // Regenerate session

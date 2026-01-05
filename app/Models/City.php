@@ -13,11 +13,17 @@ class City extends Model
         'state_id',
     ];
 
+    /**
+     * @return BelongsTo<State, $this>
+     */
     public function state(): BelongsTo
     {
         return $this->belongsTo(State::class);
     }
 
+    /**
+     * @return HasMany<Car, $this>
+     */
     public function cars(): HasMany
     {
         return $this->hasMany(Car::class);

@@ -11,11 +11,17 @@ class State extends Model
         'name',
     ];
 
+    /**
+     * @return HasMany<Car, $this>
+     */
     public function cars(): HasMany
     {
         return $this->hasMany(Car::class);
     }
 
+    /**
+     * @return HasMany<City, $this>
+     */
     public function city(): HasMany
     {
         return $this->hasMany(City::class);

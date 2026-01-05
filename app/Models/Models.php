@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Models extends Model
 {
+    /** @use HasFactory<\Database\Factories\ModelsFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -16,11 +17,17 @@ class Models extends Model
         'maker_id',
     ];
 
+    /**
+     * @return BelongsTo<Maker, $this>
+     */
     public function maker(): BelongsTo
     {
         return $this->belongsTo(Maker::class);
     }
 
+    /**
+     * @return HasMany<Car, $this>
+     */
     public function cars(): HasMany
     {
         return $this->hasMany(Car::class);

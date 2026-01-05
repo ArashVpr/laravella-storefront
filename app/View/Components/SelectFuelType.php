@@ -11,6 +11,7 @@ use Illuminate\View\Component;
 
 class SelectFuelType extends Component
 {
+    /** @var Collection<int, FuelType> */
     public Collection $fuelTypes;
 
     /**

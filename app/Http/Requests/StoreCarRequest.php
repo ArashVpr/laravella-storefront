@@ -39,7 +39,7 @@ class StoreCarRequest extends FormRequest
             'features' => 'array',
             'features.*' => 'string',
             'images' => 'array',
-            'images.*' => File::image()->max(2048),
+            'images.*' => File::image()->max(2048)->toValidationRule(),
         ];
     }
 

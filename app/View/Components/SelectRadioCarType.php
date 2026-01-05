@@ -10,6 +10,7 @@ use Illuminate\View\Component;
 
 class SelectRadioCarType extends Component
 {
+    /** @var Collection<int, CarType> */
     public Collection $radioCarTypes;
 
     /**

@@ -9,12 +9,12 @@ use Illuminate\Validation\Rules\Password;
 
 class ProfileController
 {
-    public function index()
+    public function index(): \Illuminate\View\View
     {
         return view('profile.index', ['user' => Auth::user()]);
     }
 
-    public function update(Request $request)
+    public function update(Request $request): \Illuminate\Http\RedirectResponse
     {
         $user = $request->user();
 
@@ -43,7 +43,7 @@ class ProfileController
         return redirect()->route('profile.index')->with('success', $success);
     }
 
-    public function updatePassword(Request $request)
+    public function updatePassword(Request $request): \Illuminate\Http\RedirectResponse
     {
         // Validate current password and new password
         $request->validate([

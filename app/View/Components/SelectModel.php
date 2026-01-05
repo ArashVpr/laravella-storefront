@@ -11,6 +11,7 @@ use Illuminate\View\Component;
 
 class SelectModel extends Component
 {
+    /** @var Collection<int, Models> */
     public Collection $models;
 
     /**

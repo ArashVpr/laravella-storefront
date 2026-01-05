@@ -27,6 +27,8 @@ class ProcessCarImages implements ShouldQueue
 
     /**
      * Create a new job instance.
+     *
+     * @param array<int, string> $uploadedImages
      */
     public function __construct(
         public Car $car,

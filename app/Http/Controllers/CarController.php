@@ -16,7 +16,7 @@ class CarController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request): \Illuminate\View\View
     {
         $request->session()->get('success');
         $cars = Auth::user()
@@ -31,7 +31,7 @@ class CarController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): \Illuminate\Http\RedirectResponse|\Illuminate\View\View
     {
         if (! Gate::allows('create', Car::class)) {
             return redirect()->route('profile.index')
@@ -44,7 +44,7 @@ class CarController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCarRequest $request)
+    public function store(StoreCarRequest $request): \Illuminate\Http\RedirectResponse
     {
 
         // Get request data
@@ -75,7 +75,7 @@ class CarController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Car $car)
+    public function show(Car $car): \Illuminate\View\View
     {
         return view('car.show', ['car' => $car]);
     }
@@ -83,7 +83,7 @@ class CarController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Car $car)
+    public function edit(Car $car): \Illuminate\View\View
     {
         Gate::authorize('update', $car);
 
@@ -93,7 +93,7 @@ class CarController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreCarRequest $request, Car $car)
+    public function update(StoreCarRequest $request, Car $car): \Illuminate\Http\RedirectResponse
     {
         // Check if the authenticated user is the owner of the car
         if ($car->user_id !== Auth::id()) {
@@ -128,7 +128,7 @@ class CarController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Car $car)
+    public function destroy(Car $car): \Illuminate\Http\RedirectResponse
     {
         Gate::authorize('delete', $car);
 
@@ -137,7 +137,7 @@ class CarController extends Controller
         return redirect()->route('car.index')->with('success', 'Car deleted successfully');
     }
 
-    public function search(Request $request)
+    public function search(Request $request): \Illuminate\View\View
     {
         $maker = $request->integer('maker_id');
         $model = $request->integer('model_id');
@@ -204,14 +204,14 @@ class CarController extends Controller
         return view('car.search', ['cars' => $cars]);
     }
 
-    public function carImages(Car $car)
+    public function carImages(Car $car): \Illuminate\View\View
     {
         Gate::authorize('update', $car);
 
         return view('car.images', ['car' => $car]);
     }
 
-    public function updateImages(Request $request, Car $car)
+    public function updateImages(Request $request, Car $car): \Illuminate\Http\RedirectResponse
     {
         Gate::authorize('update', $car);
 
@@ -232,6 +232,7 @@ class CarController extends Controller
         // }
 
         // Select images to delete
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\CarImage> $imagesToDelete */
         $imagesToDelete = $car->images()->whereIn('id', $deleteImages)->get();
 
         // Iterate over images to delete and delete them from file system
@@ -254,7 +255,7 @@ class CarController extends Controller
             ->with('success', 'Car images were updated');
     }
 
-    public function addImages(Request $request, Car $car)
+    public function addImages(Request $request, Car $car): \Illuminate\Http\RedirectResponse
     {
         Gate::authorize('update', $car);
 
@@ -283,7 +284,7 @@ class CarController extends Controller
             ->with('success', 'New images were added');
     }
 
-    public function showPhone(Car $car)
+    public function showPhone(Car $car): \Illuminate\Http\JsonResponse
     {
         return response()->json(['phone' => $car->phone]);
     }

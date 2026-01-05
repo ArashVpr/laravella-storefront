@@ -11,6 +11,7 @@ use Illuminate\View\Component;
 
 class SelectCarType extends Component
 {
+    /** @var Collection<int, CarType> */
     public Collection $carTypes;
 
     /**

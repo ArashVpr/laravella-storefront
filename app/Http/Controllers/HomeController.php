@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(): \Illuminate\View\View
     {
         $cars = Cache::remember('home-cars', 60, function () {
             return Car::where('created_at', '<', now())

@@ -12,12 +12,12 @@ use Illuminate\Validation\Rules\Password as PasswordRule;
 
 class PasswordResetController
 {
-    public function showForgotPassword()
+    public function showForgotPassword(): \Illuminate\View\View
     {
         return view('auth.forgot-password');
     }
 
-    public function forgotPassword(Request $request)
+    public function forgotPassword(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
             'email' => 'required|string|email',
@@ -35,12 +35,12 @@ class PasswordResetController
             ->withInput($request->only('email'));
     }
 
-    public function showResetPassword()
+    public function showResetPassword(): \Illuminate\View\View
     {
         return view('auth.reset-password');
     }
 
-    public function resetPassword(Request $request)
+    public function resetPassword(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
             'token' => ['required'],

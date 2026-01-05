@@ -11,12 +11,12 @@ use Illuminate\Validation\Rules\Password;
 
 class SignupController extends Controller
 {
-    public function create()
+    public function create(): \Illuminate\View\View
     {
         return view('auth.signup');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
             'name' => 'required|string|max:255',

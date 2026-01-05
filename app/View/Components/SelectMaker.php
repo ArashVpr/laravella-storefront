@@ -11,6 +11,7 @@ use Illuminate\View\Component;
 
 class SelectMaker extends Component
 {
+    /** @var Collection<int, Maker> */
     public Collection $makers;
 
     /**

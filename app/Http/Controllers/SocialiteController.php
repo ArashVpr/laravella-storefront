@@ -8,14 +8,14 @@ use Laravel\Socialite\Facades\Socialite;
 
 class SocialiteController
 {
-    public function redirectToProvider($provider)
+    public function redirectToProvider(string $provider): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         // Implement proper redirect to oauth provider
         return Socialite::driver($provider)->redirect();
 
     }
 
-    public function handleCallback($provider)
+    public function handleCallback(string $provider): \Illuminate\Http\RedirectResponse
     {
         // Put everything in try catch for safety reasons
         try {

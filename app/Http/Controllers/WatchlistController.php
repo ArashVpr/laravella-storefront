@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class WatchlistController
 {
-    public function index()
+    public function index(): \Illuminate\View\View
     {
         // To render cars in watchlist for authenticated users
         $cars = Auth::user()
@@ -18,7 +18,7 @@ class WatchlistController
         return view('watchlist.index', ['cars' => $cars]);
     }
 
-    public function storeDestroy(Car $car)
+    public function storeDestroy(Car $car): \Illuminate\Http\JsonResponse
     {
         // Get the authenticated user
         $user = Auth::user();

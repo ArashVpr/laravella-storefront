@@ -21,6 +21,9 @@ class SearchCar extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.search-car');
+        /** @var view-string $viewName */
+        $viewName = 'components.search-car';
+
+        return view($viewName);
     }
 }

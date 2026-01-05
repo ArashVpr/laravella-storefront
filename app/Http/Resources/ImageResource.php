@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\CarImage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin CarImage
+ */
 class ImageResource extends JsonResource
 {
     /**

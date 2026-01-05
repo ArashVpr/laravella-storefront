@@ -11,6 +11,7 @@ use Illuminate\View\Component;
 
 class SelectCity extends Component
 {
+    /** @var Collection<int, City> */
     public Collection $cities;
 
     /**

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class EmailVerifyController
 {
-    public function verify(EmailVerificationRequest $request)
+    public function verify(EmailVerificationRequest $request): \Illuminate\Http\RedirectResponse
     {
         // Will be called when user clicks on the verification link in email
         $request->fulfill();
@@ -16,14 +16,14 @@ class EmailVerifyController
         return redirect()->route('homepage')->with('success', 'Email verified successfully. You can now add new cars!');
     }
 
-    public function notice()
+    public function notice(): \Illuminate\View\View
     {
         // Will be called if we setup verified middleware, so that only
         // verified users to be able to access certain routes
         return view('auth.verify-email');
     }
 
-    public function send(Request $request)
+    public function send(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->user()->sendEmailVerificationNotification();
 

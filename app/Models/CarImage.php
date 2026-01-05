@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 class CarImage extends Model
 {
+    /** @use HasFactory<\Database\Factories\CarImageFactory> */
     use HasFactory;
 
     public $timestamps = false;
@@ -18,12 +19,15 @@ class CarImage extends Model
         'image_path',
     ];
 
+    /**
+     * @return BelongsTo<Car, $this>
+     */
     public function car(): BelongsTo
     {
         return $this->belongsTo(Car::class);
     }
 
-    public function getUrl()
+    public function getUrl(): string
     {
         // bring the image from database
         if (str_starts_with($this->image_path, 'http')) {

@@ -11,6 +11,7 @@ use Illuminate\View\Component;
 
 class SelectState extends Component
 {
+    /** @var Collection<int, State> */
     public Collection $states;
 
     /**

@@ -8,17 +8,24 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Maker extends Model
 {
+    /** @use HasFactory<\Database\Factories\MakerFactory> */
     use HasFactory;
 
     protected $fillable = ['name'];
 
+    /**
+     * @return HasMany<Car, $this>
+     */
     public function cars(): HasMany
     {
         return $this->hasMany(Car::class);
     }
 
+    /**
+     * @return HasMany<Models, $this>
+     */
     public function models(): HasMany
     {
-        return $this->hasMany(Model::class);
+        return $this->hasMany(Models::class);
     }
 }
