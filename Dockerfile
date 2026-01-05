@@ -1,7 +1,14 @@
 # Multi-stage Dockerfile for Laravel 12 Production
 
 # Stage 1: Composer Dependencies
-FROM composer:2 AS composer
+FROM php:8.3-cli-alpine AS composer
+
+# Install system dependencies and PHP extensions
+RUN apk add --no-cache $PHPIZE_DEPS \
+    && docker-php-ext-install pcntl \
+    && apk del $PHPIZE_DEPS \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install \

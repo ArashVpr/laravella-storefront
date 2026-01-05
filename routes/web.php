@@ -49,18 +49,21 @@ Route::view('/cookies', 'components.legal.cookies')->name('cookies');
 
 Route::get('/docs', function () {
     $viewName = 'components.documentation';
+
     /** @var view-string $viewName */
     return view($viewName);
 })->name('docs');
 
 Route::get('/docs-fr', function () {
     $viewName = 'components.documentation-fr';
+
     /** @var view-string $viewName */
     return view($viewName);
 })->name('docs.fr');
 
 Route::get('erd', function () {
     $viewName = 'components.db-schema';
+
     /** @var view-string $viewName */
     return view($viewName);
 })->name('erd');
@@ -69,6 +72,7 @@ Route::get('erd', function () {
 if (app()->environment('local')) {
     Route::get('/pulse', function () {
         $viewName = 'pulse::dashboard';
+
         /** @var view-string $viewName */
         return view($viewName);
     })->name('pulse');
