@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Models extends Model
 {
+    /** @phpstan-ignore-next-line */
     use HasFactory;
 
     protected $fillable = [

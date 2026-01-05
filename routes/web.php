@@ -48,19 +48,13 @@ Route::view('/mentions-legales', 'components.legal.mentions-legales')->name('men
 Route::view('/cookies', 'components.legal.cookies')->name('cookies');
 
 Route::get('/docs', function () {
-    /** @var view-string $viewName */
-    $viewName = 'components.documentation';
-    return view($viewName);
+    return view(/** @phpstan-ignore-next-line */ 'components.documentation');
 })->name('docs');
 Route::get('/docs-fr', function () {
-    /** @var view-string $viewName */
-    $viewName = 'components.documentation-fr';
-    return view($viewName);
+    return view(/** @phpstan-ignore-next-line */ 'components.documentation-fr');
 })->name('docs.fr');
 Route::get('erd', function () {
-    /** @var view-string $viewName */
-    $viewName = 'components.db-schema';
-    return view($viewName);
+    return view(/** @phpstan-ignore-next-line */ 'components.db-schema');
 })->name('erd');
 
 // Monitoring dashboards (local environment only for now)

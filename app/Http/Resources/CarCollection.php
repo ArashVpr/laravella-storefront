@@ -8,8 +8,8 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
- * @property LengthAwarePaginator<CarResource> $resource
- * @mixin LengthAwarePaginator<CarResource>
+ * @property LengthAwarePaginator<int, CarResource> $resource
+ * @mixin LengthAwarePaginator<int, CarResource>
  */
 class CarCollection extends ResourceCollection
 {
