@@ -248,13 +248,20 @@ jobs:
         run: npx playwright install --with-deps
       
       - name: Start Laravel server
-        run: php artisan serve --host=127.0.0.1 --port=8000 &
+        run: |
+          php artisan serve --host=127.0.0.1 --port=8000 > /tmp/laravel.log 2>&1 &
+          echo $! > /tmp/laravel.pid
         env:
           APP_ENV: testing
       
       - name: Wait for server to be ready
         run: |
-          timeout 30 bash -c 'until curl -f http://127.0.0.1:8000; do sleep 1; done'
+          set -x
+          timeout 60 bash -c 'until curl --retry 10 --retry-delay 2 --retry-connrefused -f http://127.0.0.1:8000; do sleep 1; done' || {
+            echo "Server failed to start. Laravel log:"
+            cat /tmp/laravel.log
+            exit 1
+          }'
       
       - name: Run Playwright tests
         run: npx playwright test
