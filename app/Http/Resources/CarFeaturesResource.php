@@ -8,6 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @mixin CarFeature
+ *
  * @property bool $gps
  * @property bool $camera
  * @property bool $bluetooth

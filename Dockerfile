@@ -6,10 +6,9 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install \
     --no-dev \
-    --no-scripts \
-    --no-autoloader \
     --prefer-dist \
-    --optimize-autoloader
+    --optimize-autoloader \
+    --no-interaction
 
 # Stage 2: Frontend Build
 FROM node:20-alpine AS frontend
@@ -59,9 +58,6 @@ COPY --from=composer --chown=www-data:www-data /app/vendor /var/www/vendor
 
 # Copy frontend build from frontend stage
 COPY --from=frontend --chown=www-data:www-data /app/public/build /var/www/public/build
-
-# Generate optimized autoload
-RUN composer dump-autoload --optimize
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www \

@@ -52,11 +52,13 @@ Route::get('/docs', function () {
     /** @var view-string $viewName */
     return view($viewName);
 })->name('docs');
+
 Route::get('/docs-fr', function () {
     $viewName = 'components.documentation-fr';
     /** @var view-string $viewName */
     return view($viewName);
 })->name('docs.fr');
+
 Route::get('erd', function () {
     $viewName = 'components.db-schema';
     /** @var view-string $viewName */
