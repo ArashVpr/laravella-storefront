@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CarType extends Model
 {
-    /** @phpstan-ignore-next-line */
     use HasFactory;
 
     protected $fillable = ['name'];

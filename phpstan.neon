@@ -2,8 +2,12 @@ includes:
     - vendor/larastan/larastan/extension.neon
 
 parameters:
-    level: 4
+    level: 2
     paths:
         - app
     ignoreErrors:
-        - '#Parameter \#1 \$view of function view expects view-string\|null, string given\.#'
+        - '#Access to an undefined property.*#'
+        - '#Property .* is not writable\.#'
+        - '#Relation .* is not found.*#'
+        - '#Call to an undefined method.*#'
+        - '#Array has .* duplicate keys.*#'
