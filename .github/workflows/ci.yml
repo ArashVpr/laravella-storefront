@@ -257,11 +257,11 @@ jobs:
       - name: Wait for server to be ready
         run: |
           set -x
-          timeout 60 bash -c 'until curl --retry 10 --retry-delay 2 --retry-connrefused -f http://127.0.0.1:8000; do sleep 1; done' || {
+          timeout 60 bash -c "until curl --retry 10 --retry-delay 2 --retry-connrefused -f http://127.0.0.1:8000; do sleep 1; done" || {
             echo "Server failed to start. Laravel log:"
             cat /tmp/laravel.log
             exit 1
-          }'
+          }
       
       - name: Run Playwright tests
         run: npx playwright test
