@@ -41,7 +41,7 @@ jobs:
         run: cp .env.example .env
       
       - name: Install Composer Dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
       
       - name: Install NPM Dependencies
         run: npm ci
@@ -57,6 +57,10 @@ jobs:
           echo "DB_DATABASE=laravella_test" >> .env
           echo "DB_USERNAME=root" >> .env
           echo "DB_PASSWORD=password" >> .env
+          echo "APP_ENV=production" >> .env
+          echo "APP_DEBUG=false" >> .env
+          echo "TELESCOPE_ENABLED=false" >> .env
+          echo "PULSE_ENABLED=false" >> .env
       
       - name: Run Migrations
         run: php artisan migrate --force
@@ -75,6 +79,14 @@ jobs:
           php artisan config:cache
           php artisan route:cache
           php artisan view:cache
+      
+      - name: Start Laravel Server
+        run: |
+          php artisan serve --host=127.0.0.1 --port=8000 > /tmp/laravel.log 2>&1 &
+          echo $! > /tmp/laravel.pid
+          sleep 5
+          curl -s http://127.0.0.1:8000 | head -1
+          echo "Server is responding"
       
       - name: Run Lighthouse CI
         run: |

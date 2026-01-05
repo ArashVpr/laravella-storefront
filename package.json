@@ -5,8 +5,8 @@
     "build": "vite build",
     "dev": "vite",
     "lhci": "lhci",
-    "lhci:desktop": "CHROME_PATH=/root/.cache/ms-playwright/chromium-1194/chrome-linux/chrome lhci autorun",
-    "lhci:mobile": "CHROME_PATH=/root/.cache/ms-playwright/chromium-1194/chrome-linux/chrome lhci autorun --collect.settings.preset=mobile"
+    "lhci:desktop": "lhci autorun",
+    "lhci:mobile": "lhci autorun --collect.settings.preset=mobile"
   },
   "devDependencies": {
     "@lhci/cli": "^0.14.0",
