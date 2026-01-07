@@ -16,8 +16,8 @@ const isLive = /car-hub\.xyz$/.test(new URL(base).host);
   await page.getByPlaceholder('John Doe').fill(`E2E User ${unique}`);
   await page.getByPlaceholder('you@example.com').fill(email);
   await page.getByPlaceholder('+1 (555) 000-0000').fill(phone);
-  await page.getByPlaceholder('••••••••').fill('Str0ngP@ss!');
-  await page.getByPlaceholder('••••••••').fill('Str0ngP@ss!');
+  await page.getByLabel('Password').fill('Str0ngP@ss!');
+  await page.getByLabel('Confirm Password').fill('Str0ngP@ss!');
   await page.getByRole('button', { name: 'Register' }).click();
 
   await expect(page).toHaveURL(new RegExp(`${base.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}/`));

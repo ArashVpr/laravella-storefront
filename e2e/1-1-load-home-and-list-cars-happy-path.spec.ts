@@ -15,7 +15,7 @@ test.describe('Home Page — Listings and Entry Points', () => {
 
     // 2. Observe hero section and search link presence.
     await expect(page.getByRole('heading', { name: 'Find Your Dream Ride' })).toBeVisible();
-    await expect(page.locator('a[href*="car.search"]', { hasText: 'Search' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Search' })).toBeVisible();
 
     // 3. Verify "Latest Arrivals" section renders cars.
     await expect(page.getByRole('heading', { name: 'Latest Arrivals' })).toBeVisible();
