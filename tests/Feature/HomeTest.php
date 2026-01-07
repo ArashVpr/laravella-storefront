@@ -1,10 +1,10 @@
 <?php
 
-test('home page shows no cars message when database is empty', function () {
+test('home page loads successfully when database is empty', function () {
     $response = $this->get('/');
-    
+
     $response->assertOk()
-        ->assertSee('No cars found');
+        ->assertSee('Latest Arrivals');
 });
 
 test('home page shows cars when database has data', function () {

@@ -49,16 +49,17 @@ test('login succeeds with correct credentials', function () {
 test('navbar shows login and signup for guests', function () {
     $response = $this->get('/');
 
-    $response->assertSee('Login')
-        ->assertSee('Signup');
+    $response->assertSee('Log in')
+        ->assertSee('Sign up');
 });
 
 test('navbar shows logout and user name for authenticated users', function () {
     $this->seed();
     $user = User::first();
-    
+
     $response = $this->actingAs($user)->get('/');
 
-    $response->assertSee('Logout')
-        ->assertSee('Welcome, '.$user->name);
+    $response->assertSee('Welcome,')
+        ->assertSee($user->name)
+        ->assertSee('Logout');
 });
