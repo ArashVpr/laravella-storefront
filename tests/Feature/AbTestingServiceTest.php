@@ -41,7 +41,7 @@ test('can create experiment with variants', function () {
 
 test('get variant assigns user to experiment', function () {
     $user = User::factory()->create();
-    $experiment = createTestExperiment();
+    $experiment = createTestExperimentForFeature();
     $experiment->start();
 
     $variant = $this->service->getVariant('test-experiment', $user->id);
@@ -57,7 +57,7 @@ test('get variant assigns user to experiment', function () {
 
 test('get variant returns same variant for same user', function () {
     $user = User::factory()->create();
-    $experiment = createTestExperiment();
+    $experiment = createTestExperimentForFeature();
     $experiment->start();
 
     $variant1 = $this->service->getVariant('test-experiment', $user->id);
@@ -69,7 +69,7 @@ test('get variant returns same variant for same user', function () {
 
 test('get variant returns null for non running experiment', function () {
     $user = User::factory()->create();
-    createTestExperiment(); // Status is 'draft'
+    createTestExperimentForFeature(); // Status is 'draft'
 
     $variant = $this->service->getVariant('test-experiment', $user->id);
 
@@ -78,7 +78,7 @@ test('get variant returns null for non running experiment', function () {
 
 test('track conversion creates conversion record', function () {
     $user = User::factory()->create();
-    $experiment = createTestExperiment();
+    $experiment = createTestExperimentForFeature();
     $experiment->start();
 
     $variant = $this->service->getVariant('test-experiment', $user->id);
@@ -104,7 +104,7 @@ test('track conversion creates conversion record', function () {
 
 test('track conversion prevents duplicate conversions', function () {
     $user = User::factory()->create();
-    $experiment = createTestExperiment();
+    $experiment = createTestExperimentForFeature();
     $experiment->start();
 
     $this->service->getVariant('test-experiment', $user->id);
@@ -119,7 +119,7 @@ test('track conversion prevents duplicate conversions', function () {
 
 test('is in variant returns correct boolean', function () {
     $user = User::factory()->create();
-    $experiment = createTestExperiment();
+    $experiment = createTestExperimentForFeature();
     $experiment->start();
 
     $variant = $this->service->getVariant('test-experiment', $user->id);
@@ -129,7 +129,7 @@ test('is in variant returns correct boolean', function () {
 });
 
 test('get experiment stats calculates correctly', function () {
-    $experiment = createTestExperiment();
+    $experiment = createTestExperimentForFeature();
     $experiment->start();
 
     $user1 = User::factory()->create();
@@ -152,7 +152,7 @@ test('get experiment stats calculates correctly', function () {
 });
 
 test('get winner returns variant with most conversions', function () {
-    $experiment = createTestExperiment();
+    $experiment = createTestExperimentForFeature();
     $experiment->start();
 
     $controlVariant = $experiment->variants()->where('name', 'control')->first();
@@ -247,7 +247,7 @@ test('traffic allocation distributes users', function () {
 });
 
 // Helper function
-function createTestExperiment(): AbExperiment
+function createTestExperimentForFeature(): AbExperiment
 {
     $experiment = AbExperiment::create([
         'name' => 'test-experiment',
