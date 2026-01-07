@@ -245,3 +245,29 @@ test('traffic allocation distributes users', function () {
     expect($controlCount)->toBeGreaterThan(60)->toBeLessThan(95)
         ->and($variantCount)->toBeGreaterThan(5)->toBeLessThan(40);
 });
+
+// Helper function
+function createTestExperiment(): AbExperiment
+{
+    $experiment = AbExperiment::create([
+        'name' => 'test-experiment',
+        'description' => 'Test experiment',
+        'goal' => 'conversion',
+        'status' => 'draft',
+    ]);
+
+    AbVariant::create([
+        'experiment_id' => $experiment->id,
+        'name' => 'control',
+        'traffic_allocation' => 50,
+        'is_control' => true,
+    ]);
+
+    AbVariant::create([
+        'experiment_id' => $experiment->id,
+        'name' => 'variant_a',
+        'traffic_allocation' => 50,
+    ]);
+
+    return $experiment;
+}
