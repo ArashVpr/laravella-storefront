@@ -276,7 +276,7 @@ class CarController extends Controller
         }
 
         // Handle position updates
-        if (!empty($positions)) {
+        if (count($positions) > 0) {
             // Iterate over positions and update position for each image, by its ID
             foreach ($positions as $id => $position) {
                 $car->images()->where('id', $id)->update(['position' => $position]);
@@ -284,18 +284,18 @@ class CarController extends Controller
         }
 
         // If neither deletions nor position updates were provided
-        if (empty($deleteImages) && empty($positions)) {
+        if (empty($deleteImages) && count($positions) === 0) {
             return redirect()->route('car.images', $car)
                 ->with('warning', 'No changes were made');
         }
 
         // Prepare success message
         $message = '';
-        if (!empty($deleteImages) && !empty($positions)) {
+        if (!empty($deleteImages) && count($positions) > 0) {
             $message = 'Images deleted and positions updated successfully';
         } elseif (!empty($deleteImages)) {
             $message = count($deleteImages) . ' image' . (count($deleteImages) > 1 ? 's' : '') . ' deleted successfully';
-        } elseif (!empty($positions)) {
+        } elseif (count($positions) > 0) {
             $message = 'Image positions updated successfully';
         }
 
