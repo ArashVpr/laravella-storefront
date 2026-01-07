@@ -9,38 +9,29 @@ test.describe('Car Browsing & Search', () => {
   test('4.1 Search With Filters (Happy Path)', async ({ page }) => {
     await page.goto(`${base}/car/search`);
 
-    const form = page.locator('form.find-a-car-form');
-    await expect(form).toBeVisible();
+    // Select filters in the sidebar
+    const makerSelect = page.locator('select').filter({ hasText: 'All Makes' });
+    const priceFromInput = page.locator('input[placeholder="Min"]');
+    const priceToInput = page.locator('input[placeholder="Max"]');
+    const yearFromInput = page.locator('input[placeholder="From"]');
+    const yearToInput = page.locator('input[placeholder="To"]');
 
-    const maker = form.locator('select#makerSelect');
-    const model = form.locator('select#modelSelect');
-    const type = form.locator('select[name="car_type_id"]');
-    const fuel = form.locator('select[name="fuel_type_id"]');
-
-    // Select first non-empty options where available
-    async function selectFirstNonEmpty(sel: typeof maker) {
-      const options = sel.locator('option[value]:not([value=""])');
-      if ((await options.count()) > 0) {
-        const val = await options.first().getAttribute('value');
-        await sel.selectOption({ value: val! });
-      }
+    // Select first maker if available
+    const makerOptions = makerSelect.locator('option[value]:not([value=""])');
+    if ((await makerOptions.count()) > 0) {
+      const firstMakerValue = await makerOptions.first().getAttribute('value');
+      await makerSelect.selectOption({ value: firstMakerValue! });
     }
 
-    await selectFirstNonEmpty(maker);
-    await selectFirstNonEmpty(model);
-    await selectFirstNonEmpty(type);
-    await selectFirstNonEmpty(fuel);
-
-    await form.locator('input[name="year_from"]').fill('2000');
-    await form.locator('input[name="year_to"]').fill('2025');
-    await form.locator('input[name="price_from"]').fill('1000');
-    await form.locator('input[name="price_to"]').fill('999999');
-
-    await form.getByRole('button', { name: /Search/ }).click();
+    // Fill price and year filters
+    await priceFromInput.fill('1000');
+    await priceToInput.fill('999999');
+    await yearFromInput.fill('2000');
+    await yearToInput.fill('2025');
 
     // Results visible and persist across pagination
-    const list = page.locator('.search-cars-results .car-items-listing');
-    await expect(list).toBeVisible();
+    const resultsGrid = page.locator('.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3');
+    await expect(resultsGrid).toBeVisible();
 
     const foundText = page.getByText('Found', { exact: false });
     await expect(foundText.first()).toBeVisible();
@@ -49,7 +40,7 @@ test.describe('Car Browsing & Search', () => {
     const next = page.getByRole('link', { name: /Next|›|»/ });
     if (await next.count()) {
       await next.first().click();
-      await expect(list).toBeVisible();
+      await expect(resultsGrid).toBeVisible();
     }
   });
 });

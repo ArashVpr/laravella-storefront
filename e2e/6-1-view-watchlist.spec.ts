@@ -23,8 +23,8 @@ test.describe('Watchlist', () => {
     if (await notice.count()) {
       await expect(notice).toBeVisible();
     } else {
-      await expect(page.getByRole('heading', { name: 'My Favourite Cars' })).toBeVisible();
-      await expect(page.locator('.car-items-listing')).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'My Watchlist' })).toBeVisible();
+      await expect(page.locator('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3.xl\\:grid-cols-4')).toBeVisible();
     }
   });
 });

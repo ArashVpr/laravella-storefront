@@ -19,10 +19,10 @@ test.describe('Home Page — Listings and Entry Points', () => {
 
     await expect(page).toHaveURL(new RegExp(`${escRe(base)}/car/\\d+/?$`));
 
-    await expect(page.locator('h1.car-details-page-title')).toBeVisible();
-    await expect(page.locator('.car-details-price')).toBeVisible();
-    await expect(page.locator('img.car-active-image#activeImage')).toBeVisible();
-    await expect(page.locator('table.car-details-table')).toBeVisible();
+    await expect(page.locator('h1').filter({ hasText: /\d{4}/ })).toBeVisible(); // Car title with year
+    await expect(page.locator('p').filter({ hasText: 'Price' })).toBeVisible();
+    await expect(page.locator('img[alt*="car"]').first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Features & Options' })).toBeVisible();
 
     await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
 

@@ -15,8 +15,8 @@ export function collectConsoleErrors(page: Page) {
 
 export async function login(page: Page, email: string, password: string) {
   await page.goto(`${base}/login`);
-  await page.getByPlaceholder('Your Email').fill(email);
-  await page.getByPlaceholder('Your Password').fill(password);
+  await page.getByPlaceholder('you@example.com').fill(email);
+  await page.getByPlaceholder('••••••••').fill(password);
   await page.getByRole('button', { name: 'Login' }).click();
 }
 
@@ -31,5 +31,5 @@ export async function selectFirstNonEmpty(select: Locator) {
 }
 
 export function firstCarCard(page: Page) {
-  return page.locator('.car-items-listing .car-item').first();
+  return page.locator('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 .group').first();
 }

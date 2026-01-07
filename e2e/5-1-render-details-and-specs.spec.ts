@@ -9,23 +9,20 @@ test.describe('Car Details Page', () => {
   test('5.1 Render Details and Specs', async ({ page }) => {
     // Open first car detail from home
     await page.goto(`${base}/`);
-    const firstCard = page.locator('.car-items-listing .car-item').first();
+    const firstCard = page.locator('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 .group').first();
     await expect(firstCard).toBeVisible();
     await firstCard.locator('a').click();
 
     await expect(page).toHaveURL(/\/car\/\d+\/?$/);
 
     // Main image, title, price
-    await expect(page.locator('#activeImage.car-active-image')).toBeVisible();
-    await expect(page.locator('h1.car-details-page-title')).toBeVisible();
-    await expect(page.locator('.car-details-price')).toBeVisible();
+    await expect(page.locator('img[alt*="car"]').first()).toBeVisible();
+    await expect(page.locator('h1').filter({ hasText: /\d{4}/ })).toBeVisible(); // Car title with year
+    await expect(page.locator('.text-3xl.font-bold.text-primary')).toBeVisible();
 
-    // Specs table present with expected rows
-    const specs = page.locator('table.car-details-table');
-    await expect(specs).toBeVisible();
-    await expect(specs.getByText('Maker')).toBeVisible();
-    await expect(specs.getByText('Model')).toBeVisible();
-    await expect(specs.getByText('Year')).toBeVisible();
+    // Features section present
+    await expect(page.getByRole('heading', { name: 'Features & Options' })).toBeVisible();
+    await expect(page.locator('ul.grid')).toBeVisible();
 
     // Structured data script exists
     await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);

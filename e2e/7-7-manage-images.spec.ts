@@ -11,8 +11,8 @@ const DEMO_PASSWORD = process.env.DEMO_PASSWORD || 'password';
 (test.skip(isLive, 'Mutative flow disabled on live'), test)('7.7 Manage Images (Reorder/Delete/Add)', async ({ page }) => {
   // Login
   await page.goto(`${base}/login`);
-  await page.getByPlaceholder('Your Email').fill(DEMO_EMAIL);
-  await page.getByPlaceholder('Your Password').fill(DEMO_PASSWORD);
+  await page.getByPlaceholder('you@example.com').fill(DEMO_EMAIL);
+  await page.getByPlaceholder('••••••••').fill(DEMO_PASSWORD);
   await page.getByRole('button', { name: 'Login' }).click();
 
   // Go to My Cars -> Images page for first car

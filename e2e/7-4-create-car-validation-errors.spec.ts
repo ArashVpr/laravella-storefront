@@ -16,12 +16,12 @@ const DEMO_PASSWORD = process.env.DEMO_PASSWORD || 'password';
   await page.getByRole('button', { name: 'Login' }).click();
 
   await page.goto(`${base}/car/create`);
-  const form = page.locator('form.add-new-car-form');
+  const form = page.locator('form[action*="car.store"]');
   await expect(form).toBeVisible();
 
   // Submit with empty/invalid data
-  await form.getByRole('button', { name: 'Submit' }).click();
+  await form.getByRole('button', { name: 'Publish' }).click();
 
   // Expect error messages
-  await expect(page.locator('.error-message')).toBeVisible();
+  await expect(page.locator('.text-red-600')).toBeVisible();
 });

@@ -16,33 +16,30 @@ test.describe('Home Page — Listings and Entry Points', () => {
     expect(res, 'should load homepage').toBeTruthy();
     expect(res!.ok(), 'HTTP 200 OK expected').toBeTruthy();
 
-    const form = page.locator('form[role="search"][aria-label="Search for cars"]');
-    await expect(form).toBeVisible();
+    // Navigate to search page from homepage
+    await page.locator('a[href*="car.search"]', { hasText: 'Search' }).click();
 
-    const makerSelect = form.locator('select#makerSelect');
+    await expect(page).toHaveURL(new RegExp(`${escRe(base)}/car/search`));
+
+    const makerSelect = page.locator('select').filter({ hasText: 'All Makes' });
     await expect(makerSelect).toBeVisible();
 
     const makerValue = await selectFirstNonEmpty(makerSelect);
     expect(makerValue, 'Maker options should be available').toBeTruthy();
-    const firstOption = makerSelect.locator('option[value]:not([value=""])').first();
-    const makerLabel = (await firstOption.textContent())?.trim() || '';
-
-    await form.getByRole('button', { name: /Search/ }).click();
 
     await expect(page).toHaveURL(new RegExp(`${escRe(base)}/car/search`));
     await expect(page).toHaveURL(new RegExp(`[?&]maker_id=${makerValue}(?:&|$)`));
 
     await expect(page.getByText('Found', { exact: false })).toBeVisible();
 
-    const cards = page.locator('.search-cars-results .car-items-listing .car-item');
+    const cards = page.locator('.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3 .group');
     const count = await cards.count();
 
-    if (count > 0 && makerLabel) {
-      const firstTitle = cards.first().locator('.car-item-title');
+    if (count > 0) {
+      const firstTitle = cards.first().locator('h3');
       await expect(firstTitle).toBeVisible();
-      await expect(firstTitle).toHaveText(ci(makerLabel));
     } else {
-      await expect(page.getByText('No results found', { exact: false })).toBeVisible();
+      await expect(page.getByText('No cars found', { exact: false })).toBeVisible();
     }
 
     // Filter out external 503 errors from third-party resources

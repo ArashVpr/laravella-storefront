@@ -13,23 +13,23 @@ test.describe('Home Page — Listings and Entry Points', () => {
     expect(response, 'should load homepage').toBeTruthy();
     expect(response!.ok(), 'HTTP 200 OK expected').toBeTruthy();
 
-    // 2. Observe hero slider and search form presence.
-    await expect(page.locator('section.hero-slider')).toBeVisible();
-    await expect(page.locator('form[role="search"][aria-label="Search for cars"]')).toBeVisible();
+    // 2. Observe hero section and search link presence.
+    await expect(page.getByRole('heading', { name: 'Find Your Dream Ride' })).toBeVisible();
+    await expect(page.locator('a[href*="car.search"]', { hasText: 'Search' })).toBeVisible();
 
-    // 3. Verify "New Cars" list renders up to 30 recent items.
-    await expect(page.getByRole('heading', { name: 'Latest Added Cars' })).toBeVisible();
+    // 3. Verify "Latest Arrivals" section renders cars.
+    await expect(page.getByRole('heading', { name: 'Latest Arrivals' })).toBeVisible();
 
-    const cards = page.locator('.car-items-listing .car-item');
+    const cards = page.locator('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 .group');
     const cardCount = await cards.count();
     expect(cardCount, 'should render at least one car card').toBeGreaterThan(0);
     expect(cardCount, 'should render no more than 30 items').toBeLessThanOrEqual(30);
 
     const firstCard = cards.first();
-    await expect(firstCard.locator('img.car-item-img')).toBeVisible();
-    await expect(firstCard.locator('.car-item-title')).toBeVisible();
-    await expect(firstCard.locator('.car-item-price')).toBeVisible();
-    await expect(firstCard.locator('small.text-muted')).toBeVisible();
+    await expect(firstCard.locator('img')).toBeVisible();
+    await expect(firstCard.locator('.font-bold')).toBeVisible();
+    await expect(firstCard.locator('.text-primary')).toBeVisible();
+    await expect(firstCard.locator('.text-gray-400')).toBeVisible();
 
     await expect(page.locator('nav[aria-label*="Pagination"]')).toHaveCount(0);
 

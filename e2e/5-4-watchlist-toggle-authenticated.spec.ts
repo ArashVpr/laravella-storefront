@@ -17,10 +17,10 @@ const DEMO_PASSWORD = process.env.DEMO_PASSWORD || 'password';
 
   // Open a car details page
   await page.goto(`${base}/`);
-  await page.locator('.car-items-listing .car-item').first().locator('a').click();
+  await page.locator('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 .group').first().locator('a').click();
   await expect(page).toHaveURL(/\/car\/\d+\/?$/);
 
-  const heart = page.locator('button.btn-heart');
+  const heart = page.locator('button.watchlist-btn');
   await expect(heart).toBeVisible();
 
   // Add to watchlist

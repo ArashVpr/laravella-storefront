@@ -9,13 +9,13 @@ test.describe('Car Details Page', () => {
   test('5.3 Watchlist Toggle — Unauthenticated', async ({ page }) => {
     // Open first car details as a guest
     await page.goto(`${base}/`);
-    const first = page.locator('.car-items-listing .car-item').first();
+    const first = page.locator('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 .group').first();
     await first.locator('a').click();
     await expect(page).toHaveURL(/\/car\/\d+\/?$/);
 
     // Click heart and capture the watchlist request
     const responsePromise = page.waitForResponse((res) => /\/watchlist\//.test(res.url()));
-    await page.locator('button.btn-heart').click();
+    await page.locator('button.watchlist-btn').click();
     const res = await responsePromise.catch(() => null);
 
     // Expect unauthorized or redirect behavior (non-200)
