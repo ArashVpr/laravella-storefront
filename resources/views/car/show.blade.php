@@ -1,36 +1,30 @@
 @php
     use Illuminate\Support\Str;
+    use Illuminate\Support\Facades\Auth;
+    use Illuminate\Support\Facades\Storage;
 
-    $inWatchlist = $car->favoredUsers->contains(\Illuminate\Support\Facades\Auth::user());
+    $inWatchlist = Auth::check() && $car->favoredUsers->contains(Auth::user());
 
     $imgs = $car->images->pluck('path')->map(fn($p) => asset('storage/'.$p))->all();
     if (empty($imgs)) {
         $imgs = [asset('img/placeholder-car.jpg')];
     }
-
+    
+    // SEO Data
     $structuredData = [
         '@context' => 'https://schema.org',
         '@type' => 'Product',
         'name' => "{$car->year} {$car->maker->name} {$car->model->name}",
-        'brand' => [
-            '@type' => 'Brand',
-            'name' => $car->maker->name,
-        ],
+        'brand' => ['@type' => 'Brand', 'name' => $car->maker->name],
         'model' => $car->model->name,
-        'vehicleModelDate' => (string) $car->year,
-        'description' => Str::limit(trim(preg_replace('/\s+/', ' ', $car->description ?? '')), 300, ''),
-        'sku' => $car->vin ?? (string) $car->id,
         'image' => $imgs,
-        'url' => url()->current(),
-        'category' => 'vehicle',
+        'description' => Str::limit(trim(preg_replace('/\s+/', ' ', $car->description ?? '')), 300),
         'offers' => [
             '@type' => 'Offer',
-            'priceCurrency' => 'EUR',
-            'price' => number_format((float)$car->price, 2, '.', ''), // string is fine
+            'priceCurrency' => 'USD',
+            'price' => $car->price,
             'availability' => 'https://schema.org/InStock',
-            'itemCondition' => 'https://schema.org/UsedCondition',
-            'url' => url()->current(),
-        ],
+        ]
     ];
 @endphp
 
@@ -38,204 +32,136 @@
 {!! json_encode($structuredData, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) !!}
 </script>
 
-
-<x-app title="Car Details">
-    <div>
-        <main>
-            <div class="container">
-                <h1 class="car-details-page-title">{{ $car->maker->name }} {{ $car->model->name }} - {{ $car->year }}
-                </h1>
-                <div class="car-details-region">{{ $car->city->name }} - {{ $car->created_at->format('Y/m/d') }}</div>
-
-                <div class="car-details-content">
-                    <div class="car-images-and-description">
-                        <div class="car-images-carousel">
-                            <div class="car-image-wrapper">
-                                <img src="{{ $car->primaryImage?->getUrl() ?? '/img/no-image.png' }}" alt=""
-                                    class="car-active-image" id="activeImage" />
-                            </div>
-                            <div class="car-image-thumbnails">
-                                @foreach ($car->images as $image)
-                                    <img src="{{ $image->getUrl() }}" alt="" />
-                                @endforeach
-                            </div>
-                            <button class="carousel-button prev-button" id="prevButton">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" style="width: 64px">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15.75 19.5 8.25 12l7.5-7.5" />
-                                </svg>
-                            </button>
-                            <button class="carousel-button next-button" id="nextButton">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" style="width: 64px">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                                </svg>
-                            </button>
+<x-app title="{{ $car->maker->name }} {{ $car->model->name }}" bodyClass="bg-gray-50 text-gray-900">
+    <div class="min-h-screen flex flex-col pb-20">
+        <!-- Breadcrumb & Header -->
+        <div class="bg-white border-b border-gray-200 sticky top-16 z-20 shadow-sm transition-all duration-200">
+            <div class="container mx-auto px-4 py-4 md:py-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="text-sm text-gray-500 mb-1 flex items-center gap-2">
+                             <a href="{{ route('homepage') }}" class="hover:text-primary">Home</a> / 
+                             <a href="{{ route('car.search') }}" class="hover:text-primary">Search</a> / 
+                             <span class="text-gray-900 font-medium">{{ $car->maker->name }}</span>
                         </div>
-
-                        <div class="card car-detailed-description">
-                            <h2 class="car-details-title">Detailed Description</h2>
-                            <p>
-                                {{ $car->description }}
-                            </p>
-                        </div>
-
-                        <div class="card car-detailed-description">
-                            <h2 class="car-details-title">Car Specifications</h2>
-                            <ul class="car-specifications">
-
-                                <x-car-features :value="$car->features?->abs ?? false">ABS</x-car-features>
-                                <x-car-features :value="$car->features?->air_conditioning ?? false">Air Conditioning</x-car-features>
-                                <x-car-features :value="$car->features?->power_windows ?? false">Power Windows</x-car-features>
-                                <x-car-features :value="$car->features?->power_door_locks ?? false">Power Door Lock</x-car-features>
-                                <x-car-features :value="$car->features?->cruise_control ?? false">Cruise Control</x-car-features>
-                                <x-car-features :value="$car->features?->bluetooth_connectivity ?? false">Bluetooth</x-car-features>
-                                <x-car-features :value="$car->features?->gps_navigation ?? false">GPS Navigation</x-car-features>
-                                <x-car-features :value="$car->features?->heated_seats ?? false">Heated Seats</x-car-features>
-                                <x-car-features :value="$car->features?->climate_control ?? false">Climate Control</x-car-features>
-                                <x-car-features :value="$car->features?->rear_parking_sensors ?? false">Rear Parking Sensors</x-car-features>
-                                <x-car-features :value="$car->features?->leather_seats ?? false">Leather Seats</x-car-features>
-
-                            </ul>
+                        <h1 class="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">
+                            {{ $car->maker->name }} {{ $car->model->name }} <span class="text-gray-400 font-normal ml-2 text-xl">{{ $car->year }}</span>
+                        </h1>
+                        <div class="flex items-center gap-2 mt-1 text-sm text-gray-500">
+                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                             {{ $car->city->name }}, {{ $car->city->state->name }}
                         </div>
                     </div>
-                    <div class="car-details card">
-                        {{-- Featured Badge --}}
-                        @if($car->isFeatured())
-                            <div class="mb-4 p-3 bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-orange-300 rounded-lg">
-                                <div class="flex items-center justify-center space-x-2">
-                                    <svg class="h-5 w-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                    </svg>
-                                    <span class="font-bold text-orange-600 uppercase tracking-wide">Featured Listing</span>
-                                    <svg class="h-5 w-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                    </svg>
-                                </div>
-                                <p class="text-center text-orange-700 text-xs mt-1">
-                                    Featured until {{ $car->featured_until->format('M d, Y') }}
-                                </p>
-                            </div>
-                        @endif
-
-                        <div class="flex items-center justify-between">
-                            <p class="car-details-price">${{ number_format($car->price) }}</p>
-                            <button class="btn-heart text-primary"
-                                data-url="{{ route('watchlist.storeDestroy', $car) }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" style="width: 20px"
-                                    @class(['hidden' => $inWatchlist])>
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                                </svg>
-
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                    style="width: 20px" @class(['hidden' => !$inWatchlist])>
-                                    <path
-                                        d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-                                </svg>
-                            </button>
-                        </div>
-
-                        <hr />
-
-                        {{-- Make Featured Button (Owner Only) --}}
-                        @auth
-                            @if($car->user_id === auth()->id() && !$car->isFeatured())
-                                <div class="my-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                    <div class="flex items-start space-x-3">
-                                        <svg class="h-6 w-6 text-blue-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                        </svg>
-                                        <div class="flex-1">
-                                            <h3 class="text-lg font-semibold text-gray-900 mb-1">Boost Your Listing!</h3>
-                                            <p class="text-sm text-gray-600 mb-3">
-                                                Get more visibility with a featured listing. Your car will appear at the top of search results with a special badge for {{ config('stripe.featured_listing.duration_days') }} days.
-                                            </p>
-                                            <div class="flex items-center justify-between">
-                                                <span class="text-2xl font-bold text-gray-900">
-                                                    ${{ number_format(config('stripe.featured_listing.price') / 100, 2) }}
-                                                </span>
-                                                <form action="{{ route('stripe.checkout', $car) }}" method="POST">
-                                                    @csrf
-                                                    <button type="submit" 
-                                                            class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg">
-                                                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                                        </svg>
-                                                        Make Featured
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                        @endauth
-
-                        <table class="car-details-table">
-                            <tbody>
-                                <tr>
-                                    <th>Maker</th>
-                                    <td>{{ $car->maker->name }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Model</th>
-                                    <td>{{ $car->model->name }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Year</th>
-                                    <td>{{ $car->year }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Car Type</th>
-                                    <td>{{ $car->carType->name }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Fuel Type</th>
-                                    <td>{{ $car->fuelType->name }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Mileage</th>
-                                    <td>{{ $car->mileage }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Vin</th>
-                                    <td>{{ $car->vin }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Address</th>
-                                    <td>{{ $car->address }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <hr />
-
-                        <div class="flex gap-1 my-medium">
-                            <img src="/img/avatar.png" alt="" class="car-details-owner-image" />
-                            <div>
-                                <h3 class="car-details-owner">{{ $car->owner->name }}</h3>
-                                <div class="text-muted">{{ $car->owner->cars()->count() }}</div>
-                            </div>
-                        </div>
-                        <a href="tel:{{ Str::mask($car->phone, '*', -3) }}" class="car-details-phone">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" style="width: 16px">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                    <div class="flex items-center gap-4">
+                         <div class="text-right">
+                             <p class="text-xs text-gray-500 uppercase font-semibold">Price</p>
+                             <p class="text-3xl font-bold text-primary">${{ number_format($car->price) }}</p>
+                         </div>
+                         <!-- Watchlist Button -->
+                         <button data-url="{{ route('watchlist.storeDestroy', $car) }}" 
+                                 class="watchlist-btn p-3 rounded-full bg-gray-100 hover:bg-red-50 transition-colors {{ $inWatchlist ? 'text-red-500 bg-red-50' : 'text-gray-400 hover:text-red-500' }}" 
+                                 title="{{ $inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="{{ $inWatchlist ? 'currentColor' : 'none' }}" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
-
-                            <span class="text-phone">
-                                {{ \Illuminate\Support\Str::mask($car->phone, '*', -3) }}
-                            </span>
-                            <span class="car-details-phone-view" data-url="{{ route('car.showPhone', $car) }}">view
-                                full number</span>
-                        </a>
+                         </button>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
+
+        <div class="container mx-auto px-4 py-8 flex-grow">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Main Content (Gallery + Details) -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Gallery -->
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 p-2">
+                        <div x-data="{ activeImage: '{{ $car->primaryImage ? $car->primaryImage->getUrl() : asset('img/no-image.png') }}' }">
+                            <div class="relative w-full bg-gray-100 rounded-xl overflow-hidden mb-2 group" style="aspect-ratio: 16/9;">
+                                <img :src="activeImage" alt="{{ $car->maker->name }} {{ $car->model->name }}" class="object-cover w-full h-full transition-all duration-300">
+                                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
+                            </div>
+                            <!-- Thumbnails -->
+                            @if($car->images->count() > 1)
+                            <div class="grid grid-cols-5 gap-2">
+                                @foreach($car->images as $image)
+                                    <button @click="activeImage = '{{ $image->getUrl() }}'" class="relative rounded-lg overflow-hidden border-2 border-transparent hover:border-primary focus:border-primary focus:outline-none transition-all" style="aspect-ratio: 1/1;">
+                                        <img src="{{ $image->getUrl() }}" alt="Thumbnail" class="object-cover w-full h-full">
+                                    </button>
+                                @endforeach
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">Vehicle Overview</h2>
+                        <div class="prose prose-orange max-w-none text-gray-600">
+                            {!! nl2br(e($car->description)) !!}
+                        </div>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                        <h2 class="text-xl font-bold text-gray-900 mb-6 border-b border-gray-100 pb-2">Features & Options</h2>
+                        <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <x-car-features :value="$car->features?->abs ?? false">ABS</x-car-features>
+                            <x-car-features :value="$car->features?->air_conditioning ?? false">Air Conditioning</x-car-features>
+                            <x-car-features :value="$car->features?->power_windows ?? false">Power Windows</x-car-features>
+                            <x-car-features :value="$car->features?->power_door_locks ?? false">Power Locks</x-car-features>
+                            <x-car-features :value="$car->features?->cruise_control ?? false">Cruise Control</x-car-features>
+                            <x-car-features :value="$car->features?->bluetooth_connectivity ?? false">Bluetooth</x-car-features>
+                            <x-car-features :value="$car->features?->gps_navigation ?? false">Navigation</x-car-features>
+                            <x-car-features :value="$car->features?->heated_seats ?? false">Heated Seats</x-car-features>
+                            <x-car-features :value="$car->features?->climate_control ?? false">Climate Control</x-car-features>
+                            <x-car-features :value="$car->features?->rear_parking_sensors ?? false">Parking Sensors</x-car-features>
+                            <x-car-features :value="$car->features?->leather_seats ?? false">Leather Seats</x-car-features>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sticky Sidebar -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- Seller Card -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-36">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center text-primary font-bold text-xl">
+                                {{ substr($car->user?->name ?? 'U', 0, 1) }}
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Listed by</p>
+                                <h3 class="font-bold text-gray-900">{{ $car->user?->name ?? 'Unknown Seller' }}</h3>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <form action="{{ route('car.showPhone', $car) }}" method="POST">
+                                @csrf
+                                <button class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white font-bold py-3 px-4 rounded-xl transition-all shadow-lg shadow-primary/30">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                    Show Phone Number
+                                </button>
+                            </form>
+                            
+                            <a href="mailto:{{ $car->user?->email }}" class="w-full flex items-center justify-center gap-2 bg-white border-2 border-gray-200 hover:border-primary hover:text-primary text-gray-700 font-bold py-3 px-4 rounded-xl transition-all">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                Message Seller
+                            </a>
+                        </div>
+                        
+                        <div class="mt-6 pt-6 border-t border-gray-100">
+                             <h4 class="font-semibold text-gray-900 mb-2">Safety Tips</h4>
+                             <ul class="text-xs text-gray-500 space-y-1 list-disc pl-4">
+                                 <li>Inspect the car in person</li>
+                                 <li>Check vehicle history report</li>
+                                 <li>Meet in a safe public place</li>
+                             </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </x-app>

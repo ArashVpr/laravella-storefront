@@ -1,6 +1,10 @@
 import axios from 'axios';
 import './bootstrap';
 import showCookieBanner from './cookieConsent';
+import Alpine from 'alpinejs';
+
+window.Alpine = Alpine;
+Alpine.start();
 
 document.addEventListener("DOMContentLoaded", function () {
   showCookieBanner();
@@ -57,19 +61,60 @@ document.addEventListener("DOMContentLoaded", function () {
   const initImagePicker = () => {
     const fileInput = document.querySelector("#carFormImageUpload");
     const imagePreview = document.querySelector("#imagePreviews");
+    let selectedFiles = [];
+
     if (!fileInput) {
       return;
     }
+
     fileInput.onchange = (ev) => {
+      const newFiles = Array.from(ev.target.files);
+      selectedFiles = selectedFiles.concat(newFiles);
+      updatePreview();
+    };
+
+    function updatePreview() {
       imagePreview.innerHTML = "";
-      const files = ev.target.files;
-      for (let file of files) {
+      selectedFiles.forEach((file, index) => {
         readFile(file).then((url) => {
-          const img = createImage(url);
+          const img = createImage(url, index);
           imagePreview.append(img);
         });
-      }
-    };
+      });
+    }
+
+    function createImage(url, index) {
+      const container = document.createElement("div");
+      container.classList.add("car-form-image-preview", "relative", "inline-block", "mr-2", "mb-2");
+
+      const img = document.createElement("img");
+      img.src = url;
+      img.classList.add("w-20", "h-20", "object-cover", "rounded-lg", "border", "border-gray-300");
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.classList.add("absolute", "-top-2", "-right-2", "w-6", "h-6", "bg-red-500", "text-white", "rounded-full", "flex", "items-center", "justify-center", "text-xs", "hover:bg-red-600", "transition-colors");
+      removeBtn.innerHTML = "×";
+      removeBtn.onclick = () => {
+        selectedFiles.splice(index, 1);
+        updatePreview();
+        updateFileInput();
+      };
+
+      container.appendChild(img);
+      container.appendChild(removeBtn);
+
+      return container;
+    }
+
+    function updateFileInput() {
+      // Create a new DataTransfer object to update the file input
+      const dt = new DataTransfer();
+      selectedFiles.forEach(file => {
+        dt.items.add(file);
+      });
+      fileInput.files = dt.files;
+    }
 
     function readFile(file) {
       return new Promise((resolve, reject) => {
@@ -83,23 +128,16 @@ document.addEventListener("DOMContentLoaded", function () {
         reader.readAsDataURL(file);
       });
     }
-
-    function createImage(url) {
-      const a = document.createElement("a");
-      a.classList.add("car-form-image-preview");
-      a.innerHTML = `
-        <img src="${url}" />
-      `;
-      return a;
-    }
   };
 
   const initMobileNavbar = () => {
     const btnToggle = document.querySelector(".btn-navbar-toggle");
 
-    btnToggle.onclick = () => {
-      document.body.classList.toggle("navbar-opened");
-    };
+    if (btnToggle) {
+      btnToggle.onclick = () => {
+        document.body.classList.toggle("navbar-opened");
+      };
+    }
   };
 
   const imageCarousel = () => {
@@ -219,39 +257,61 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const initAddToWatchlist = () => {
     // Select add to watchlist buttons
-    const buttons = document.querySelectorAll('.btn-heart');
+    const buttons = document.querySelectorAll('.btn-heart, .watchlist-btn');
 
     // Iterate over these buttons and add click event listener
     buttons.forEach((button) => {
       button.addEventListener('click', ev => {
+        ev.preventDefault();
         // Get the button element on which click happened
         const button = ev.currentTarget;
         // We added data-url attribute to the button in blade file
         // get the url
         const url = button.dataset.url;
+
+        if (!url) {
+          console.error('No URL found for watchlist button');
+          return;
+        }
+
         // Make request on the URL to add or remove the car from watchlist
         axios.post(url).then((response) => {
           // Select both svg tags of the button
           const toShow = button.querySelector('svg.hidden');
           const toHide = button.querySelector('svg:not(.hidden)');
 
-          // Which was hidden must be displayed
-          toShow.classList.remove('hidden')
-          // Which was displayed must be hidden
-          toHide.classList.add('hidden')
-          // Show alert to the user
-          alert(response.data.message)
-        })
-          .catch(error => {
-            console.error(error.response)
-            if (error?.response?.status === 401) {
-              alert("Please Login First!")
+          if (toShow && toHide) {
+            // Which was hidden must be displayed
+            toShow.classList.remove('hidden')
+            // Which was displayed must be hidden
+            toHide.classList.add('hidden')
+          } else {
+            // For new component: toggle fill and color
+            const svg = button.querySelector('svg');
+            if (response.data.added) {
+              button.classList.remove('text-gray-400', 'hover:text-red-500');
+              button.classList.add('text-red-500');
+              svg.setAttribute('fill', 'currentColor');
+            } else {
+              button.classList.remove('text-red-500');
+              button.classList.add('text-gray-400', 'hover:text-red-500');
+              svg.setAttribute('fill', 'none');
             }
-            else alert("Internal Server Error. Please Try again later!")
-          })
-      })
-    })
-  }
+          }
+
+          // Show alert to the user (optional)
+          // alert(response.data.message)
+        }).catch((error) => {
+          if (error.response?.status === 401) {
+            // Redirect to login if not authenticated
+            window.location.href = '/login';
+          } else {
+            console.error('Watchlist error:', error);
+          }
+        });
+      });
+    });
+  };
 
   const initShowPhoneNumber = () => {
     // Select the element we need to listen to click

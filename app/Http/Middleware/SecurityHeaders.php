@@ -104,8 +104,8 @@ class SecurityHeaders
             // Frame ancestors: Prevent framing (same as X-Frame-Options)
             "frame-ancestors 'self'",
 
-            // Frames: Allow self
-            "frame-src 'self'",
+            // Frames: Allow self and dbdiagram.io
+            "frame-src 'self' https://dbdiagram.io",
 
             // Upgrade insecure requests in production
             config('app.env') === 'production' ? 'upgrade-insecure-requests' : '',

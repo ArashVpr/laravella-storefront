@@ -14,7 +14,26 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                primary: {
+                    DEFAULT: '#c74c09',
+                    50: '#fdf3f0',
+                    100: '#fce6de',
+                    200: '#fad0c2',
+                    300: '#f6b09c',
+                    400: '#f08269',
+                    500: '#c74c09',
+                    600: '#a63a08',
+                    700: '#8a310d',
+                    800: '#732d10',
+                    900: '#461908',
+                },
+                surface: {
+                    DEFAULT: '#ffffff',
+                    dark: '#18181b',
+                },
             },
         },
     },

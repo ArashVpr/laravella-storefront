@@ -1,3 +1,3 @@
-<div class="announcement-bar" role="banner" aria-label="Site announcement">
+<div class="bg-gray-900 text-white text-xs py-2 text-center" role="banner">
     <p>This is a demo application with limited functionalities.</p>
 </div>

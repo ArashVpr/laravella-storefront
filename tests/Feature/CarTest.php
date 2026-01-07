@@ -16,7 +16,7 @@ test('authenticated user can access car create page', function () {
     $response = $this->actingAs($user)->get('/car/create');
 
     $response->assertOk()
-        ->assertSee('Add new car');
+        ->assertSee('List Your Car');
 });
 
 test('guest user cannot access my cars page', function () {

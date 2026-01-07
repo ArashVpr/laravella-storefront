@@ -1,120 +1,100 @@
 <x-app title="My Cars">
-    <div>
-        <main>
-            <div>
-                <div class="container">
-                    <h1 class="car-details-page-title">My Cars</h1>
-                    <div class="card p-medium">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Image</th>
-                                        <th>Title</th>
-                                        <th>Date</th>
-                                        <th>Published</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($cars as $car)
-                                        <tr>
-                                            <td>
-                                                <div class="relative inline-block">
-                                                    <img src=`{{ $car->primaryImage?->getUrl() ?? '/img/no-image.png' }}`
-                                                        alt="" class="my-cars-img-thumbnail" />
-                                                    @if($car->isFeatured())
-                                                        <div class="absolute -top-1 -right-1">
-                                                            <svg class="h-5 w-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                            </svg>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                            <td> {{ $car->getTitle() }}
-                                            </td>
-                                            <td>{{ $car->formatDate() }}</td>
-                                            <td>{{ $car->published_at ? 'YES' : 'NO' }}</td>
-                                            <td>
-                                                @if($car->isFeatured())
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">
-                                                        <svg class="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                        </svg>
-                                                        Featured
-                                                    </span>
-                                                    <small class="block text-gray-500 mt-1">Until {{ $car->featured_until->format('M d') }}</small>
-                                                @else
-                                                    <span class="text-gray-400 text-xs">Standard</span>
-                                                @endif
-                                            </td>
-                                            <td class="">
-                                                <a href="{{ route('car.edit', $car) }}"
-                                                    class="btn btn-edit inline-flex items-center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                                        style="width: 12px; margin-right: 5px">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
-                                                    </svg>
-                                                    edit
-                                                </a>
-                                                <a href="{{ route('car.images', $car) }}" class="btn btn-edit inline-flex items-center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                                        style="width: 12px; margin-right: 5px">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                                                    </svg>
-                                                    images
-                                                </a>
-                                                @if(!$car->isFeatured())
-                                                    <form action="{{ route('stripe.checkout', $car) }}" method="POST" class="inline-flex">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-edit inline-flex items-center" style="background: linear-gradient(135deg, #f97316 0%, #fb923c 100%); color: white; border: none;">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 12px; margin-right: 5px">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
-                                                            </svg>
-                                                            promote
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                                <form action="{{ route('car.destroy', $car) }}" method="POST"
-                                                    class="inline-flex">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button onclick="return confirm('Are you sure?')"
-                                                        class="btn btn-delete inline-flex items-center">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                                            style="width: 12px; margin-right: 5px">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                                        </svg>
-                                                        delete
-                                                    </button>
-                                                </form>
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-black text-gray-900 tracking-tight">My Garage</h1>
+            <a href="{{ route('car.create') }}" class="bg-primary hover:bg-primary-hover text-white font-bold py-2 px-6 rounded-xl transition-all shadow-lg shadow-primary/30 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Sell a Car
+            </a>
+        </div>
 
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5" class="text-center p-large">
-                                                <p class="text-gray-500">No cars found.</p>
-                                                <a href="{{ route('car.create') }}">Add a new car</a>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- Pagination -->
-                        {{ $cars->onEachSide(2)->links() }}
-                    </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            @if($cars->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-100 text-xs uppercase text-gray-500 font-semibold tracking-wider">
+                                <th class="p-6">Vehicle</th>
+                                <th class="p-6">Added</th>
+                                <th class="p-6">Price</th>
+                                <th class="p-6">Status</th>
+                                <th class="p-6 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @foreach ($cars as $car)
+                                <tr class="hover:bg-gray-50/50 transition-colors group">
+                                    <td class="p-6">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-20 h-14 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 relative">
+                                                <img src="{{ $car->primaryImage?->getUrl() ?? '/img/no-image.png' }}" class="w-full h-full object-cover">
+                                                @if($car->isFeatured()) 
+                                                    <div class="absolute top-0 right-0 bg-yellow-400 w-3 h-3 rounded-bl-md z-10" title="Featured"></div>
+                                                @endif
+                                            </div>
+                                            <div>
+                                                <a href="{{ route('car.show', $car) }}" class="font-bold text-gray-900 hover:text-primary transition-colors block">
+                                                    {{ $car->getTitle() }}
+                                                </a>
+                                                <div class="text-xs text-gray-500 mt-1">
+                                                    {{ $car->details_completed ? 'Details Complete' : 'Details Incomplete' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="p-6 text-sm text-gray-600">
+                                        {{ $car->created_at->format('M d, Y') }}
+                                    </td>
+                                    <td class="p-6 font-bold text-gray-900">
+                                        ${{ number_format($car->price) }}
+                                    </td>
+                                    <td class="p-6">
+                                        @if($car->published_at)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                Active
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                Draft
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="p-6">
+                                        <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <a href="{{ route('car.edit', $car) }}" class="p-2 text-gray-400 hover:text-primary hover:bg-primary-50 rounded-lg transition-all" title="Edit">
+                                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            </a>
+                                            <form action="{{ route('car.destroy', $car) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this car?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Delete">
+                                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-        </main>
+                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50">
+                    {{ $cars->links() }}
+                </div>
+            @else
+                <div class="text-center py-16 px-4">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                         <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">No cars listed yet</h3>
+                    <p class="text-gray-500 mb-6 max-w-sm mx-auto">It looks like you haven't listed any cars for sale yet. Get started today!</p>
+                    <a href="{{ route('car.create') }}" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-hover text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-primary/30">
+                        Sell Your Car
+                    </a>
+                </div>
+            @endif
+        </div>
     </div>
 </x-app>

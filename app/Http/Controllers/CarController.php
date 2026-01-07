@@ -63,7 +63,7 @@ class CarController extends Controller
 
             // Iterate and create images
             foreach ($images as $index => $image) {
-                $path = $image->store('images');
+                $path = $image->store('images', 'public');
                 $car->images()->create(['image_path' => $path, 'position' => $index + 1]);
             }
         });
@@ -249,42 +249,59 @@ class CarController extends Controller
 
         // Get Validated data of delete images and positions
         $data = $request->validate([
-            'delete_images' => 'array',
-            'delete_images.*' => 'integer',
-            'positions' => 'array',
-            'positions.*' => 'integer',
+            'delete' => 'nullable|array',
+            'delete.*' => 'integer',
+            'position' => 'nullable|array',
+            'position.*' => 'integer',
         ]);
 
-        $deleteImages = $data['delete_images'] ?? [];
-        $positions = $data['positions'] ?? [];
+        $deleteImages = array_keys($data['delete'] ?? []);
+        $positions = $data['position'] ?? [];
 
-        // if (empty($deleteImages) || empty($positions)) {
-        //     return redirect()->route('car.images', $car)
-        //         ->with('warning', 'No changes were made');
-        // }
+        // Handle deletions
+        if (!empty($deleteImages)) {
+            // Select images to delete
+            /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\CarImage> $imagesToDelete */
+            $imagesToDelete = $car->images()->whereIn('id', $deleteImages)->get();
 
-        // Select images to delete
-        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\CarImage> $imagesToDelete */
-        $imagesToDelete = $car->images()->whereIn('id', $deleteImages)->get();
+            // Iterate over images to delete and delete them from file system
+            foreach ($imagesToDelete as $image) {
+                if (Storage::exists($image->image_path)) {
+                    Storage::delete($image->image_path);
+                }
+            }
 
-        // Iterate over images to delete and delete them from file system
-        foreach ($imagesToDelete as $image) {
-            if (Storage::exists($image->image_path)) {
-                Storage::delete($image->image_path);
+            // Delete images from the database
+            $car->images()->whereIn('id', $deleteImages)->delete();
+        }
+
+        // Handle position updates
+        if (!empty($positions)) {
+            // Iterate over positions and update position for each image, by its ID
+            foreach ($positions as $id => $position) {
+                $car->images()->where('id', $id)->update(['position' => $position]);
             }
         }
 
-        // Delete images from the database
-        $car->images()->whereIn('id', $deleteImages)->delete();
+        // If neither deletions nor position updates were provided
+        if (empty($deleteImages) && empty($positions)) {
+            return redirect()->route('car.images', $car)
+                ->with('warning', 'No changes were made');
+        }
 
-        // Iterate over positions and update position for each image, by its ID
-        foreach ($positions as $id => $position) {
-            $car->images()->where('id', $id)->update(['position' => $position]);
+        // Prepare success message
+        $message = '';
+        if (!empty($deleteImages) && !empty($positions)) {
+            $message = 'Images deleted and positions updated successfully';
+        } elseif (!empty($deleteImages)) {
+            $message = count($deleteImages) . ' image' . (count($deleteImages) > 1 ? 's' : '') . ' deleted successfully';
+        } elseif (!empty($positions)) {
+            $message = 'Image positions updated successfully';
         }
 
         // Redirect back to car.images route
         return redirect()->route('car.images', $car)
-            ->with('success', 'Car images were updated');
+            ->with('success', $message);
     }
 
     public function addImages(Request $request, Car $car): \Illuminate\Http\RedirectResponse

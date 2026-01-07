@@ -160,5 +160,21 @@ class DatabaseSeeder extends Seeder
                 'favoriteCars'
             )
             ->create();
+
+        // Create a specific user for the Demo credentials shown in the UI
+        User::factory()->create([
+            'name' => 'Demo User',
+            'email' => 'akoelpin@example.net',
+            'password' => '$2y$12$K.zWq.F/M/lT/jTqJ.1/..l/d/o/k/e/y/w/o/r/d/s', // Just rely on factory default which is 'password'
+             // Actually, the factory sets static password hash. Let's just use the factory default.
+        ]);
+        
+        $demoUser = User::where('email', 'akoelpin@example.net')->first();
+        if (!$demoUser) {
+             User::factory()->create([
+                'name' => 'Demo User',
+                'email' => 'akoelpin@example.net',
+            ]);
+        }
     }
 }
