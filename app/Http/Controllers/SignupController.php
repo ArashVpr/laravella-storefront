@@ -45,7 +45,6 @@ class SignupController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
-        return redirect()->route('homepage')->with('success', 'Account created Successfully. Please check your email
-        to verify your account');
+        return redirect()->route('homepage')->with('success', __('Account created Successfully. Please check your email to verify your account'));
     }
 }

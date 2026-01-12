@@ -7,7 +7,16 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\WatchlistController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+
+Route::get('/language/{locale}', function ($locale) {
+    if (! in_array($locale, ['en', 'fr'])) {
+        abort(400);
+    }
+    Session::put('locale', $locale);
+    return redirect()->back();
+})->name('locale.switch');
 
 Route::get('/', [HomeController::class, 'index'])->name('homepage');
 
@@ -99,21 +108,21 @@ if (app()->environment('local')) {
         /** @var view-string $viewName */
         return view($viewName);
     })->name('pulse');
-    
+
     // Sentry Test Routes (local only)
     Route::prefix('sentry-test')->group(function () {
         Route::get('/exception', function () {
             throw new \Exception('Test Exception: This is a test error sent to Sentry');
         })->name('sentry.test.exception');
-        
+
         Route::get('/error', function () {
             trigger_error('Test Error: This is a test PHP error', E_USER_ERROR);
         })->name('sentry.test.error');
-        
+
         Route::get('/warning', function () {
             trigger_error('Test Warning: This is a test PHP warning', E_USER_WARNING);
         })->name('sentry.test.warning');
-        
+
         Route::get('/breadcrumbs', function () {
             \Sentry\addBreadcrumb(new \Sentry\Breadcrumb(
                 \Sentry\Breadcrumb::LEVEL_INFO,
@@ -121,22 +130,22 @@ if (app()->environment('local')) {
                 'user',
                 'User visited test page'
             ));
-            
+
             \Sentry\addBreadcrumb(new \Sentry\Breadcrumb(
                 \Sentry\Breadcrumb::LEVEL_INFO,
                 \Sentry\Breadcrumb::TYPE_NAVIGATION,
                 'navigation',
                 'Navigated to breadcrumbs test'
             ));
-            
+
             \Sentry\captureMessage('Test Message with Breadcrumbs', \Sentry\Severity::info());
-            
+
             return response()->json([
                 'message' => 'Message with breadcrumbs sent to Sentry',
                 'check' => 'View your Sentry dashboard'
             ]);
         })->name('sentry.test.breadcrumbs');
-        
+
         Route::get('/context', function () {
             \Sentry\configureScope(function (\Sentry\State\Scope $scope): void {
                 $scope->setUser([
@@ -144,63 +153,65 @@ if (app()->environment('local')) {
                     'username' => auth()->user()->name ?? 'Test User',
                     'email' => auth()->user()->email ?? 'test@example.com',
                 ]);
-                
+
                 $scope->setTag('page.locale', 'en');
                 $scope->setTag('environment', config('app.env'));
-                
+
                 $scope->setContext('character', [
                     'role' => 'tester',
                     'level' => 99,
                     'premium' => true,
                 ]);
             });
-            
+
             throw new \RuntimeException('Test Exception with Context and User Info');
         })->name('sentry.test.context');
-        
+
         Route::get('/performance', function () {
             $transaction = \Sentry\startTransaction(
                 \Sentry\Tracing\TransactionContext::make()
                     ->setName('Test Performance Transaction')
                     ->setOp('http.server')
             );
-            
+
             \Sentry\SentrySdk::getCurrentHub()->setSpan($transaction);
-            
+
             // Simulate some work
-            $span1 = $transaction->startChild(\Sentry\Tracing\SpanContext::make()
-                ->setOp('db.query')
-                ->setDescription('SELECT * FROM cars LIMIT 10')
+            $span1 = $transaction->startChild(
+                \Sentry\Tracing\SpanContext::make()
+                    ->setOp('db.query')
+                    ->setDescription('SELECT * FROM cars LIMIT 10')
             );
             usleep(50000); // 50ms
             $span1->finish();
-            
-            $span2 = $transaction->startChild(\Sentry\Tracing\SpanContext::make()
-                ->setOp('http.client')
-                ->setDescription('GET https://api.example.com/data')
+
+            $span2 = $transaction->startChild(
+                \Sentry\Tracing\SpanContext::make()
+                    ->setOp('http.client')
+                    ->setDescription('GET https://api.example.com/data')
             );
             usleep(100000); // 100ms
             $span2->finish();
-            
+
             $transaction->finish();
-            
+
             return response()->json([
                 'message' => 'Performance trace sent to Sentry',
                 'transaction' => 'Test Performance Transaction',
                 'check' => 'View Performance tab in Sentry'
             ]);
         })->name('sentry.test.performance');
-        
+
         Route::get('/capture-message', function () {
             \Sentry\captureMessage('This is a test informational message', \Sentry\Severity::info());
-            
+
             return response()->json([
                 'message' => 'Info message captured',
                 'check' => 'View Issues in Sentry dashboard'
             ]);
         })->name('sentry.test.message');
     });
-    
+
     // Feature Flags Test Routes (local only)
     Route::prefix('feature-test')->group(function () {
         Route::get('/', function () {
@@ -213,7 +224,7 @@ if (app()->environment('local')) {
                 'real-time-chat',
                 'webp-images',
             ]);
-            
+
             if ($user) {
                 $userFeatures = \Laravel\Pennant\Feature::for($user)->all([
                     'enhanced-search',
@@ -226,24 +237,24 @@ if (app()->environment('local')) {
             } else {
                 $userFeatures = [];
             }
-            
+
             return view('feature-test', compact('features', 'userFeatures', 'user'));
         })->name('feature.test');
-        
+
         Route::post('/toggle-premium', function () {
             $user = auth()->user();
             if (!$user) {
                 return response()->json(['error' => 'Not authenticated'], 401);
             }
-            
+
             $user->is_premium = !$user->is_premium;
             $user->save();
-            
+
             // Clear cached feature values
             DB::table('features')
                 ->where('scope', 'App\Models\User|' . $user->id)
                 ->delete();
-            
+
             return response()->json([
                 'is_premium' => $user->is_premium,
                 'message' => $user->is_premium ? 'Upgraded to premium' : 'Downgraded to free'
@@ -252,4 +263,4 @@ if (app()->environment('local')) {
     });
 }
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

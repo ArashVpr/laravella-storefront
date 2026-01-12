@@ -28,7 +28,7 @@ class LoginController
             // and redirect user to home page. But if user is coming from another page to login page, redirect to that
             // intended page
             return redirect()->intended(route('homepage'))
-                ->with('success', 'Welcome Back');
+                ->with('success', __('Welcome Back'));
         }
 
         // If attempt was not successful, redirect back into login form with error on email and with email input data
@@ -46,6 +46,6 @@ class LoginController
         $request->session()->regenerateToken();
 
         return redirect()->route('homepage')
-            ->with('success', 'You have been logged out');
+            ->with('success', __('You have been logged out'));
     }
 }
