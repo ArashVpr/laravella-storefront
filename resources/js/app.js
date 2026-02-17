@@ -130,16 +130,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  const initMobileNavbar = () => {
-    const btnToggle = document.querySelector(".btn-navbar-toggle");
-
-    if (btnToggle) {
-      btnToggle.onclick = () => {
-        document.body.classList.toggle("navbar-opened");
-      };
-    }
-  };
-
   const imageCarousel = () => {
     const carousel = document.querySelector('.car-images-carousel');
     if (!carousel) {
@@ -339,7 +329,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   initSlider();
   initImagePicker();
-  initMobileNavbar();
   imageCarousel();
   initMobileFilters();
   initCascadingDropdown('#makerSelect', '#modelSelect');
