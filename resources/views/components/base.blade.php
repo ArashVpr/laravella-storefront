@@ -32,6 +32,7 @@
     {{-- PWA Meta Tags --}}
     <meta name="theme-color" content="#3b82f6">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Laravella">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
@@ -57,26 +58,32 @@
         integrity="sha512-XJgPMFq31Ren4pKVQgeD+0JTDzn0IwS1802sc+QTZckE6rny7AN2HLReq6Yamwpd2hFe5nJJGZLvPStWFv5Kww=="
         crossorigin="anonymous" referrerpolicy="no-referrer">
     </script>
+    @production
     <script src="https://unpkg.com/website-carbon-badges@1.1.3/b.min.js" defer></script>
-    
+    @endproduction
+
     {{-- PWA Service Worker Registration --}}
     <script>
-        if ('serviceWorker' in navigator) {
+        const shouldEnablePwa = @json(app() - > environment('production'));
+
+        if ('serviceWorker' in navigator && shouldEnablePwa) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
                     .then((registration) => {
                         console.log('✅ Service Worker registered:', registration.scope);
-                        
+
                         // Check for updates
                         registration.addEventListener('updatefound', () => {
                             const newWorker = registration.installing;
                             console.log('🔄 Service Worker update found');
-                            
+
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                                     // New service worker available, prompt user to refresh
                                     if (confirm('New version available! Reload to update?')) {
-                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        newWorker.postMessage({
+                                            type: 'SKIP_WAITING'
+                                        });
                                         window.location.reload();
                                     }
                                 }
@@ -86,7 +93,7 @@
                     .catch((error) => {
                         console.error('❌ Service Worker registration failed:', error);
                     });
-                
+
                 // Handle service worker controller change
                 let refreshing = false;
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -96,14 +103,24 @@
                     }
                 });
             });
+        } else if ('serviceWorker' in navigator && !shouldEnablePwa) {
+            window.addEventListener('load', async () => {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                await Promise.all(registrations.map((registration) => registration.unregister()));
+
+                if ('caches' in window) {
+                    const cacheKeys = await caches.keys();
+                    await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+                }
+            });
         }
-        
+
         // PWA Install Prompt
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            
+
             // Show custom install button if exists
             const installBtn = document.getElementById('pwa-install-btn');
             if (installBtn) {
@@ -111,7 +128,9 @@
                 installBtn.addEventListener('click', async () => {
                     if (deferredPrompt) {
                         deferredPrompt.prompt();
-                        const { outcome } = await deferredPrompt.userChoice;
+                        const {
+                            outcome
+                        } = await deferredPrompt.userChoice;
                         console.log(`User response to install prompt: ${outcome}`);
                         deferredPrompt = null;
                         installBtn.style.display = 'none';
@@ -119,13 +138,13 @@
                 });
             }
         });
-        
+
         // Track if app is running as PWA
         window.addEventListener('appinstalled', () => {
             console.log('✅ PWA installed successfully');
             deferredPrompt = null;
         });
-        
+
         // Check if running as PWA
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
             console.log('📱 Running as installed PWA');

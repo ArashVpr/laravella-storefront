@@ -9,14 +9,14 @@
         <button class="md:hidden p-2 text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 btn-navbar-toggle"
             aria-label="Toggle navigation menu"
             aria-expanded="false"
-            aria-controls="navbar-menu">
+            aria-controls="mobile-menu">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
         </button>
 
         <!-- Navigation -->
-        <nav id="navbar-menu" class="hidden md:flex items-center gap-6" role="navigation" aria-label="Main navigation">
+        <nav class="hidden md:flex items-center gap-6" role="navigation" aria-label="Main navigation">
             {{-- Documentation Dropdown Blade Component --}}
             @include('components.dropdown')
 
@@ -90,6 +90,66 @@
                 </a>
 
                 <a href="{{ route('signup') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-full hover:bg-primary-hover shadow-sm hover:shadow-md transition-all duration-200" aria-label="Create a new account">
+                    {{ __('Sign up') }}
+                </a>
+            </div>
+            @endguest
+        </nav>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 bg-white/95 backdrop-blur-md shadow-lg">
+        <nav class="container mx-auto px-4 py-4 space-y-4" role="navigation" aria-label="Mobile navigation">
+            <div class="space-y-2">
+                <a href="{{ route('docs') }}" class="block w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
+                    {{ __('Documentation (EN)') }}
+                </a>
+                <a href="{{ route('docs.fr') }}" class="block w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
+                    {{ __('Documentation (FR)') }}
+                </a>
+                <a href="{{ route('erd') }}" class="block w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
+                    {{ __('ERD Schema') }}
+                </a>
+            </div>
+
+            <a href="{{ route('car.create') }}"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-3 text-sm font-semibold text-white hover:bg-gray-800 transition-colors"
+                aria-label="Add a new car listing">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                {{ __('Sell Your Car') }}
+            </a>
+
+            <div class="grid grid-cols-2 gap-2">
+                <a href="{{ route('locale.switch', 'en') }}"
+                    class="inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition-colors {{ App::getLocale() == 'en' ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-700 hover:bg-gray-50' }}">
+                    🇺🇸 {{ __('English') }}
+                </a>
+                <a href="{{ route('locale.switch', 'fr') }}"
+                    class="inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition-colors {{ App::getLocale() == 'fr' ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-700 hover:bg-gray-50' }}">
+                    🇫🇷 {{ __('Français') }}
+                </a>
+            </div>
+
+            @auth
+            <div class="border-t border-gray-100 pt-4 space-y-2">
+                <p class="px-1 text-xs font-semibold uppercase tracking-wide text-gray-500">{{ __('Account') }}</p>
+                <a href="{{ route('profile.index') }}" class="block rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">{{ __('My Profile') }}</a>
+                <a href="{{ route('car.index') }}" class="block rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">{{ __('My Cars') }}</a>
+                <a href="{{ route('watchlist.index') }}" class="block rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">{{ __('My Watchlist') }}</a>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">{{ __('Log Out') }}</button>
+                </form>
+            </div>
+            @endauth
+
+            @guest
+            <div class="grid grid-cols-2 gap-2 border-t border-gray-100 pt-4">
+                <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-lg border border-gray-200 px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    {{ __('Log in') }}
+                </a>
+                <a href="{{ route('signup') }}" class="inline-flex items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover transition-colors">
                     {{ __('Sign up') }}
                 </a>
             </div>
