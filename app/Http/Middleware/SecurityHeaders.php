@@ -151,6 +151,6 @@ class SecurityHeaders
      */
     protected function buildScriptSrc(): string
     {
-        return "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://js.pusher.com";
+        return "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://js.pusher.com https://cdn.tailwindcss.com";
     }
 }

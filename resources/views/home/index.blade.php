@@ -1,4 +1,4 @@
-<x-app title="Laravella Storefront - Premium Cars">
+<x-app title="Premium Cars">
     <!-- Immersive Hero Section -->
     <section class="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gray-900 rounded-b-[2.5rem]">
         <!-- Background Video -->
