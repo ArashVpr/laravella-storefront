@@ -64,7 +64,7 @@
 
     {{-- PWA Service Worker Registration --}}
     <script>
-        const shouldEnablePwa = @json(app() - > environment('production'));
+        const shouldEnablePwa = @json(app() -> environment('production'));
 
         if ('serviceWorker' in navigator && shouldEnablePwa) {
             window.addEventListener('load', () => {
