@@ -75,6 +75,10 @@ class CarController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        $stateId = $request->validate([
+            'state_id' => 'required|exists:states,id',
+        ])['state_id'];
+
         $validated = $request->validate([
             'maker_id' => 'required|exists:makers,id',
             'model_id' => 'required|exists:models,id',
@@ -85,13 +89,11 @@ class CarController extends Controller
             'car_type_id' => 'nullable|exists:car_types,id',
             'city_id' => [
                 'required',
-                Rule::exists('cities', 'id')->where('state_id', $request->integer('state_id')),
+                Rule::exists('cities', 'id')->where('state_id', $stateId),
             ],
-            'state_id' => 'required|exists:states,id',
             'description' => 'nullable|string|max:1000',
         ]);
 
-        unset($validated['state_id']);
         $validated['user_id'] = $request->user()->id;
         $car = Car::create($validated);
 
@@ -113,7 +115,13 @@ class CarController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $stateId = $request->integer('state_id', $car->city->state_id);
+        $stateId = $car->city->state_id;
+        if ($request->filled('state_id')) {
+            $stateId = $request->validate([
+                'state_id' => 'exists:states,id',
+            ])['state_id'];
+        }
+
         $validated = $request->validate([
             'maker_id' => 'sometimes|exists:makers,id',
             'model_id' => 'sometimes|exists:models,id',
@@ -126,11 +134,9 @@ class CarController extends Controller
                 'sometimes',
                 Rule::exists('cities', 'id')->where('state_id', $stateId),
             ],
-            'state_id' => 'sometimes|exists:states,id',
             'description' => 'nullable|string|max:1000',
         ]);
 
-        unset($validated['state_id']);
         $car->update($validated);
         $car->load(['maker', 'model', 'fuelType', 'carType', 'city.state', 'owner']);
 
