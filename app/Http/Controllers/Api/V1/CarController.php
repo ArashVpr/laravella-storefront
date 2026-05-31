@@ -75,9 +75,7 @@ class CarController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $stateId = $request->validate([
-            'state_id' => 'required|exists:states,id',
-        ])['state_id'];
+        $stateId = $this->validatedRequiredStateId($request);
 
         $validated = $request->validate([
             'maker_id' => 'required|exists:makers,id',
@@ -115,12 +113,7 @@ class CarController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $stateId = $car->city->state_id;
-        if ($request->filled('state_id')) {
-            $stateId = $request->validate([
-                'state_id' => 'exists:states,id',
-            ])['state_id'];
-        }
+        $stateId = $this->validatedStateIdForUpdate($request, $car);
 
         $validated = $request->validate([
             'maker_id' => 'sometimes|exists:makers,id',
@@ -263,5 +256,25 @@ class CarController extends Controller
     private function resolveSortOrder(?string $sortOrder): string
     {
         return $sortOrder === 'asc' ? 'asc' : 'desc';
+    }
+
+    private function validatedRequiredStateId(Request $request): int
+    {
+        return (int) $request->validate([
+            'state_id' => 'required|exists:states,id',
+        ])['state_id'];
+    }
+
+    private function validatedStateIdForUpdate(Request $request, Car $car): int
+    {
+        $car->loadMissing('city');
+
+        if (! $request->filled('state_id')) {
+            return $car->city->state_id;
+        }
+
+        return (int) $request->validate([
+            'state_id' => 'exists:states,id',
+        ])['state_id'];
     }
 }
