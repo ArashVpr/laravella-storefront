@@ -8,6 +8,7 @@ use App\Models\Car;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Validation\Rule;
 
 class CarController extends Controller
 {
@@ -82,11 +83,15 @@ class CarController extends Controller
             'mileage' => 'required|integer|min:0',
             'fuel_type_id' => 'required|exists:fuel_types,id',
             'car_type_id' => 'nullable|exists:car_types,id',
-            'city_id' => 'required|exists:cities,id',
+            'city_id' => [
+                'required',
+                Rule::exists('cities', 'id')->where('state_id', $request->integer('state_id')),
+            ],
             'state_id' => 'required|exists:states,id',
             'description' => 'nullable|string|max:1000',
         ]);
 
+        unset($validated['state_id']);
         $validated['user_id'] = $request->user()->id;
         $car = Car::create($validated);
 
@@ -108,6 +113,7 @@ class CarController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        $stateId = $request->integer('state_id', $car->city->state_id);
         $validated = $request->validate([
             'maker_id' => 'sometimes|exists:makers,id',
             'model_id' => 'sometimes|exists:models,id',
@@ -116,11 +122,15 @@ class CarController extends Controller
             'mileage' => 'sometimes|integer|min:0',
             'fuel_type_id' => 'sometimes|exists:fuel_types,id',
             'car_type_id' => 'nullable|exists:car_types,id',
-            'city_id' => 'sometimes|exists:cities,id',
+            'city_id' => [
+                'sometimes',
+                Rule::exists('cities', 'id')->where('state_id', $stateId),
+            ],
             'state_id' => 'sometimes|exists:states,id',
             'description' => 'nullable|string|max:1000',
         ]);
 
+        unset($validated['state_id']);
         $car->update($validated);
         $car->load(['maker', 'model', 'fuelType', 'carType', 'city.state', 'owner']);
 
