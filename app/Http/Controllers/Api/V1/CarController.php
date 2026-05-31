@@ -142,9 +142,7 @@ class CarController extends Controller
 
         $car->delete();
 
-        return response()->json([
-            'message' => 'Car deleted successfully',
-        ]);
+        return response()->noContent();
     }
 
     /**

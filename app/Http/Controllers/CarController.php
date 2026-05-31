@@ -309,18 +309,14 @@ class CarController extends Controller
     {
         Gate::authorize('update', $car);
 
-        // Get images from request
-        $images = $request->file('images') ?? [];
-
-        if (empty($images)) {
-            return redirect()->route('car.images', $car)
-                ->with('warning', 'No images were selected');
-        }
-
-        $request->validate([
-            'images' => 'array',
+        $validated = $request->validate([
+            'images' => 'required|array|min:1',
             'images.*' => 'image|max:5120',
+        ], [
+            'images.required' => 'No images were selected',
         ]);
+
+        $images = $validated['images'];
 
         // Select max position of car images
         $position = $car->images()->max('position') ?? 0;
