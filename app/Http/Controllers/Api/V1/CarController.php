@@ -48,11 +48,12 @@ class CarController extends Controller
         }
 
         // Sorting
-        $sortBy = $request->input('sort_by', 'created_at');
-        $sortOrder = $request->input('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
+        $query->orderBy(
+            $this->resolveSortField($request->input('sort_by')),
+            $this->resolveSortOrder($request->input('sort_order'))
+        );
 
-        $perPage = min($request->input('per_page', 20), 100); // Max 100 per page
+        $perPage = max(1, min((int) $request->input('per_page', 20), 100));
         $cars = $query->paginate($perPage);
 
         return new CarCollection($cars);
@@ -89,7 +90,7 @@ class CarController extends Controller
         $validated['user_id'] = $request->user()->id;
         $car = Car::create($validated);
 
-        $car->load(['maker', 'model', 'fuelType', 'carType', 'city', 'state', 'owner']);
+        $car->load(['maker', 'model', 'fuelType', 'carType', 'city.state', 'owner']);
 
         return response()->json([
             'message' => 'Car created successfully',
@@ -121,7 +122,7 @@ class CarController extends Controller
         ]);
 
         $car->update($validated);
-        $car->load(['maker', 'model', 'fuelType', 'carType', 'city', 'state', 'owner']);
+        $car->load(['maker', 'model', 'fuelType', 'carType', 'city.state', 'owner']);
 
         return response()->json([
             'message' => 'Car updated successfully',
@@ -143,7 +144,7 @@ class CarController extends Controller
 
         return response()->json([
             'message' => 'Car deleted successfully',
-        ], 204);
+        ]);
     }
 
     /**
@@ -218,18 +219,13 @@ class CarController extends Controller
         }
 
         // Apply sorting
-        $sortBy = $request->input('sort_by', 'created_at');
-        $sortOrder = $request->input('sort_order', 'desc');
-        
-        $allowedSortFields = ['price', 'year', 'created_at', 'mileage'];
-        if (in_array($sortBy, $allowedSortFields)) {
-            $carQuery->orderBy($sortBy, $sortOrder);
-        } else {
-            $carQuery->orderBy('created_at', 'desc');
-        }
+        $carQuery->orderBy(
+            $this->resolveSortField($request->input('sort_by')),
+            $this->resolveSortOrder($request->input('sort_order'))
+        );
 
         // Pagination
-        $perPage = (int) min($request->input('per_page', 20), 100);
+        $perPage = max(1, min((int) $request->input('per_page', 20), 100));
         $results = $carQuery->paginate($perPage);
 
         return response()->json([
@@ -241,5 +237,17 @@ class CarController extends Controller
                 'last_page' => $results->lastPage(),
             ],
         ]);
+    }
+
+    private function resolveSortField(?string $sortBy): string
+    {
+        $allowedSortFields = ['price', 'year', 'created_at', 'mileage'];
+
+        return in_array($sortBy, $allowedSortFields, true) ? $sortBy : 'created_at';
+    }
+
+    private function resolveSortOrder(?string $sortOrder): string
+    {
+        return $sortOrder === 'asc' ? 'asc' : 'desc';
     }
 }

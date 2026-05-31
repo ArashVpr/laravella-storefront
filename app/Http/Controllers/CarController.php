@@ -263,11 +263,12 @@ class CarController extends Controller
             // Select images to delete
             /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\CarImage> $imagesToDelete */
             $imagesToDelete = $car->images()->whereIn('id', $deleteImages)->get();
+            $disk = Storage::disk('public');
 
             // Iterate over images to delete and delete them from file system
             foreach ($imagesToDelete as $image) {
-                if (Storage::exists($image->image_path)) {
-                    Storage::delete($image->image_path);
+                if ($disk->exists($image->image_path)) {
+                    $disk->delete($image->image_path);
                 }
             }
 
@@ -315,6 +316,11 @@ class CarController extends Controller
             return redirect()->route('car.images', $car)
                 ->with('warning', 'No images were selected');
         }
+
+        $request->validate([
+            'images' => 'array',
+            'images.*' => 'image|max:5120',
+        ]);
 
         // Select max position of car images
         $position = $car->images()->max('position') ?? 0;
