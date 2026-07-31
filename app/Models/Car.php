@@ -19,7 +19,22 @@ class Car extends Model implements HasMedia
     /** @use HasFactory<\Database\Factories\CarFactory> */
     use HasFactory, SoftDeletes, Searchable, InteractsWithMedia;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'maker_id',
+        'model_id',
+        'year',
+        'price',
+        'mileage',
+        'vin',
+        'car_type_id',
+        'fuel_type_id',
+        'user_id',
+        'city_id',
+        'address',
+        'phone',
+        'description',
+        'published_at',
+    ];
 
     protected $casts = [
         'is_featured' => 'boolean',
@@ -63,10 +78,10 @@ class Car extends Model implements HasMedia
 
     public function model(): BelongsTo
     {
-        return $this->belongsTo(Models::class);
+        return $this->belongsTo(CarModel::class);
     }
 
-    public function owner()
+    public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
@@ -74,16 +89,6 @@ class Car extends Model implements HasMedia
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);
-    }
-
-    public function carImages(): HasMany
-    {
-        return $this->hasMany(CarImage::class);
-    }
-
-    public function carFeatures(): BelongsToMany
-    {
-        return $this->belongsToMany(CarFeature::class, 'car_id');
     }
 
     public function payments(): HasMany
@@ -100,7 +105,7 @@ class Car extends Model implements HasMedia
     {
         $maker = $this->maker?->name ?? 'Unknown';
         $model = $this->model?->name ?? 'Unknown';
-        return $this->year.' - '.$maker.' '.$model;
+        return $this->year . ' - ' . $maker . ' ' . $model;
     }
 
     /**

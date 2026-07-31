@@ -2,7 +2,7 @@
 
 namespace App\View\Components;
 
-use App\Models\Models;
+use App\Models\CarModel;
 use Illuminate\Support\Facades\DB;
 use Closure;
 use Illuminate\Contracts\View\View;
@@ -21,7 +21,7 @@ class SelectModel extends Component
     public function __construct()
     {
         $this->models = Cache::rememberForever('models', function () {
-            return Models::select(DB::raw('MIN(id) as id'), 'name', 'maker_id')
+            return CarModel::select(DB::raw('MIN(id) as id'), 'name', 'maker_id')
                 ->groupBy('name', 'maker_id')
                 ->orderBy('name')
                 ->get();

@@ -6,7 +6,7 @@ use App\Models\CarType;
 use App\Models\City;
 use App\Models\FuelType;
 use App\Models\Maker;
-use App\Models\Models;
+use App\Models\CarModel;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,19 +22,33 @@ class CarFactory extends Factory
      */
     public function definition(): array
     {
-        $model = Models::inRandomOrder()->first();
+        static $models = null;
+        static $users = null;
+        static $carTypes = null;
+        static $fuelTypes = null;
+        static $cities = null;
+
+        if ($models === null) {
+            $models = CarModel::all()->keyBy('id');
+            $users = User::all();
+            $carTypes = CarType::all();
+            $fuelTypes = FuelType::all();
+            $cities = City::all();
+        }
+
+        $model = $models->random();
 
         return [
-            'maker_id' => $model->maker_id, // Ensure maker matches model
-            'user_id' => User::inRandomOrder()->first()->id,
+            'maker_id' => $model->maker_id,
+            'user_id' => $users->random()->id,
             'model_id' => $model->id,
-            'car_type_id' => CarType::inRandomOrder()->first()->id,
-            'fuel_type_id' => FuelType::inRandomOrder()->first()->id,
-            'city_id' => City::inRandomOrder()->first()->id,
+            'car_type_id' => $carTypes->random()->id,
+            'fuel_type_id' => $fuelTypes->random()->id,
+            'city_id' => $cities->random()->id,
             'year' => fake()->numberBetween(2000, now()->year),
             'price' => fake()->numberBetween(100, 500) * 100,
             'mileage' => fake()->numberBetween(1000, 200000),
-            'vin' => strtoupper(fake()->bothify('??###??###??###??###')),
+            'vin' => strtoupper(fake()->bothify('?###??###??###??#')),
             'address' => fake()->streetAddress,
             'phone' => fake()->phoneNumber,
             'description' => fake()->text(200),
