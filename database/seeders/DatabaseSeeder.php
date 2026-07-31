@@ -6,7 +6,6 @@ use App\Models\Car;
 use App\Models\CarImage;
 use App\Models\Maker;
 use App\Models\User;
-// use Doctrine\DBAL\Schema\Sequence;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -154,7 +153,8 @@ class DatabaseSeeder extends Seeder
                 Car::factory(20)
                     ->has(
                         CarImage::factory(5)
-                            ->sequence(fn (Sequence $sequence) => ['position' => $sequence->index % 5 + 1]),
+                            ->sequence(fn(Sequence $sequence) => ['position' => $sequence->index % 5 + 1]),
+                        'images'
                     )
                     ->hasFeatures(),
                 'favoriteCars'
@@ -166,12 +166,12 @@ class DatabaseSeeder extends Seeder
             'name' => 'Demo User',
             'email' => 'akoelpin@example.net',
             'password' => '$2y$12$K.zWq.F/M/lT/jTqJ.1/..l/d/o/k/e/y/w/o/r/d/s', // Just rely on factory default which is 'password'
-             // Actually, the factory sets static password hash. Let's just use the factory default.
+            // Actually, the factory sets static password hash. Let's just use the factory default.
         ]);
-        
+
         $demoUser = User::where('email', 'akoelpin@example.net')->first();
         if (!$demoUser) {
-             User::factory()->create([
+            User::factory()->create([
                 'name' => 'Demo User',
                 'email' => 'akoelpin@example.net',
             ]);

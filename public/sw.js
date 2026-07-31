@@ -84,6 +84,11 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Partial content responses triggered by range requests cannot be stored in Cache.
+    if (request.headers.has('range')) {
+        return;
+    }
+
     // Skip Chrome extensions
     if (url.protocol === 'chrome-extension:') {
         return;
@@ -125,6 +130,10 @@ async function handleRequest(request, strategy, cacheName) {
     }
 }
 
+function isCacheableResponse(response) {
+    return response.ok && response.status !== 206 && !response.headers.has('content-range');
+}
+
 // Cache First Strategy
 async function cacheFirst(request, cache) {
     const cached = await cache.match(request);
@@ -136,7 +145,7 @@ async function cacheFirst(request, cache) {
     try {
         const response = await fetch(request);
 
-        if (response.ok) {
+        if (isCacheableResponse(response)) {
             cache.put(request, response.clone());
         }
 
@@ -152,7 +161,7 @@ async function networkFirst(request, cache) {
     try {
         const response = await fetch(request);
 
-        if (response.ok) {
+        if (isCacheableResponse(response)) {
             cache.put(request, response.clone());
         }
 
@@ -176,7 +185,7 @@ async function staleWhileRevalidate(request, cache) {
 
     const fetchPromise = fetch(request)
         .then((response) => {
-            if (response.ok) {
+            if (isCacheableResponse(response)) {
                 cache.put(request, response.clone());
             }
             return response;

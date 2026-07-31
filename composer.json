@@ -32,6 +32,8 @@
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.8",
         "laravel-lang/common": "^6.7",
+        "laravel/boost": "^2.4",
+        "laravel/doctor": "^0.1.0",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",

@@ -18,7 +18,6 @@ class CarFeatureFactory extends Factory
     public function definition(): array
     {
         return [
-            'car_id' => Car::inRandomOrder()->first()->id,
             'abs' => fake()->boolean(),
             'air_conditioning' => fake()->boolean(),
             'power_windows' => fake()->boolean(),
